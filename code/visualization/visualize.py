@@ -26,7 +26,6 @@ def visualize(width, depth, grid, wijk):
         bottom_y = int(water[ident].get('bottom_left_y'))*0.1
         top_x = int(water[ident].get('top_right_x'))*0.1
         top_y = int(water[ident].get('top_right_y'))*0.1
-        print(f"{bottom_x}, {bottom_y}, {top_x}, {top_y}")
 
         water_vis = plt.Rectangle((bottom_x, bottom_y), top_x, top_y, fc="blue")
         # plt.gca().add_patch(h1)
