@@ -8,6 +8,8 @@ class Grid():
         self.cells = self.load_grid(self.width, self.depth)
 
     def load_grid(self, width, depth):
+        "Creates a 2D array filled with Cells with according coordinates"
+
         grid = np.array([])
         for x in range(depth):
             for y in range(width):
