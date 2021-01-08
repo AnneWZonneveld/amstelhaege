@@ -2,7 +2,7 @@ from code.classes import grid
 from code.visualization import visualize as vis
 
 if __name__ == "__main__":
-    test_grid = grid.Grid()
+    test_grid = grid.Grid(20)
     print(test_grid.cells[0,3].x_coordinate)
     print(test_grid.cells[0,3].y_coordinate)
 
@@ -16,4 +16,3 @@ if __name__ == "__main__":
     print(test_grid.cells[0,0].y_coordinate)
     # test_grid.draw()
     test_grid.print_grid()
-    

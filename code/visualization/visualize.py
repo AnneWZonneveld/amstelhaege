@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 def visualize():
     print("runs visualize()")
 
-    plt.plot([1,2,3])
-    plt.savefig('foo.png')
+    plt.plot([1,2,3, 4, 5, 6])
+    plt.show()
+    plt.savefig('visualization.png')
