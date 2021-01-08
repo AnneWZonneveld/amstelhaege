@@ -16,8 +16,7 @@ class Grid():
         """
 
         grid = np.array([])
-        for i in range(width + 1 ):
-            y = width - i 
+        for y in range(width + 1 ):
             for x in range(depth + 1):
                 cell = Cell(x, y)
                 grid = np.append(grid, cell)
