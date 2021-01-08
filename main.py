@@ -7,7 +7,8 @@ if __name__ == "__main__":
     print(test_grid.cells[0,3].y_coordinate)
 
     # visualization
-    vis.visualize()
+    vis.visualize(test_grid.width, test_grid.depth)
+
     test_grid = grid.Grid(20)
     houses = test_grid.all_houses
     print(f"houses: {houses}")

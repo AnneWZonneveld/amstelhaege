@@ -1,8 +1,14 @@
 import matplotlib.pyplot as plt
 
-def visualize():
-    print("runs visualize()")
+def visualize(width, depth):
+    
+    x_max = width
+    y_max = depth
+    w = range(x_max)
+    d = range(y_max)
 
-    plt.plot([1,2,3, 4, 5, 6])
-    plt.show()
+    plt.plot([w], [d])  
+    plt.xlim([0, x_max])
+    plt.ylim([0, y_max])
+    plt.grid(True)
     plt.savefig('visualization.png')
