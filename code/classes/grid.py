@@ -9,14 +9,10 @@ class Grid():
 
     def load_grid(self, width, depth):
         grid = np.array([])
-        for x in range(depth):
-            for y in range(width):
+        for x in range(width):
+            for y in range(depth):
                 cell = Cell(x, y)
                 grid = np.append(grid, cell)
         
         grid = np.resize(grid,(width, depth))
         return grid 
-
-
-
-
