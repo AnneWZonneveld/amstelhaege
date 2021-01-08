@@ -1,11 +1,12 @@
+import csv
 import numpy as np
 from .cell import Cell
 from .house import House
 
 class Grid():
     def __init__(self, quantity):
-        self.width = 18
-        self.depth = 16
+        self.width = 4
+        self.depth = 4
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
 
@@ -15,13 +16,18 @@ class Grid():
         """
 
         grid = np.array([])
-        for x in range(width):
-            for y in range(depth):
+        for i in range(width + 1 ):
+            y = width - i 
+            for x in range(depth + 1):
                 cell = Cell(x, y)
                 grid = np.append(grid, cell)
         
-        grid = np.resize(grid,(width, depth))
+        grid = np.resize(grid,(width + 1, depth + 1))
         return grid 
+
+    def print_grid(self):
+        print(f"{self.cells}")
+
 
     def load_houses(self, quantity):
         """
@@ -56,4 +62,21 @@ class Grid():
 
         return all_houses
 
+    # def load_water(self, source_file):
+    #     with open(source_file, 'r') as in_file:
+    #         reader = csv.DictReader(in_file)
+
+    #         water = {}
+    #         # skip the header
+    #         next(reader, None)
+    #         for row in reader:
+    #             water[row[0]] = {'bottom_left_xy': row[1], 'top_right_xy': row[2]}
+
+    #     return water
+
+    # for x in range(x_left_bottom, x_right_bottom):
+    #     for y in range(y_left_bottom, y_right_bottom):
+    #         cell(x, j).type =  water
+    
+      
 
