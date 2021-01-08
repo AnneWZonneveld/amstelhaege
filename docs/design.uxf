@@ -2,7 +2,7 @@
 --
 width: int (180)
 depth: int (160)
-cells: np.array([[Cel]])
+cells: np.array([[Cell]])
 --
 load_grid(self, width, depth): np.array([[Cell]])
 load_water(self, source_file)
@@ -12,7 +12,7 @@ load_houses (self, quantity)
 id: int
 x_coordinate: int
 y_coordinate: int
-type: string (empty, water, house)
+type: string (None, Water, House)
 </panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>0</x><y>259</y><w>290</w><h>170</h></coordinates><panel_attributes>House
 --
 id: int
