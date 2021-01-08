@@ -1,4 +1,4 @@
-from code.classes import grid
+from code.classes import grid, house
 from code.visualization import visualize as vis
 
 if __name__ == "__main__":
@@ -6,8 +6,10 @@ if __name__ == "__main__":
     print(test_grid.cells[0,3].x_coordinate)
     print(test_grid.cells[0,3].y_coordinate)
 
+    test_house = house.House("single", 1)
+
     # visualization
-    vis.visualize(test_grid.width, test_grid.depth)
+    vis.visualize(test_grid.width, test_grid.depth, test_house)
 
     test_grid = grid.Grid(20)
     houses = test_grid.all_houses

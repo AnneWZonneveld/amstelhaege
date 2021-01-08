@@ -5,8 +5,8 @@ from .house import House
 
 class Grid():
     def __init__(self, quantity):
-        self.width = 4
-        self.depth = 4
+        self.width = 16
+        self.depth = 18
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
 
