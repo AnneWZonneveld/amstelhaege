@@ -60,21 +60,29 @@ class Grid():
 
         return all_houses
 
-    # def load_water(self, source_file):
-    #     with open(source_file, 'r') as in_file:
-    #         reader = csv.DictReader(in_file)
+    def load_water(self, source_file):
+        with open(source_file, 'r') as in_file:
 
-    #         water = {}
-    #         # skip the header
-    #         next(reader, None)
-    #         for row in reader:
-    #             water[row[0]] = {'bottom_left_xy': row[1], 'top_right_xy': row[2]}
+            # Create dict to save water
+            water = {}
+            
+            # Skip the header row
+            next(in_file)
 
-    #     return water
+            while True:
+                # Read through file row by row (till blank row)
+                row = in_file.readline().rstrip("\n")
+                if row == "":
+                    break
+                # Create a list of all items on row
+                row = row.split(",")
+
+                # Create a dictionary to store all waters
+                water[row[0]] = {'bottom_left_x': row[1].strip("\""), 'bottom_left_y': row[2].strip("\""),'top_right_x': row[3].strip("\""), 'top_right_y': row[4].strip("\"")}
+                # water[row[0]] = {row[1], row[2], row[3], row[4]}
+
+        return water
 
     # for x in range(x_left_bottom, x_right_bottom):
     #     for y in range(y_left_bottom, y_right_bottom):
     #         cell(x, j).type =  water
-    
-      
-
