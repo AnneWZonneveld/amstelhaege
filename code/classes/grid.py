@@ -4,7 +4,7 @@ from .cell import Cell
 from .house import House
 
 class Grid():
-    def __init__(self, quantity):
+    def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
