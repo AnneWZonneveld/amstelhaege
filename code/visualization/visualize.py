@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-def visualize(width, depth, grid, wijk):
+def visualize(grid, wijk):
+    # create diagram representing a map of the Amstelhaege
     plt.axis([0, grid.width, 0, grid.depth]) 
     plt.xticks(np.arange(0, grid.width + 1, 1))
     plt.yticks(np.arange(0, grid.depth + 1, 1)) 
@@ -31,10 +33,18 @@ def visualize(width, depth, grid, wijk):
         # plt.gca().add_patch(h1)
         plt.gca().add_patch(water_vis)
 
-    # load house
+    # load house, todo: load based on grid
+    print(grid.all_houses)
+    """
+        for house in grid.all_houses:
+            print(house)
+    """
+    # Hardcode house for test
     house = plt.Rectangle((0, 0), 0.8, 0.8, fc="orange")
     plt.gca().add_patch(house)
     
     # Todo: load houses based on grid
 
-    plt.savefig('visualization.png')
+    # save map to current directory
+    visualization = os.path.join('.','code', 'visualization', 'visualization.png')
+    plt.savefig(visualization)
