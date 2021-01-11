@@ -4,7 +4,7 @@ from .cell import Cell
 from .house import House
 
 class Grid():
-    def __init__(self, quantity):
+    def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
@@ -89,7 +89,7 @@ class Grid():
 
         return water
 
-    def create_water(self):
+    def create_water(self, source_file):
         """
         Transforms Cell objects into the 'water' type.
         """
@@ -98,7 +98,7 @@ class Grid():
         for water in self.all_water:
             # Define coordinates of water objects
             for x in range(int(self.all_water[water]['bottom_left_x']), int(self.all_water[water]['top_right_x']) + 1):
-                for y in range(int(self.all_water[water]['bottom_left_y']), int(self.all_water[water]['top_right_y']) + 1):
+                for y in range(int(self.all_water[water]['bottom_left_y']), int([water]['top_right_y']) + 1):
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
