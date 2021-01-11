@@ -4,9 +4,9 @@ from .cell import Cell
 from .house import House
 
 class Grid():
-    def __init__(self, quantity, source_file):
-        self.width = 4
-        self.depth = 4
+    def __init__(self, quantity):
+        self.width = 180
+        self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
         self.all_water = self.load_water(source_file)
@@ -27,7 +27,6 @@ class Grid():
 
     def print_grid(self):
         print(f"{self.cells}")
-
 
     def load_houses(self, quantity):
         """

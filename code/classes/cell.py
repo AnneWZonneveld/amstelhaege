@@ -9,5 +9,5 @@ class Cell():
 		"""
 		Make sure that the object is printed properly if it is in a list/dict.
 		"""
-		return f" ({self.x_coordinate}, {self.y_coordinate})"
+		return f" ({self.x_coordinate}, {self.y_coordinate}: {self.type})"
         
