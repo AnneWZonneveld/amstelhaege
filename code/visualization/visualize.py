@@ -2,24 +2,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-def visualize(grid, wijk):
+def visualize(grid):
     # create diagram representing a map of the Amstelhaege
-    plt.axis([0, grid.width, 0, grid.depth]) 
-    plt.xticks(np.arange(0, grid.width + 1, 1))
-    plt.yticks(np.arange(0, grid.depth + 1, 1)) 
+    plt.axis([0, grid.width*0.1, grid.depth*0.1, 0]) 
+    plt.xticks(np.arange(0, grid.width*0.1 + 1, 1))
+    plt.yticks(np.arange(0, grid.depth*0.1 + 1, 1)) 
     # how start from bottom left corner from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
-    plt.xlim([0, grid.width])
-    plt.ylim([0, grid.depth])
+    plt.xlim([0, grid.width*0.1])
+    plt.ylim([grid.depth*0.1, 0])
     plt.grid(True)
 
     # load correct map
-    if wijk == "wijk_1":
-        water = grid.load_water("data/wijken/wijk_1.csv")
-    elif wijk == "wijk_2":
-        water = grid.load_water("data/wijken/wijk_2.csv")
-    else:
-        water = grid.load_water("data/wijken/wijk_3.csv")
-    
+    water = grid.load_water(grid.map)
+    print(water)
+
     # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
     for ident, coordinates in water.items():
         # *0.1 adjusts coordinates to smaller map for testing
@@ -34,9 +30,9 @@ def visualize(grid, wijk):
         plt.gca().add_patch(water_vis)
 
     # load house, todo: load based on grid
-    print(grid.all_houses)
-    for house in grid.all_houses.values():
-        print(house.type)
+    # print(grid.all_houses)
+    # for house in grid.all_houses.values():
+        # print(house.type)
     # Hardcode house for test
     house = plt.Rectangle((0, 0), 0.8, 0.8, fc="orange")
     plt.gca().add_patch(house)
