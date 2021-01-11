@@ -5,10 +5,11 @@ from .house import House
 
 class Grid():
     def __init__(self, quantity):
-        self.width = 16
-        self.depth = 18
+        self.width = 180
+        self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
+        self.all_water = self.load_water(source_file)
 
     def load_grid(self, width, depth):
         """
@@ -26,7 +27,6 @@ class Grid():
 
     def print_grid(self):
         print(f"{self.cells}")
-
 
     def load_houses(self, quantity):
         """
@@ -62,9 +62,14 @@ class Grid():
         return all_houses
 
     def load_water(self, source_file):
+        """
+        Reads a csv file into a dictionary. Returns a dictionary of water 
+        coordinates.
+        """
+
         with open(source_file, 'r') as in_file:
 
-            # Create dict to save water
+            # Create dict to save water coordinates
             water = {}
             
             # Skip the header row
@@ -75,15 +80,25 @@ class Grid():
                 row = in_file.readline().rstrip("\n")
                 if row == "":
                     break
+
                 # Create a list of all items on row
                 row = row.split(",")
 
-                # Create a dictionary to store all waters
+                # Save water coordinates in dict
                 water[row[0]] = {'bottom_left_x': row[1].strip("\""), 'bottom_left_y': row[2].strip("\""),'top_right_x': row[3].strip("\""), 'top_right_y': row[4].strip("\"")}
-                # water[row[0]] = {row[1], row[2], row[3], row[4]}
 
         return water
 
-    # for x in range(x_left_bottom, x_right_bottom):
-    #     for y in range(y_left_bottom, y_right_bottom):
-    #         cell(x, j).type =  water
+    def create_water(self):
+        """
+        Transforms Cell objects into the 'water' type.
+        """
+
+        # Iterate over all water objects in dict
+        for water in self.all_water:
+            # Define coordinates of water objects
+            for x in range(int(self.all_water[water]['bottom_left_x']), int(self.all_water[water]['top_right_x']) + 1):
+                for y in range(int(self.all_water[water]['bottom_left_y']), int(self.all_water[water]['top_right_y']) + 1):
+
+                    # Transform cells into 'Water' type
+                    self.cells[y][x].type = "Water"
