@@ -32,7 +32,13 @@ def random_assignment_house(grid, house, random_cell):
 	random_cell_x = random_cell.x_coordinate
 	random_cell_y = random_cell.y_coordinate
 
-	house_coordinates = {'bottom_left_x': random_cell_x + house.width, 'bottom_left_y': random_cell_y, 'top_right_x': random_cell_x, 'top_right_y': random_cell_y + house.depth}
+	# house_coordinates = {'bottom_left_x': random_cell_x + house.width, 'bottom_left_y': random_cell_y, 'top_right_x': random_cell_x, 'top_right_y': random_cell_y + house.depth}
+	house_coordinates = {
+		'bottom_left': (random_cell_x, random_cell_y), 
+		'bottom_right': (random_cell_x + house.width, random_cell_y), 
+		'top_left': (random_cell_x, random_cell_y + house.depth),
+		'top_right': (random_cell_x + house.width, random_cell_y + house.depth)
+		}
 
 	# Set all grid cells of house to according house type
 	for row in range(random_cell_y, random_cell_y + house.depth):
