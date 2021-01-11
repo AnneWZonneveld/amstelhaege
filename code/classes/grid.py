@@ -102,3 +102,24 @@ class Grid():
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
+    
+    def calculate_worth(self):
+        """
+        Calculates worth of all House objects on grid. Returns the total net 
+        worth.
+        """
+
+        total_net_worth = 0
+
+        for house in #ALL_HOUSES_ON_GRID
+            net_worth_house = house.price
+            
+            if house.extra_free_cells != 0:
+                net_worth_house += house.extra_free_cells * house.percentage * house.price
+            
+            total_net_worth += net_worth_house
+        
+        return total_net_worth
+
+
+
