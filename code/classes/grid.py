@@ -4,12 +4,13 @@ from .cell import Cell
 from .house import House
 
 class Grid():
-    def __init__(self, quantity):
+    def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
         self.all_water = self.load_water(source_file)
+        self.map = source_file
 
     def load_grid(self, width, depth):
         """
@@ -102,3 +103,30 @@ class Grid():
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
+    
+    def create_output(self):
+        # how to create csv file from https://www.programiz.com/python-programming/writing-csv-files
+        with open('data/output.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+
+            # create header
+            fieldnames =["structure", "corner_1", "corner_2", "corner_3", "corner_4", "type"]
+            writer.writerow(fieldnames)
+
+            # load coordinates for water from correct map
+            water = self.load_water(self.map)
+
+            # add location of water to csv file
+            water_list = []
+            for ident, coordinates in water.items():
+                water_list = [ident, water[ident].get('bottom_left_x'), water[ident].get('bottom_left_y'), water[ident].get('top_right_x'), water[ident].get('top_right_y'), "WATER"]
+                writer.writerow(water_list)
+                print(water_list)
+            
+            # todo: add location of houses to csv file
+            
+            optimalization = "[insert optimalization function]"
+            writer.writerow(["networth", optimalization])
+            
+            
+            
