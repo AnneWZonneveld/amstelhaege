@@ -121,12 +121,9 @@ class Grid():
             for ident, coordinates in water.items():
                 water_list = [ident, water[ident].get('bottom_left_x'), water[ident].get('bottom_left_y'), water[ident].get('top_right_x'), water[ident].get('top_right_y'), "WATER"]
                 writer.writerow(water_list)
-                print(water_list)
             
             # todo: add location of houses to csv file
             
+            # add optimalization function to csv file
             optimalization = "[insert optimalization function]"
             writer.writerow(["networth", optimalization])
-            
-            
-            
