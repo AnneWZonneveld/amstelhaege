@@ -35,10 +35,8 @@ def visualize(grid, wijk):
 
     # load house, todo: load based on grid
     print(grid.all_houses)
-    """
-        for house in grid.all_houses:
-            print(house)
-    """
+    for house in grid.all_houses.values():
+        print(house.type)
     # Hardcode house for test
     house = plt.Rectangle((0, 0), 0.8, 0.8, fc="orange")
     plt.gca().add_patch(house)
