@@ -8,7 +8,7 @@ if __name__ == "__main__":
     print(test_grid.cells[0,3].y_coordinate)
     """
     # visualize case
-    vis.visualize(test_grid, "wijk_1")
+    vis.visualize(test_grid, "wijk_2")
 
     """
     test_grid = grid.Grid(20)
