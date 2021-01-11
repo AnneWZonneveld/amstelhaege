@@ -23,6 +23,10 @@ if __name__ == "__main__":
     random_grid = random_config_info[0]
     random_house_coordinates = random_config_info[1]
     print(f"House coordinates: {random_house_coordinates}")
+<<<<<<< HEAD
+=======
+
+>>>>>>> ecd6af7478c281fdadd451571aeed12cb20fae15
     # visualize case
     vis.visualize(test_grid, "wijk_2")
     # visualization
@@ -35,9 +39,17 @@ if __name__ == "__main__":
     print(test_grid.cells[0,0].x_coordinate)
     print(test_grid.cells[0,0].y_coordinate)
     test_grid.print_grid()
+<<<<<<< HEAD
     
+=======
+    """
+>>>>>>> ecd6af7478c281fdadd451571aeed12cb20fae15
     print("New grid:")
     random_grid.print_grid()
     """
     # # visualize case
+<<<<<<< HEAD
     # vis.visualize(test_grid, "wijk_1")
+=======
+    # vis.visualize(test_grid, "wijk_1")
+>>>>>>> ecd6af7478c281fdadd451571aeed12cb20fae15
