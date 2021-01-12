@@ -33,11 +33,12 @@ def random_assignment_house(grid, house, random_cell):
 	random_cell_y = random_cell.y_coordinate
 
 	# Set house coordinates
+	
 	house_coordinates = {
-		'bottom_left': (random_cell_x, random_cell_y), 
-		'bottom_right': (random_cell_x + house.width, random_cell_y), 
-		'top_left': (random_cell_x, random_cell_y + house.depth),
-		'top_right': (random_cell_x + house.width, random_cell_y + house.depth)
+		'bottom_left': (random_cell_x, random_cell_y + house.depth), 
+		'bottom_right': (random_cell_x + house.width, random_cell_y + house.depth), 
+		'top_left': (random_cell_x, random_cell_y),
+		'top_right': (random_cell_x + house.width, random_cell_y)
 		}
 
 	# Set all grid cells of house to according house type
@@ -69,7 +70,6 @@ def random_assignment(grid, houses):
 				house_info = random_assignment_house(new_grid, house, random_cell)
 				new_grid = house_info[0]
 				house.coordinates = house_info[1]
-				# all_house_coordinates["%d" % house.id] = house_coordinates
 				succes = True
 
 				print(f"Updated grid:")
@@ -78,7 +78,4 @@ def random_assignment(grid, houses):
 				print("Error")
 				pass
 
-		# all_info = [new_grid, all_house_coordinates]
-
-	# return all_info
 	return new_grid

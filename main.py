@@ -16,16 +16,15 @@ if __name__ == "__main__":
     # print(f"houses: {houses}")
     
     # Randomize algorithm
+
     random_config = randomize.random_assignment(test_grid, houses)
-    # random_grid = random_config_info[0]
-    # random_house_coordinates = random_config_info[1]
-    # print(f"House coordinates: {random_house_coordinates}")
 
     print("New grid:")
     random_config.print_grid()
 
     # visualize case
-    vis.visualize(test_grid, "wijk_2")
+    vis.visualize(test_grid)
 
     # # Create csv output file
     # test_grid.create_output()
+
