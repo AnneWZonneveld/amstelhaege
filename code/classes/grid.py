@@ -89,10 +89,10 @@ class Grid():
                 strip_row = [item.strip("\"") for item in row]
 
                 # Save water coordinates in dict
-                water[strip_row[0]] = {'bottom_left': (strip_row[1], strip_row[4]),
-                                    'bottom_right': (strip_row[3], strip_row[4]),
-                                    'top_left': (strip_row[1], strip_row[2]),
-                                    'top_right': (strip_row[3], strip_row[2])}
+                water[strip_row[0]] = {'bottom_left': (int(strip_row[1]), int(strip_row[4])),
+                                    'bottom_right': (int(strip_row[3]), int(strip_row[4])),
+                                    'top_left': (int(strip_row[1]), int(strip_row[2])),
+                                    'top_right': (int(strip_row[3]), int(strip_row[2]))}
 
         return water
 
