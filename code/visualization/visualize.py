@@ -39,7 +39,7 @@ def visualize(grid):
         # Create rectangle for specific type 
         print(house.type)
         if house.type == "single":
-            rectangle = plt.Rectangle(house.coordinates['bottom_left'], width, height, fc="m")
+            rectangle = plt.Rectangle(house.coordinates['bottom_left'], width, height, fc="r")
         elif house.type == "bungalow":
             rectangle = plt.Rectangle(house.coordinates['bottom_left'], width, height, fc="y")
         else:

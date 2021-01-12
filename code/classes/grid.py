@@ -5,12 +5,12 @@ from .house import House
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 160
-        self.depth = 180
+        self.width = 180
+        self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
         self.all_water = self.load_water(source_file)
-        self.create_water()
+        # self.create_water()
         self.map = source_file
 
     def load_grid(self, width, depth):
@@ -97,20 +97,20 @@ class Grid():
         return water
 
 
-    def create_water(self):
-        """
-        Transforms Cell objects into the 'water' type.
-        """
+    # def create_water(self):
+    #     """
+    #     Transforms Cell objects into the 'water' type.
+    #     """ 
 
-        # Iterate over all water objects in dict
-        for water in self.all_water:
+    #     # Iterate over all water objects in dict
+    #     for water in self.all_water:
 
-            # Define coordinates of water objects
-            for x in range(int(self.all_water[water]['top_left'][0]), int(self.all_water[water]['bottom_right'][0]) + 1):
-                for y in range(int(self.all_water[water]['top_left'][1]), int(self.all_water[water]['bottom_right'][1]) + 1):
+    #         # Define coordinates of water objects
+    #         for x in range(int(self.all_water[water]['top_left'][0]), int(self.all_water[water]['bottom_right'][0]) + 1):
+    #             for y in range(int(self.all_water[water]['top_left'][1]), int(self.all_water[water]['bottom_right'][1]) + 1):
 
-                    # Transform cells into 'Water' type
-                    self.cells[y][x].type = "Water"
+    #                 # Transform cells into 'Water' type
+    #                 self.cells[y][x].type = "Water"
     
 
     def calculate_worth(self, houses):

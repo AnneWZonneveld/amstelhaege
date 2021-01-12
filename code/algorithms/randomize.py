@@ -33,19 +33,26 @@ def random_assignment_house(grid, house, random_cell):
 	random_cell_y = random_cell.y_coordinate
 
 	# Set house coordinates
-	
 	house_coordinates = {
-		'bottom_left': (random_cell_x, random_cell_y + house.depth), 
-		'bottom_right': (random_cell_x + house.width, random_cell_y + house.depth), 
+		'bottom_left': (random_cell_x, random_cell_y + house.width), 
+		'bottom_right': (random_cell_x + house.depth, random_cell_y + house.width), 
 		'top_left': (random_cell_x, random_cell_y),
-		'top_right': (random_cell_x + house.width, random_cell_y)
+		'top_right': (random_cell_x + house.depth, random_cell_y)
 		}
 
 	# Set all grid cells of house to according house type
-	for row in range(random_cell_y, random_cell_y + house.depth):
-		for column in range(random_cell_x, random_cell_x + house.width):
+	for row in range(random_cell_y, random_cell_y + house.width):
+		for column in range(random_cell_x, random_cell_x + house.depth):
 			# print(f"current cell: {grid.cells[row,column]}")
-			grid.cells[row, column].type = house.type
+			# grid.cells[row, column].type = house.type
+
+			current_cell = grid.cells[row, column]
+			
+			# Ensure every cell of house location is empty (not water or other house)
+			if current_cell.type == None:
+				current_cell.type = house.type
+			else:
+				raise ValueError("Location of house unavailable.")
 
 	all_info = [grid, house_coordinates]
 
@@ -69,8 +76,7 @@ def random_assignment(grid, houses):
 				random_cell = random_empty_cell(new_grid)
 				house_info = random_assignment_house(new_grid, house, random_cell)
 				new_grid = house_info[0]
-				house_coordinates = house_info[1]
-				house.placed = True
+				house.coordinates = house_info[1]
 				succes = True
 
 				print(f"Updated grid:")

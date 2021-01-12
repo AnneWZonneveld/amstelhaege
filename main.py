@@ -4,11 +4,6 @@ from code.algorithms import randomize
 
 if __name__ == "__main__":
 
-    test_grid = grid.Grid(20, "data/wijken/wijk_2.csv")
-    # print(test_grid.cells)
-    vis.visualize(test_grid)
-    test_grid.create_output()
-    """
 	# Create grid
     test_grid = grid.Grid(20, "data/wijken/wijk_2.csv")
     test_grid.print_grid()
@@ -28,7 +23,7 @@ if __name__ == "__main__":
     random_config.print_grid()
 
     # visualize case
-    vis.visualize(test_grid)
+    # vis.visualize(test_grid)
 
     # # Create csv output file
     # test_grid.create_output()
