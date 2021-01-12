@@ -4,6 +4,8 @@ class House():
 		self.id = id
 		self.min_free_cells = []
 		self.extra_free_cells = []
+		self.extra_free_meters = 0
+		self.placed = False
 
 		if self.type == "single":
 			self.width = 8

@@ -64,6 +64,7 @@ def random_assignment(grid, houses):
 				new_grid = house_info[0]
 				house_coordinates = house_info[1]
 				all_house_coordinates["%d" % house.id] = house_coordinates
+				house.placed = True
 				succes = True
 
 				print(f"Updated grid:")

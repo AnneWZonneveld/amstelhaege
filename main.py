@@ -5,6 +5,8 @@ from code.algorithms import randomize
 if __name__ == "__main__":
 
     test_grid = grid.Grid(20, "data/wijken/wijk_2.csv")
+    # print(test_grid.cells)
+    vis.visualize(test_grid)
     test_grid.create_output()
     """
 	# Create grid

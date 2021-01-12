@@ -70,7 +70,6 @@ class Grid():
 
         with open(source_file, 'r') as in_file:
 
-            # Create dict to save water coordinates
             water = {}
             
             # Skip the header row
@@ -85,43 +84,58 @@ class Grid():
                 # Create a list of all items on row
                 row = row.split(",")
 
+                # Remove " from each item in list
+                strip_row = [item.strip("\"") for item in row]
+
                 # Save water coordinates in dict
-                water[row[0]] = {'bottom_left_x': row[1].strip("\""), 'bottom_left_y': row[2].strip("\""),'top_right_x': row[3].strip("\""), 'top_right_y': row[4].strip("\"")}
+                water[strip_row[0]] = {'bottom_left': (strip_row[1], strip_row[4]),
+                                    'bottom_right': (strip_row[3], strip_row[4]),
+                                    'top_left': (strip_row[1], strip_row[2]),
+                                    'top_right': (strip_row[3], strip_row[2])}
 
         return water
 
-    def create_water(self, source_file):
+
+    def create_water(self):
         """
         Transforms Cell objects into the 'water' type.
         """
 
         # Iterate over all water objects in dict
         for water in self.all_water:
+
             # Define coordinates of water objects
-            for x in range(int(self.all_water[water]['bottom_left_x']), int(self.all_water[water]['top_right_x']) + 1):
-                for y in range(int(self.all_water[water]['bottom_left_y']), int([water]['top_right_y']) + 1):
+            for x in range(int(self.all_water[water]['top_left'][0]), int(self.all_water[water]['bottom_right'][0]) + 1):
+                for y in range(int(self.all_water[water]['top_left'][1]), int(self.all_water[water]['bottom_right'][1]) + 1):
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
     
-    def calculate_worth(self):
+
+    def calculate_worth(self, houses):
         """
         Calculates worth of all House objects on grid. Returns the total net 
         worth.
         """
 
+        # Create variable to calculate total net worth
         total_net_worth = 0
 
-        for house in #ALL_HOUSES_ON_GRID
-            net_worth_house = house.price
-            
-            if house.extra_free_cells != 0:
-                net_worth_house += house.extra_free_cells * house.percentage * house.price
-            
-            total_net_worth += net_worth_house
-        
-        return total_net_worth
+        for house in houses.values():
 
+            if house.placed == True:
+
+                # Net worth of house
+                net_worth_house = house.price
+            
+                if house.extra_free_meters != 0:
+                    # Add worth of extra free space to net worth of house
+                    net_worth_house += house.extra_free_meters * house.percentage * house.price
+
+                # Add net worth of house to total net worth
+                total_net_worth += net_worth_house
+                
+        return total_net_worth
 
 
     def create_output(self):
