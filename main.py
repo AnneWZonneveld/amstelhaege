@@ -13,16 +13,19 @@ if __name__ == "__main__":
 
     # Obtain all houses
     houses = test_grid.all_houses
-    # # print(f"houses: {houses}")
+    # print(f"houses: {houses}")
     
     # Randomize algorithm
-    random_config_info = randomize.random_assignment(test_grid, houses)
-    random_grid = random_config_info[0]
-    random_house_coordinates = random_config_info[1]
-    print(f"House coordinates: {random_house_coordinates}")
+    random_config = randomize.random_assignment(test_grid, houses)
+    # random_grid = random_config_info[0]
+    # random_house_coordinates = random_config_info[1]
+    # print(f"House coordinates: {random_house_coordinates}")
 
     print("New grid:")
-    random_grid.print_grid()
+    random_config.print_grid()
 
-    # # visualize case
-    # vis.visualize(test_grid, "wijk_1")
+    # visualize case
+    vis.visualize(test_grid, "wijk_2")
+
+    # # Create csv output file
+    # test_grid.create_output()

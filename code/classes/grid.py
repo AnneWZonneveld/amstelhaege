@@ -10,6 +10,8 @@ class Grid():
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
         self.all_water = self.load_water(source_file)
+        #self.create_water()
+        self.map = source_file
 
     def load_grid(self, width, depth):
         """
@@ -89,7 +91,7 @@ class Grid():
 
         return water
 
-    def create_water(self, source_file):
+    def create_water(self):
         """
         Transforms Cell objects into the 'water' type.
         """
@@ -102,3 +104,47 @@ class Grid():
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
+    
+    # def calculate_worth(self):
+    #     """
+    #     Calculates worth of all House objects on grid. Returns the total net 
+    #     worth.
+    #     """
+
+    #     total_net_worth = 0
+
+    #     for house in #ALL_HOUSES_ON_GRID
+    #         net_worth_house = house.price
+            
+    #         if house.extra_free_cells != 0:
+    #             net_worth_house += house.extra_free_cells * house.percentage * house.price
+            
+    #         total_net_worth += net_worth_house
+        
+    #     return total_net_worth
+
+
+
+    def create_output(self):
+        # how to create csv file from https://www.programiz.com/python-programming/writing-csv-files
+        with open('data/output.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+
+            # create header
+            fieldnames =["structure", "corner_1", "corner_2", "corner_3", "corner_4", "type"]
+            writer.writerow(fieldnames)
+
+            # load coordinates for water from correct map
+            water = self.load_water(self.map)
+
+            # add location of water to csv file
+            water_list = []
+            for ident, coordinates in water.items():
+                water_list = [ident, water[ident].get('bottom_left_x'), water[ident].get('bottom_left_y'), water[ident].get('top_right_x'), water[ident].get('top_right_y'), "WATER"]
+                writer.writerow(water_list)
+            
+            # todo: add location of houses to csv file
+            
+            # add optimalization function to csv file
+            optimalization = "[insert optimalization function]"
+            writer.writerow(["networth", optimalization])

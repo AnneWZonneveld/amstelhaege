@@ -2,6 +2,7 @@ class House():
 	def __init__(self, type, id):
 		self.type = type
 		self.id = id
+		self.coordinates = None
 		self.min_free_cells = []
 		self.extra_free_cells = []
 
