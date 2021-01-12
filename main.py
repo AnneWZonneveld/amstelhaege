@@ -27,4 +27,3 @@ if __name__ == "__main__":
 
     # # Create csv output file
     # test_grid.create_output()
-
