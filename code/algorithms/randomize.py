@@ -87,7 +87,7 @@ def random_assignment(grid):
 				pass
 
 	return second_grid
-
+"""
 def mandatory_free_check(grid):
 
 	# loop over alle huizen op grid
@@ -112,3 +112,4 @@ def mandatory_free_check(grid):
 
 				if current_cell.type != house.type:
 					current_cell.type = "VERPLICHTE VRIJSTAND VAN DIT HUIS"
+"""
