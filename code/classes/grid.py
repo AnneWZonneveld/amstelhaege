@@ -5,7 +5,7 @@ from .house import House
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 180 
+        self.width = 180
         self.depth = 160
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
@@ -89,10 +89,10 @@ class Grid():
                 strip_row = [item.strip("\"") for item in row]
 
                 # Save water coordinates in dict
-                water[strip_row[0]] = {'bottom_left': (strip_row[1], strip_row[4]),
-                                    'bottom_right': (strip_row[3], strip_row[4]),
-                                    'top_left': (strip_row[1], strip_row[2]),
-                                    'top_right': (strip_row[3], strip_row[2])}
+                water[strip_row[0]] = {'bottom_left': (int(strip_row[1]), int(strip_row[4])),
+                                    'bottom_right': (int(strip_row[3]), int(strip_row[4])),
+                                    'top_left': (int(strip_row[1]), int(strip_row[2])),
+                                    'top_right': (int(strip_row[3]), int(strip_row[2]))}
 
         return water
 
@@ -101,6 +101,8 @@ class Grid():
         """
         Transforms Cell objects into the 'water' type.
         """
+
+        print("Creating water")
 
         # Iterate over all water objects in dict
         for water in self.all_water:
@@ -140,25 +142,29 @@ class Grid():
 
 
     def create_output(self):
+        """
+        Creates csv-file that represents results from running the algorithm.
+        """
+
         # how to create csv file from https://www.programiz.com/python-programming/writing-csv-files
         with open('data/output.csv', 'w', newline='') as file:
             writer = csv.writer(file)
 
-            # create header
-            fieldnames =["structure", "corner_1", "corner_2", "corner_3", "corner_4", "type"]
+            # Create header
+            fieldnames =["structure", "corner_1 (bottom_left)", "corner_2 (bottom_right)", "corner_3 (top_left)", "corner_4 (top_right)", "type"]
             writer.writerow(fieldnames)
 
-            # load coordinates for water from correct map
+            # Load water coordinates from correct map
             water = self.load_water(self.map)
 
-            # add location of water to csv file
+            # Add location of water to csv file
             water_list = []
             for ident, coordinates in water.items():
-                water_list = [ident, water[ident].get('bottom_left_x'), water[ident].get('bottom_left_y'), water[ident].get('top_right_x'), water[ident].get('top_right_y'), "WATER"]
+                water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
                 writer.writerow(water_list)
             
             # todo: add location of houses to csv file
             
-            # add optimalization function to csv file
+            # Add optimalization function to csv file
             optimalization = "[insert optimalization function]"
             writer.writerow(["networth", optimalization])
