@@ -164,7 +164,7 @@ class Grid():
                 writer.writerow(water_list)
             
             for house in self.all_houses.values():
-                house_list = [house.type, house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()]
+                house_list = [f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()]
                 writer.writerow(house_list)
             
             # Add optimalization function to csv file
