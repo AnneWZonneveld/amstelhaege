@@ -140,7 +140,6 @@ class Grid():
                 
         return total_net_worth
 
-
     def create_output(self):
         """
         Creates csv-file that represents results from running the algorithm.
@@ -168,5 +167,5 @@ class Grid():
                 writer.writerow(house_list)
             
             # Add optimalization function to csv file
-            optimalization = "[insert optimalization function]"
+            optimalization = self.calculate_worth(self.all_houses)
             writer.writerow(["networth", optimalization])
