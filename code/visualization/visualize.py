@@ -17,21 +17,36 @@ def visualize(grid):
     plt.ylim([grid.depth, 0])
     plt.grid(True)
 
-    # Load water coordinates from correct map
-    water = grid.load_water(grid.map)
-    print(water)
+    # # Load water coordinates from correct map
+    # water = grid.load_water(grid.map)
+    # print(f" Water: {water}")
 
-    # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
-    # Add representation of water to diagram
-    for ident, coordinates in water.items():
-        # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
-        bottom_x = int(water[ident].get('bottom_left_x'))
-        bottom_y = int(water[ident].get('bottom_left_y'))
-        top_x = int(water[ident].get('top_right_x'))
-        top_y = int(water[ident].get('top_right_y'))
+    # # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
+    # # Add representation of water to diagram
+    # # for ident, coordinates in water.items():
+    # #     # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
+    # #     bottom_x = int(water[ident].get('bottom_left_x'))
+    # #     bottom_y = int(water[ident].get('bottom_left_y'))
+    # #     top_x = int(water[ident].get('top_right_x'))
+    # #     top_y = int(water[ident].get('top_right_y'))
 
-        water_vis = plt.Rectangle((bottom_x, bottom_y), top_x, top_y, fc="blue")
-        plt.gca().add_patch(water_vis)
+    # #     water_vis = plt.Rectangle((bottom_x, bottom_y), top_x, top_y, fc="blue")
+    # #     plt.gca().add_patch(water_vis)
+
+    # for ident, coordinates in water.items():
+    #     # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
+        
+    #     print(f"Ident: {ident}")
+    #     print(f"coordinates {coordinates}")
+
+    #     top_left =  water[ident].get('top_left')
+    #     bottom_right = water[ident].get('bottom_right')
+
+    #     print(f"Top left {top_left}")
+    #     print(f"Bottom right {bottom_right}")
+
+    #     water_vis = plt.Rectangle(top_left, bottom_right[0], bottom_right[1], fc="blue")
+    #     plt.gca().add_patch(water_vis)
 
     # Load houses based on grid and add to diagram
     print(grid.all_houses)

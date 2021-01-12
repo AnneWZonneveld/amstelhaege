@@ -102,6 +102,8 @@ class Grid():
         Transforms Cell objects into the 'water' type.
         """
 
+        print("Creating water")
+
         # Iterate over all water objects in dict
         for water in self.all_water:
 

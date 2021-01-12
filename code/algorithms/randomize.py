@@ -58,13 +58,13 @@ def random_assignment_house(grid, house, random_cell):
 
 	return all_info
 
-def random_assignment(grid, houses):
+def random_assignment(grid):
 	# print(f"grid: {grid}")
 	# print(f"houses in random: {houses}")
 
 	new_grid = copy.deepcopy(grid)
-	all_house_coordinates = {}
-
+	houses = new_grid.all_houses
+	
 	for house in houses.values():
 
 		print(f"HOUSE: {house}")
@@ -75,14 +75,15 @@ def random_assignment(grid, houses):
 			try:
 				random_cell = random_empty_cell(new_grid)
 				house_info = random_assignment_house(new_grid, house, random_cell)
-				new_grid = house_info[0]
+				second_grid = house_info[0]
 				house.coordinates = house_info[1]
+				print(f"House coordinates: {house.coordinates}")
 				succes = True
 
 				print(f"Updated grid:")
-				new_grid.print_grid()
+				second_grid.print_grid()
 			except:
 				print("Error")
 				pass
 
-	return new_grid
+	return second_grid
