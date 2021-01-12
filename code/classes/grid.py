@@ -5,11 +5,12 @@ from .house import House
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 180
-        self.depth = 160
+        self.width = 160
+        self.depth = 180
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
         self.all_water = self.load_water(source_file)
+        self.create_water()
         self.map = source_file
 
     def load_grid(self, width, depth):

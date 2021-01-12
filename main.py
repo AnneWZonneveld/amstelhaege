@@ -18,31 +18,18 @@ if __name__ == "__main__":
 
     # Obtain all houses
     houses = test_grid.all_houses
-    # # print(f"houses: {houses}")
+    # print(f"houses: {houses}")
     
     # Randomize algorithm
-    random_config_info = randomize.random_assignment(test_grid, houses)
-    random_grid = random_config_info[0]
-    random_house_coordinates = random_config_info[1]
-    print(f"House coordinates: {random_house_coordinates}")
+
+    random_config = randomize.random_assignment(test_grid, houses)
+
+    print("New grid:")
+    random_config.print_grid()
 
     # visualize case
-    vis.visualize(test_grid, "wijk_2")
+    vis.visualize(test_grid)
 
-    # visualization
-    vis.visualize(test_grid.width, test_grid.depth)
+    # # Create csv output file
+    # test_grid.create_output()
 
-    test_grid = grid.Grid(20, "data/wijken/wijk_2.csv")
-    test_grid = grid.Grid(20)
-    houses = test_grid.all_houses
-    print(f"houses: {houses}")
-    print(houses[1].type)
-    print(test_grid.cells[0,0].x_coordinate)
-    print(test_grid.cells[0,0].y_coordinate)
-    test_grid.print_grid()
-    """
-    print("New grid:")
-    random_grid.print_grid()
-
-    # # visualize case
-    # vis.visualize(test_grid, "wijk_1")
