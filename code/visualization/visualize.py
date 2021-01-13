@@ -29,7 +29,7 @@ def visualize(grid):
 
     # Load water coordinates from correct map
     water = grid.load_water(grid.map)
-    print(f" Water: {water}")
+    # print(f" Water: {water}")
 
     # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
     # Add representation of water to diagram
