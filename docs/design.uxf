@@ -1,4 +1,4 @@
-<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>0</x><y>109</y><w>250</w><h>230</h></coordinates><panel_attributes>Grid
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>40</x><y>27</y><w>250</w><h>230</h></coordinates><panel_attributes>Grid
 --
 width: int (180)
 depth: int (160)
@@ -14,13 +14,13 @@ load_houses (self, quantity)
 create_water(self, source_file)
 calculate_worth(self)
 create_output(self)
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>300</x><y>109</y><w>200</w><h>90</h></coordinates><panel_attributes>Cell
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>340</x><y>27</y><w>310</w><h>90</h></coordinates><panel_attributes>Cell
 --
 id: int
 x_coordinate: int
 y_coordinate: int
-type: string (None, Water, House)
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>10</x><y>369</y><w>290</w><h>170</h></coordinates><panel_attributes>House
+type: string (None, Water, House, MandatoryFreeSpace)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>50</x><y>287</y><w>290</w><h>180</h></coordinates><panel_attributes>House
 --
 id: int
 type: string (single-family house, bungalow, maison)
@@ -31,7 +31,11 @@ extra_free_cells: [Cell]
 min_free: int
 price: int
 depth: int
-width: int)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>350</x><y>259</y><w>130</w><h>50</h></coordinates><panel_attributes>Water
+width: int)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>390</x><y>177</y><w>130</w><h>50</h></coordinates><panel_attributes>Water
 --
 cells: [Cell]
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>240</x><y>110</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>270</x><y>190</y><w>80</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;180</additional_attributes></element><element><id>Relation</id><coordinates><x>400</x><y>190</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element></diagram>
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>280</x><y>28</y><w>80</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>310</x><y>108</y><w>80</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>60;10;10;180</additional_attributes></element><element><id>Relation</id><coordinates><x>440</x><y>108</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>520</x><y>250</y><w>130</w><h>60</h></coordinates><panel_attributes>MandatoryFreeSpace
+--
+house: House
+cells: [Cell]
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>510</x><y>110</y><w>90</w><h>160</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;70;140</additional_attributes></element><element><id>Relation</id><coordinates><x>330</x><y>300</y><w>210</w><h>80</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;60;190;10</additional_attributes></element></diagram>

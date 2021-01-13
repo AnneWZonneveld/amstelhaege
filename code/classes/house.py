@@ -3,6 +3,7 @@ class House():
 		self.type = type
 		self.id = id
 		self.coordinates = None
+		self.min_free_coordinates = None
 		self.min_free_cells = []
 		self.extra_free_cells = []
 		self.extra_free_meters = 0
