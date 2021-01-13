@@ -28,7 +28,7 @@ def random_assignment_house(grid, house, random_cell):
 
 	print("Performing random_assignment_house")
 	
-	# Pick random empty cell
+	# Retrieve coordinates random starting cell (top-left)
 	random_cell_x = random_cell.x_coordinate
 	random_cell_y = random_cell.y_coordinate
 
@@ -40,31 +40,46 @@ def random_assignment_house(grid, house, random_cell):
 		'top_right': (random_cell_x + house.depth, random_cell_y)
 		}
 
-	# Set all grid cells of house to according house type
+	# Check for all cells of possible house location if occupied 
+	occupied = False
+
 	for row in range(random_cell_y, random_cell_y + house.width):
 		for column in range(random_cell_x, random_cell_x + house.depth):
-			# print(f"current cell: {grid.cells[row,column]}")
-			# grid.cells[row, column].type = house.type
 
 			current_cell = grid.cells[row, column]
 			
-			# Ensure every cell of house location is empty (not water or other house)
-			if current_cell.type == None:
+			if current_cell.type != None:
+				occupied = True
+
+	# If all cells of possible location are still availabe 
+	if occupied == False:
+
+		# Set cells to according house type
+		for row in range(random_cell_y, random_cell_y + house.width):
+			for column in range(random_cell_x, random_cell_x + house.depth):
+				current_cell = grid.cells[row, column]
 				current_cell.type = house.type
-			else:
-				raise ValueError("Location of house unavailable.")
 
-	all_info = [grid, house_coordinates]
+		# Save coordinates
+		house.coordinates = house_coordinates
 
-	return all_info
+	else:
+		occupied = False
+		raise ValueError("Location of house unavailable.")
+
+	# all_info = [grid, house_coordinates]
+
+	return grid
 
 def random_assignment(grid):
 	# print(f"grid: {grid}")
 	# print(f"houses in random: {houses}")
 
-	new_grid = copy.deepcopy(grid)
-	houses = new_grid.all_houses
+	# Copy empty grid 
+	copy_grid = copy.deepcopy(grid)
+	houses = copy_grid.all_houses
 	
+	# Try to place all houses on grid at valid location 
 	for house in houses.values():
 
 		print(f"HOUSE: {house}")
@@ -73,11 +88,8 @@ def random_assignment(grid):
 
 		while succes == False:
 			try:
-				random_cell = random_empty_cell(new_grid)
-				house_info = random_assignment_house(new_grid, house, random_cell)
-				second_grid = house_info[0]
-				house.coordinates = house_info[1]
-				print(f"House coordinates: {house.coordinates}")
+				random_cell = random_empty_cell(copy_grid)
+				new_grid = random_assignment_house(copy_grid, house, random_cell)
 				succes = True
 
 				print(f"Updated grid:")
@@ -86,4 +98,4 @@ def random_assignment(grid):
 				print("Error")
 				pass
 
-	return second_grid
+	return new_grid
