@@ -99,3 +99,31 @@ def random_assignment(grid):
 				pass
 
 	return new_grid
+
+"""
+def mandatory_free_check(grid):
+
+	# loop over alle huizen op grid
+	for house in grid.all_houses.values():
+		
+		# STAP 1: KIJK OF EVENTUELE VERPLICHTE VRIJSTAND HUIS OVERLAP HEEFT MET VERPLICHTE VRIJSTAND ANDER HUIS
+		for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+			for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
+
+				current_cell = grid.cells[row, column]
+
+				# als cellen het type 'verplichte vrijstand' hebben
+				if current_cell.type == "VERPLICHTE VRIJSTAND VAN ANDER HUIS": # AANPASSEN
+
+					# STAP 2A: OVERLAP --> HUIS OPNIEUW RANDOM PLAATSEN EN TERUG NAAR BEGIN VAN FOR-LOOP
+
+		# STAP 2B: GEEN OVERLAP --> CELLEN TRANSFORMEREN NAAR VERPLICHTE VRIJSTAND VAN HUIS 
+		for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+			for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
+
+				current_cell = grid.cells[row, column]
+
+				if current_cell.type != house.type:
+					current_cell.type = "VERPLICHTE VRIJSTAND VAN DIT HUIS"
+"""
+
