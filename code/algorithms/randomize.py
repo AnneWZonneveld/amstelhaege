@@ -38,10 +38,10 @@ def random_assignment_house(grid, house, random_cell):
 
 	# Set house coordinates
 	house_coordinates = {
-		'bottom_left': (random_cell_x, random_cell_y + house.width), 
-		'bottom_right': (random_cell_x + house.depth, random_cell_y + house.width), 
+		'bottom_left': (random_cell_x, random_cell_y + house.depth), 
+		'bottom_right': (random_cell_x + house.width, random_cell_y + house.depth), 
 		'top_left': (random_cell_x, random_cell_y),
-		'top_right': (random_cell_x + house.depth, random_cell_y)
+		'top_right': (random_cell_x + house.width, random_cell_y)
 		}
 
 	# Set house coordinates including mandatory free space
@@ -77,8 +77,8 @@ def random_assignment_house(grid, house, random_cell):
 	if occupied == False:
 
 		# Set cells to according house type
-		for row in range(random_cell_y, random_cell_y + house.width):
-			for column in range(random_cell_x, random_cell_x + house.depth):
+		for row in range(random_cell_y, random_cell_y + house.depth):
+			for column in range(random_cell_x, random_cell_x + house.width):
 				current_cell = grid.cells[row, column]
 				current_cell.type = house.type
 
@@ -113,13 +113,10 @@ def random_assignment(grid):
 
 		print(f"HOUSE: {house}")
 
-		succes = False
-
-		while succes == False:
+		while house.placed == False:
 			try:
 				random_cell = random_empty_cell(copy_grid)
 				new_grid = random_assignment_house(copy_grid, house, random_cell)
-				succes = True
 				house.placed = True
 
 				print(f"Updated grid:")

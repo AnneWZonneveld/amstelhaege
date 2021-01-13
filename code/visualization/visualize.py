@@ -9,20 +9,20 @@ def visualize(grid):
     """
 
     # Create diagram representing a map of the Amstelhaege
-    plt.axis([0, grid.depth, grid.width, 0])
+    plt.axis([0, grid.width, grid.depth, 0])
 
     # Define scaling of axes 
-    plt.xticks(np.arange(0, grid.depth + 1, 10))
-    plt.yticks(np.arange(0, grid.width + 1, 10)) 
+    plt.xticks(np.arange(0, grid.width + 1, 10))
+    plt.yticks(np.arange(0, grid.depth + 1, 10)) 
 
     # Label axes
-    plt.xlabel("Depth")
-    plt.ylabel("Width")
+    plt.xlabel("Width")
+    plt.ylabel("Depth")
 
     # Begin scaling where x- and y-axis meet
     # from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
-    plt.xlim([0, grid.depth])
-    plt.ylim([grid.width, 0])
+    plt.xlim([0, grid.width])
+    plt.ylim([grid.depth, 0])
 
     # Show grid
     plt.grid(True)
@@ -40,7 +40,10 @@ def visualize(grid):
         bottom_left =  water[ident].get('bottom_left')
         top_right = water[ident].get('top_right')
 
-        water_vis = plt.Rectangle(bottom_left, int(top_right[0]), int(top_right[1]), fc="blue")
+        rectangle_width = top_right[0] - bottom_left[0]
+        rectangle_height = top_right[1] - bottom_left[1]
+
+        water_vis = plt.Rectangle(bottom_left, rectangle_width, rectangle_height, fc="blue")
         plt.gca().add_patch(water_vis)
 
     # Load houses based on grid and add to diagram
