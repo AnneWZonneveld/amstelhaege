@@ -5,7 +5,7 @@ from code.algorithms import randomize
 if __name__ == "__main__":
 
 	# Create grid
-    # test_grid = grid.Grid(20, "data/wijken/wijk_1.csv")
+    test_grid = grid.Grid(20, "data/wijken/wijk_1.csv")
     # test_grid.print_grid()
 
     # test_grid.print_grid()
@@ -14,13 +14,13 @@ if __name__ == "__main__":
     
     # Randomize algorithm
 
-    # random_config = randomize.random_assignment(test_grid)
+    random_config = randomize.random_assignment(test_grid)
 
     # print("New grid:")
     # random_config.print_grid()
 
     # Visualize case
-    # vis.visualize(test_grid)
+    vis.visualize(random_config)
 
     # # Create csv output file
     # test_grid.create_output()
