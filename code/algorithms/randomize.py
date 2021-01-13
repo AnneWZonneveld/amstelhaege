@@ -79,6 +79,7 @@ def random_assignment(grid):
 				house.coordinates = house_info[1]
 				print(f"House coordinates: {house.coordinates}")
 				succes = True
+				house.placed = True
 
 				print(f"Updated grid:")
 				second_grid.print_grid()

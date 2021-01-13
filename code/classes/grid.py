@@ -115,7 +115,7 @@ class Grid():
                     self.cells[y][x].type = "Water"
     
 
-    def calculate_worth(self, houses):
+    def calculate_worth(self):
         """
         Calculates worth of all House objects on grid. Returns the total net 
         worth.
@@ -124,10 +124,10 @@ class Grid():
         # Create variable to calculate total net worth
         total_net_worth = 0
 
-        for house in houses.values():
+        for house in self.all_houses.values():
+            print(house)
 
             if house.placed == True:
-
                 # Net worth of house
                 net_worth_house = house.price
             
@@ -136,8 +136,8 @@ class Grid():
                     net_worth_house += house.extra_free_meters * house.percentage * house.price
 
                 # Add net worth of house to total net worth
-                total_net_worth += net_worth_house
-                
+                total_net_worth = total_net_worth + net_worth_house
+    
         return total_net_worth
 
     def create_output(self):
@@ -167,5 +167,5 @@ class Grid():
                 writer.writerow(house_list)
             
             # Add optimalization function to csv file
-            optimalization = self.calculate_worth(self.all_houses)
+            optimalization = self.calculate_worth()
             writer.writerow(["networth", optimalization])

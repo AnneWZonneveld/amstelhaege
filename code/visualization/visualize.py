@@ -9,18 +9,29 @@ def visualize(grid):
     """
 
     # Create diagram representing a map of the Amstelhaege
-    plt.axis([0, grid.width, grid.depth, 0]) 
-    plt.xticks(np.arange(0, grid.width + 1, 1))
-    plt.yticks(np.arange(0, grid.depth + 1, 1)) 
-    # how start from bottom left corner from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
-    plt.xlim([0, grid.width])
-    plt.ylim([grid.depth, 0])
+    plt.axis([0, grid.depth, grid.width, 0]) 
+
+    # Add labels to axis
+    plt.ylabel("Width (180)")    
+    plt.xlabel("Depth (160)")
+
+    # Set scaling of the graph 
+    plt.xticks(np.arange(0, grid.depth + 1, 1))
+    plt.yticks(np.arange(0, grid.width + 1, 1)) 
+    
+    # Remove margin between where axis meet and scaling begins
+    # from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
+    plt.xlim([grid.depth, 0])
+    plt.ylim([0, grid.width])
+
+    # Make grid visible
     plt.grid(True)
 
     # Load water coordinates from correct map
     water = grid.load_water(grid.map)
     print(f" Water: {water}")
 
+    # Use coordinates to draw rectengualar representation of water
     for ident, coordinates in water.items():
         # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
         # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
