@@ -7,11 +7,10 @@ class Grid():
     def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
+        self.map = source_file
         self.cells = self.load_grid(self.width, self.depth)
         self.all_houses = self.load_houses(quantity)
-        self.all_water = self.load_water(source_file)
-        self.create_water()
-        self.map = source_file
+        self.create_water()      
 
     def load_grid(self, width, depth):
         """
@@ -89,10 +88,10 @@ class Grid():
                 strip_row = [item.strip("\"") for item in row]
 
                 # Save water coordinates in dict
-                water[strip_row[0]] = {'bottom_left': (int(strip_row[1]), int(strip_row[4])),
-                                    'bottom_right': (int(strip_row[3]), int(strip_row[4])),
-                                    'top_left': (int(strip_row[1]), int(strip_row[2])),
-                                    'top_right': (int(strip_row[3]), int(strip_row[2]))}
+                water[strip_row[0]] = {'top_left': (int(strip_row[1]), int(strip_row[4])),
+                                    'top_right': (int(strip_row[3]), int(strip_row[4])),
+                                    'bottom_left': (int(strip_row[1]), int(strip_row[2])),
+                                    'bottom_right': (int(strip_row[3]), int(strip_row[2]))}
 
         return water
 
@@ -104,16 +103,18 @@ class Grid():
 
         print("Creating water")
 
+        all_water = self.load_water(self.map)
+
         # Iterate over all water objects in dict
-        for water in self.all_water:
+        for water in all_water:
 
             # Define coordinates of water objects
-            for x in range(int(self.all_water[water]['top_left'][0]), int(self.all_water[water]['bottom_right'][0]) + 1):
-                for y in range(int(self.all_water[water]['top_left'][1]), int(self.all_water[water]['bottom_right'][1]) + 1):
+            for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):
+                for y in range(int(all_water[water]['bottom_left'][1]), int(all_water[water]['top_right'][1]) + 1):
 
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
-    
+
 
     def calculate_worth(self, houses):
         """
@@ -140,7 +141,6 @@ class Grid():
                 
         return total_net_worth
 
-
     def create_output(self):
         """
         Creates csv-file that represents results from running the algorithm.
@@ -163,8 +163,10 @@ class Grid():
                 water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
                 writer.writerow(water_list)
             
-            # todo: add location of houses to csv file
+            for house in self.all_houses.values():
+                house_list = [f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()]
+                writer.writerow(house_list)
             
             # Add optimalization function to csv file
-            optimalization = "[insert optimalization function]"
+            optimalization = self.calculate_worth(self.all_houses)
             writer.writerow(["networth", optimalization])
