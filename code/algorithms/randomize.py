@@ -1,5 +1,6 @@
 import random
 import copy
+from code.classes.mandatory import MandatoryFreeSpace
 
 def random_empty_cell(grid):
 	""" 
@@ -40,6 +41,14 @@ def random_assignment_house(grid, house, random_cell):
 		'top_right': (random_cell_x + house.depth, random_cell_y)
 		}
 
+	# Set house coordinates including mandatory free space
+	house_coordinates_mandatory_free_space = {
+		'bottom_left': (house.coordinates['bottom_left'][0] - house.min_free, house.coordinates['bottom_left'][1] - house.min_free), 
+		'bottom_right': (house.coordinates['bottom_right'][0] + house.min_free, house.coordinates['bottom_right'][1] + house.min_free), 
+		'top_left': (house.coordinates['top_left'][0] - house.min_free, house.coordinates['top_left'][1] - house.min_free),
+		'top_right': (house.coordinates['top_right'][0] + house.min_free, house.coordinates['top_right'][1] + house.min_free)
+		}
+
 	# Check for all cells of possible house location if occupied 
 	occupied = False
 
@@ -50,7 +59,17 @@ def random_assignment_house(grid, house, random_cell):
 			
 			if current_cell.type != None:
 				occupied = True
+	
+	# Iterate over all grid cells of house including mandatory free space
+	for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+		for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
 
+			current_cell = grid.cells[row, column]
+
+			# Ensure every cell of mandatory free space is empty (not the mandatory free space of another house)
+			if current_cell.type not in [None, 'Water']:
+				occupied = True
+	
 	# If all cells of possible location are still availabe 
 	if occupied == False:
 
@@ -60,8 +79,20 @@ def random_assignment_house(grid, house, random_cell):
 				current_cell = grid.cells[row, column]
 				current_cell.type = house.type
 
+		# Iterate over all grid cells of house including mandatory free space
+		for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+			for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
+
+				current_cell = grid.cells[row, column]
+
+				# Set all grid cells mandatory free space of house to according type
+				if current_cell.type != house.type:
+					current_cell.type = MandatoryFreeSpace(house)
+
+
 		# Save coordinates
 		house.coordinates = house_coordinates
+		house.min_free_coordinates = house_coordinates_mandatory_free_space
 
 	else:
 		occupied = False
@@ -70,6 +101,48 @@ def random_assignment_house(grid, house, random_cell):
 	# all_info = [grid, house_coordinates]
 
 	return grid
+
+
+# def mandatory_free_space_house(grid, house):
+# 	"""
+# 	Checks that the mandatory free space of a house does not overlap with other 
+# 	mandatory free space. Marks cells as mandatory free space of house.
+# 	"""
+
+# 	print("Performing mandatory_free_space_house")
+
+# 	# Set house coordinates including mandatory free space
+# 	house_coordinates_mandatory_free_space = {
+# 		'bottom_left': (house.coordinates['bottom_left'][0] - house.min_free, house.coordinates['bottom_left'][1] - house.min_free), 
+# 		'bottom_right': (house.coordinates['bottom_right'][0] + house.min_free, house.coordinates['bottom_right'][1] + house.min_free), 
+# 		'top_left': (house.coordinates['top_left'][0] - house.min_free, house.coordinates['top_left'][1] - house.min_free),
+# 		'top_right': (house.coordinates['top_right'][0] + house.min_free, house.coordinates['top_right'][1] + house.min_free)
+# 		}
+
+# 	# Iterate over all grid cells of house including mandatory free space
+# 	for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+# 		for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
+
+# 			current_cell = grid.cells[row, column]
+
+# 			# Ensure every cell of mandatory free space is empty (not the mandatory free space of another house)
+# 			if current_cell.type not in [None, 'Water']:
+# 				raise ValueError("Location mandatory free space of house unavailable.")
+
+# 	# Iterate over all grid cells of house including mandatory free space
+# 	for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
+# 		for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
+
+# 			current_cell = grid.cells[row, column]
+
+# 			# Set all grid cells mandatory free space of house to according type
+# 			if current_cell.type != house.type:
+# 				current_cell.type = MandatoryFreeSpace(house)
+	
+# 	house.min_free_coordinates = house_coordinates_mandatory_free_space
+
+# 	return grid
+
 
 def random_assignment(grid):
 	# print(f"grid: {grid}")
@@ -100,31 +173,3 @@ def random_assignment(grid):
 				pass
 
 	return new_grid
-
-"""
-def mandatory_free_check(grid):
-
-	# loop over alle huizen op grid
-	for house in grid.all_houses.values():
-		
-		# STAP 1: KIJK OF EVENTUELE VERPLICHTE VRIJSTAND HUIS OVERLAP HEEFT MET VERPLICHTE VRIJSTAND ANDER HUIS
-		for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
-			for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
-
-				current_cell = grid.cells[row, column]
-
-				# als cellen het type 'verplichte vrijstand' hebben
-				if current_cell.type == "VERPLICHTE VRIJSTAND VAN ANDER HUIS": # AANPASSEN
-
-					# STAP 2A: OVERLAP --> HUIS OPNIEUW RANDOM PLAATSEN EN TERUG NAAR BEGIN VAN FOR-LOOP
-
-		# STAP 2B: GEEN OVERLAP --> CELLEN TRANSFORMEREN NAAR VERPLICHTE VRIJSTAND VAN HUIS 
-		for row in range((house.coordinates['top_left'][1] - house.min_free), (house.coordinates['bottom_right'][1] + house.min_free)):
-			for column in range((house.coordinates['top_left'][0] - house.min_free), (house.coordinates['bottom_right'][0] + house.min_free)):
-
-				current_cell = grid.cells[row, column]
-
-				if current_cell.type != house.type:
-					current_cell.type = "VERPLICHTE VRIJSTAND VAN DIT HUIS"
-"""
-
