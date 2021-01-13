@@ -9,14 +9,22 @@ def visualize(grid):
     """
 
     # Create diagram representing a map of the Amstelhaege
-    plt.axis([0, grid.depth, grid.width, 0]) 
+    plt.axis([0, grid.depth, grid.width, 0])
+
+    # Define scaling of axes 
     plt.xticks(np.arange(0, grid.depth + 1, 10))
     plt.yticks(np.arange(0, grid.width + 1, 10)) 
+
+    # Label axes
     plt.xlabel("Depth")
     plt.ylabel("Width")
-    # how start from bottom left corner from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
+
+    # Begin scaling where x- and y-axis meet
+    # from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
     plt.xlim([0, grid.depth])
     plt.ylim([grid.width, 0])
+
+    # Show grid
     plt.grid(True)
 
     # Load water coordinates from correct map
