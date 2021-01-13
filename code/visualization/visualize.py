@@ -26,6 +26,7 @@ def visualize(grid):
 
     # Show grid
     plt.grid(True)
+    plt.gca().set_aspect("equal")
 
     # Load water coordinates from correct map
     water = grid.load_water(grid.map)
