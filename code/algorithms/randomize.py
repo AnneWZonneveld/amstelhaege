@@ -1,7 +1,7 @@
 import random
 import copy
 from code.classes.mandatory import MandatoryFreeSpace
-from IPython import embed
+# from IPython import embed
 
 def random_empty_cell(grid):
 	""" 
@@ -46,10 +46,10 @@ def random_assignment_house(grid, house, random_cell):
 
 	# Set house coordinates including mandatory free space
 	house_coordinates_mandatory_free_space = {
-		'bottom_left': (house_coordinates['bottom_left'][0] - house.min_free, house_coordinates['bottom_left'][1] - house.min_free), 
+		'bottom_left': (house_coordinates['bottom_left'][0] - house.min_free, house_coordinates['bottom_left'][1] + house.min_free), 
 		'bottom_right': (house_coordinates['bottom_right'][0] + house.min_free, house_coordinates['bottom_right'][1] + house.min_free), 
 		'top_left': (house_coordinates['top_left'][0] - house.min_free, house_coordinates['top_left'][1] - house.min_free),
-		'top_right': (house_coordinates['top_right'][0] + house.min_free, house_coordinates['top_right'][1] + house.min_free)
+		'top_right': (house_coordinates['top_right'][0] + house.min_free, house_coordinates['top_right'][1] - house.min_free)
 		}
 
 	# Check for all cells of possible house location if occupied 
