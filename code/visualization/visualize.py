@@ -26,6 +26,7 @@ def visualize(grid):
 
     # Show grid
     plt.grid(True)
+    plt.gca().set_aspect("equal")
 
     # Load water coordinates from correct map
     water = grid.load_water(grid.map)
@@ -36,7 +37,6 @@ def visualize(grid):
     for ident, coordinates in water.items():
 
         # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
-        
         bottom_left =  water[ident].get('bottom_left')
         top_right = water[ident].get('top_right')
 
@@ -46,22 +46,32 @@ def visualize(grid):
         water_vis = plt.Rectangle(bottom_left, rectangle_width, rectangle_height, fc="blue")
         plt.gca().add_patch(water_vis)
 
-    # Load houses based on grid and add to diagram
+    # Add representation of houses to diagram
     for house in grid.all_houses.values():
+        # Load coordinates of houses without free space
+        house_width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
+        house_height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
+        bottom_left = house.coordinates['bottom_left']
 
-        rectangle_width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
-        rectangle_height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
-
-        # Create rectangle for specific type 
+        # Load coordinates of houses with free space
+        free_space_width = house.min_free_coordinates['bottom_right'][0] - house.min_free_coordinates['bottom_left'][0]
+        free_space_height = house.min_free_coordinates['top_right'][1] - house.min_free_coordinates['bottom_right'][1]
+        free_space_bottom_left = house.min_free_coordinates['bottom_left']
+        
+        # Create representation depending on type of house
         if house.type == "single":
-            rectangle = plt.Rectangle(house.coordinates['bottom_left'], rectangle_width, rectangle_height, fc="r")
+            house = plt.Rectangle(bottom_left, house_width, house_height, fc="r")
+            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="r", alpha=0.3)
         elif house.type == "bungalow":
-            rectangle = plt.Rectangle(house.coordinates['bottom_left'], rectangle_width, rectangle_height, fc="y")
+            house = plt.Rectangle(bottom_left, house_width, house_height, fc="y")
+            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="y", alpha=0.3)
         else:
-            rectangle = plt.Rectangle(house.coordinates['bottom_left'], rectangle_width, rectangle_height, fc="g")
+            house = plt.Rectangle(bottom_left, house_width, house_height, fc="g")
+            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="g", alpha=0.3)
+        
+        plt.gca().add_patch(house)
+        plt.gca().add_patch(free_space)
 
-        plt.gca().add_patch(rectangle)
-
-    # Save map to current directory
+    # Save diagram to current directory
     visualization = os.path.join('.','code', 'visualization', 'visualization.png')
     plt.savefig(visualization)
