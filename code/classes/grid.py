@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from .cell import Cell
 from .house import House
+from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
@@ -123,6 +124,15 @@ class Grid():
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
 
+    def calculate_extra_free_meters(self, house):
+        print("Calculating extra free meters")
+
+        embed()
+        for coordinate in house.coordinates:
+            print("coordinate: {coordinate}")
+
+
+
 
     def calculate_worth(self):
         """
@@ -135,6 +145,9 @@ class Grid():
 
         for house in self.all_houses.values():
             print(house)
+
+            # Calculate extra free meters
+            self.calculate_extra_free_meters(house)
 
             if house.placed == True:
                 # Net worth of house
