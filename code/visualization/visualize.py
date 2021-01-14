@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
 import numpy as np
 import os
 
@@ -8,69 +9,63 @@ def visualize(grid):
         on a given grid object.
     """
 
-    # Create diagram representing a map of the Amstelhaege
+    # Create diagram representing a map of Amstelhaege
     plt.axis([0, grid.width, grid.depth, 0])
-
-    # Define scaling of axes 
-    plt.xticks(np.arange(0, grid.width + 1, 10))
-    plt.yticks(np.arange(0, grid.depth + 1, 10)) 
-
-    # Label axes
     plt.xlabel("Width")
     plt.ylabel("Depth")
 
-    # Begin scaling where x- and y-axis meet
-    # from https://stackoverflow.com/questions/44395838/how-to-make-0-0-on-matplotlib-graph-on-the-bottom-left-corner
+    # Prepare for drawing multiple objects at once
+    fig, ax = plt.subplots()
+    objects = []
+
+    # Set scaling properties
+    plt.xticks(np.arange(0, grid.width + 1, 10))
+    plt.yticks(np.arange(0, grid.depth + 1, 10)) 
     plt.xlim([0, grid.width])
     plt.ylim([grid.depth, 0])
 
-    # Show grid
+    # Set grid properties
     plt.grid(True)
     plt.gca().set_aspect("equal")
 
     # Load water coordinates from correct map
-    water = grid.load_water(grid.map)
-    # print(f" Water: {water}")
+    water_coord = grid.load_water(grid.map)
 
-    # how to loop through nested dict from https://www.learnbyexample.org/python-nested-dictionary/#:~:text=Access%20Nested%20Dictionary%20Items,key%20in%20multiple%20square%20brackets.&text=If%20you%20refer%20to%20a,dictionary%2C%20an%20exception%20is%20raised.&text=To%20avoid%20such%20exception%2C%20you,special%20dictionary%20get()%20method.
     # Add representation of water to diagram
-    for ident, coordinates in water.items():
+    for ident, coordinates in water_coord.items():
+        bottom_left =  water_coord[ident].get('bottom_left')
+        width = water_coord[ident].get('top_right')[0] - bottom_left[0]
+        height = water_coord[ident].get('top_right')[1] - bottom_left[1]
 
-        # how to draw rectangle in diagram from https://www.codespeedy.com/how-to-draw-shapes-in-matplotlib-with-python/
-        bottom_left =  water[ident].get('bottom_left')
-        top_right = water[ident].get('top_right')
-
-        rectangle_width = top_right[0] - bottom_left[0]
-        rectangle_height = top_right[1] - bottom_left[1]
-
-        water_vis = plt.Rectangle(bottom_left, rectangle_width, rectangle_height, fc="blue")
-        plt.gca().add_patch(water_vis)
+        water = plt.Rectangle(bottom_left, width, height, fc="b")
+        objects.append(water)
 
     # Add representation of houses to diagram
     for house in grid.all_houses.values():
-        # Load coordinates of houses without free space
-        house_width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
-        house_height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
+        # Load house coordinates without free space
         bottom_left = house.coordinates['bottom_left']
+        width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
+        height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
 
-        # Load coordinates of houses with free space
+        # Load house coordinates with free space
+        free_space_bottom_left = house.min_free_coordinates['bottom_left']
         free_space_width = house.min_free_coordinates['bottom_right'][0] - house.min_free_coordinates['bottom_left'][0]
         free_space_height = house.min_free_coordinates['top_right'][1] - house.min_free_coordinates['bottom_right'][1]
-        free_space_bottom_left = house.min_free_coordinates['bottom_left']
         
-        # Create representation depending on type of house
+        # Represent each type of house with a different color
         if house.type == "single":
-            house = plt.Rectangle(bottom_left, house_width, house_height, fc="r")
-            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="r", alpha=0.3)
+            color = "r"
         elif house.type == "bungalow":
-            house = plt.Rectangle(bottom_left, house_width, house_height, fc="y")
-            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="y", alpha=0.3)
+            color = "y"
         else:
-            house = plt.Rectangle(bottom_left, house_width, house_height, fc="g")
-            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc="g", alpha=0.3)
+            color = "g"
         
-        plt.gca().add_patch(house)
-        plt.gca().add_patch(free_space)
+        house = plt.Rectangle(bottom_left, width, height, fc=color)
+        free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc=color, alpha=0.3)
+        objects.extend((house, free_space))
+    
+    p = PatchCollection(objects, match_original=True)
+    ax.add_collection(p)
 
     # Save diagram to current directory
     visualization = os.path.join('.','code', 'visualization', 'visualization.png')
