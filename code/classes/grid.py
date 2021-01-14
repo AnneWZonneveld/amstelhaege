@@ -18,12 +18,12 @@ class Grid():
         """
 
         grid = np.array([])
-        for y in range(width + 1 ):
-            for x in range(depth + 1):
+        for y in range(depth + 1 ):
+            for x in range(width + 1):
                 cell = Cell(x, y)
                 grid = np.append(grid, cell)
         
-        grid = np.resize(grid,(width + 1, depth + 1))
+        grid = np.resize(grid,(depth + 1, width + 1))
         return grid 
 
     def print_grid(self):
@@ -88,10 +88,10 @@ class Grid():
                 strip_row = [item.strip("\"") for item in row]
 
                 # Save water coordinates in dict
-                water[strip_row[0]] = {'top_left': (int(strip_row[1]), int(strip_row[4])),
-                                    'top_right': (int(strip_row[3]), int(strip_row[4])),
-                                    'bottom_left': (int(strip_row[1]), int(strip_row[2])),
-                                    'bottom_right': (int(strip_row[3]), int(strip_row[2]))}
+                water[strip_row[0]] = {'bottom_left': (int(strip_row[1]), int(strip_row[4])),
+                                    'bottom_right': (int(strip_row[3]), int(strip_row[4])),
+                                    'top_left': (int(strip_row[1]), int(strip_row[2])),
+                                    'top_right': (int(strip_row[3]), int(strip_row[2]))}
 
         return water
 
@@ -104,14 +104,22 @@ class Grid():
         print("Creating water")
 
         all_water = self.load_water(self.map)
+        print(f"All water: {all_water}")
 
         # Iterate over all water objects in dict
         for water in all_water:
 
-            # Define coordinates of water objects
-            for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):
-                for y in range(int(all_water[water]['bottom_left'][1]), int(all_water[water]['top_right'][1]) + 1):
+            # # Define coordinates of water objects
+            # for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):
+            #     for y in range(int(all_water[water]['bottom_left'][1]), int(all_water[water]['top_right'][1]) + 1):
 
+            #         # Transform cells into 'Water' type
+            #         self.cells[y][x].type = "Water"
+
+            # Define coordinates of water objects
+            for y in range(int(all_water[water]['top_left'][1]), int(all_water[water]['bottom_right'][1]) + 1):
+                for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):    
+                    
                     # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
 
