@@ -1,14 +1,12 @@
 import random
 import copy
 from code.classes.mandatory import MandatoryFreeSpace
-# from IPython import embed
 
-def random_empty_cell(grid):
-	""" 
-	Picks a random empty cell from grid.
+
+def define_empty_cells(grid):
 	"""
-
-	print("Perfoming picking empty cell")
+	Returns a list of all empty cells on grid.
+	"""
 
 	empty_cells = []
 
@@ -16,81 +14,64 @@ def random_empty_cell(grid):
 		for cell in row:
 			if cell.type == None:
 				empty_cells.append(cell)
+	
+	return empty_cells
 
-	# print(f"empty_cells: {empty_cells}")
-	random_cell = random.choice(empty_cells)
-	print(f"random_start_cell: {random_cell}")
 
+def random_empty_cell(grid):
+	"""
+	Returns a random empty cell from grid.
+	"""
+
+	print("Performing picking empty cell")
+
+	random_cell = random.choice(define_empty_cells(grid))
 	return random_cell
+
 
 def random_assignment_house(grid, house, random_cell):
 	""" 
-	Assigns house to grid, based on coordinates of random cell.
+	Assigns house to grid, based on coordinates of random cell. Returns the new 
+	grid.
 	"""
 
-	# embed()
-
-	print("Performing random_assignment_house")
+	print("Performing random assignment of house")
 	
 	# Retrieve coordinates random starting cell (top-left)
 	random_cell_x = random_cell.x_coordinate
 	random_cell_y = random_cell.y_coordinate
 
-	# Set house coordinates
-	house_coordinates = {
-		'bottom_left': (random_cell_x, random_cell_y + house.depth), 
-		'bottom_right': (random_cell_x + house.width, random_cell_y + house.depth), 
-		'top_left': (random_cell_x, random_cell_y),
-		'top_right': (random_cell_x + house.width, random_cell_y)
-		}
+	# Set house coordinates (excluding and including mandatory free space)
+	house_coordinates = set_house_coordinates(house, random_cell_x, random_cell_y)
+	house_coordinates_mandatory_free_space = set_house_coordinates_mandatory_free_space(house, house_coordinates)
 
-	# Set house coordinates including mandatory free space
-	house_coordinates_mandatory_free_space = {
-		'bottom_left': (house_coordinates['bottom_left'][0] - house.min_free, house_coordinates['bottom_left'][1] + house.min_free), 
-		'bottom_right': (house_coordinates['bottom_right'][0] + house.min_free, house_coordinates['bottom_right'][1] + house.min_free), 
-		'top_left': (house_coordinates['top_left'][0] - house.min_free, house_coordinates['top_left'][1] - house.min_free),
-		'top_right': (house_coordinates['top_right'][0] + house.min_free, house_coordinates['top_right'][1] - house.min_free)
-		}
+	# Define all cells of possible house location (excluding and including mandatory free space)
+	house_cells = define_object_cells(grid, house_coordinates)
+	house_cells_mandatory_free_space = define_object_cells(grid, house_coordinates_mandatory_free_space)
 
-	# Check for all cells of possible house location if occupied 
 	occupied = False
 
-	for row in range(random_cell_y, random_cell_y + house.width):
-		for column in range(random_cell_x, random_cell_x + house.depth):
+	# Check for all cells of possible house location if occupied 
+	for current_cell in house_cells:
+		if current_cell.type != None:
+			occupied = True
 
-			current_cell = grid.cells[row, column]
-			
-			if current_cell.type != None:
-				occupied = True
-	
-	# Iterate over all grid cells of house including mandatory free space
-	for row in range((house_coordinates['top_left'][1] - house.min_free), (house_coordinates['bottom_right'][1] + house.min_free)):
-		for column in range((house_coordinates['top_left'][0] - house.min_free), (house_coordinates['bottom_right'][0] + house.min_free)):
-
-			current_cell = grid.cells[row, column]
-
-			# Ensure every cell of mandatory free space is empty (not the mandatory free space of another house)
-			if current_cell.type not in [None, 'Water']:
-				occupied = True
+	# Check for all cells of possible mandatory free space location if occupied
+	for current_cell in house_cells_mandatory_free_space:
+		if current_cell.type in ['single', 'bungalow', 'maison']: #AANPASSEN?
+			occupied = True
 	
 	# If all cells of possible location are still availabe 
 	if occupied == False:
 
 		# Set cells to according house type
-		for row in range(random_cell_y, random_cell_y + house.depth):
-			for column in range(random_cell_x, random_cell_x + house.width):
-				current_cell = grid.cells[row, column]
-				current_cell.type = house.type
+		for current_cell in house_cells:
+			current_cell.type = house.type
 
-		# Iterate over all grid cells of house including mandatory free space
-		for row in range((house_coordinates['top_left'][1] - house.min_free), (house_coordinates['bottom_right'][1] + house.min_free)):
-			for column in range((house_coordinates['top_left'][0] - house.min_free), (house_coordinates['bottom_right'][0] + house.min_free)):
-
-				current_cell = grid.cells[row, column]
-
-				# Set all grid cells mandatory free space of house to according type
-				if current_cell.type != house.type:
-					current_cell.type = MandatoryFreeSpace(house)
+		# Set cells to according mandatory free space type
+		for current_cell in house_cells_mandatory_free_space:
+			if current_cell.type != house.type:
+				current_cell.type = MandatoryFreeSpace(house)
 
 		# Save coordinates
 		house.coordinates = house_coordinates
@@ -101,8 +82,75 @@ def random_assignment_house(grid, house, random_cell):
 
 	return grid
 
+def random_rotation_choice():
+	"""
+	Returns a random rotation.
+	"""
+
+	rotation = ['horizontal', 'vertical']
+	random_rotation = random.choice(rotation)
+
+	return random_rotation
+
+def set_house_coordinates(house, random_cell_x, random_cell_y):
+	"""
+	Returns a dictionary of house coordinates (excluding mandatory free space).
+	"""
+
+	random_rotation = random_rotation_choice()
+
+	if random_rotation == 'horizontal':
+		width = house.width
+		depth = house.depth
+	else:
+		width = house.depth
+		depth = house.width
+
+	house_coordinates = {
+		'bottom_left': (random_cell_x, random_cell_y + depth), 
+		'bottom_right': (random_cell_x + width, random_cell_y + depth), 
+		'top_left': (random_cell_x, random_cell_y),
+		'top_right': (random_cell_x + width, random_cell_y)
+		}
+	
+	return house_coordinates
+
+
+def set_house_coordinates_mandatory_free_space(house, house_coordinates):
+	"""
+	Returns a dictionary of house coordinates (including mandatory free space).
+	"""
+
+	house_coordinates_mandatory_free_space = {
+		'bottom_left': (house_coordinates['bottom_left'][0] - house.min_free, house_coordinates['bottom_left'][1] + house.min_free), 
+		'bottom_right': (house_coordinates['bottom_right'][0] + house.min_free, house_coordinates['bottom_right'][1] + house.min_free), 
+		'top_left': (house_coordinates['top_left'][0] - house.min_free, house_coordinates['top_left'][1] - house.min_free),
+		'top_right': (house_coordinates['top_right'][0] + house.min_free, house_coordinates['top_right'][1] - house.min_free)
+		}
+
+	return house_coordinates_mandatory_free_space
+
+
+def define_object_cells(grid, coordinates):
+	"""
+	Returns a list of cells for a specific object.
+	"""
+
+	object_cells = []
+
+	for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+		for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+
+			current_cell = grid.cells[row, column]
+			object_cells.append(current_cell)
+
+	return object_cells
+
 
 def random_assignment(grid):
+	"""
+	Places all houses randomly on grid. Returns the new grid.
+	"""
 
 	# Copy empty grid 
 	copy_grid = copy.deepcopy(grid)
@@ -119,10 +167,10 @@ def random_assignment(grid):
 				new_grid = random_assignment_house(copy_grid, house, random_cell)
 				house.placed = True
 
-				print(f"Updated grid:")
-				new_grid.print_grid()
 			except:
 				print("Error")
 				pass
+
+	print("All houses placed succesfully")
 
 	return new_grid
