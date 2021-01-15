@@ -2,57 +2,59 @@ import csv
 import numpy as np
 from .cell import Cell
 from .house import House
-from IPython import embed;
+# from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
         self.map = source_file
-        self.cells = self.load_grid(self.width, self.depth)
-        self.all_houses = self.load_houses(quantity)
+        self.quantity = quantity
+        self.cells = self.load_grid()
+        self.all_houses = self.load_houses()    
         self.create_water()      
 
-    def load_grid(self, width, depth):
+    def load_grid(self):
         """
-        Creates a 2D array filled with Cells with according coordinates
+        Creates and returns a 2D array filled with cells. Each cell 
+        represents one square meter on the map and is associated with
+        coordinates that point to its unique position in the grid.
         """
+        
 
         grid = np.array([])
-        for y in range(depth + 1 ):
-            for x in range(width + 1):
+        for y in range(self.depth + 1 ):
+            for x in range(self.width + 1):
                 cell = Cell(x, y)
                 grid = np.append(grid, cell)
-        
-        grid = np.resize(grid,(depth + 1, width + 1))
+        grid = np.resize(grid,(self.depth + 1, self.width + 1))
+
         return grid 
 
-    def print_grid(self):
-        print(f"{self.cells}")
-
-    def load_houses(self, quantity):
+    def load_houses(self):
         """
-        Creates according quantity of House instances with specific type 
-        and id and returns dictionary with all houses.
+        Creates the specified quantity of houses with a fixed share of
+        single houses (60%), bungalows (25%) and maisons (15%). Returns
+        a dictionary that maps each house and its type to an ID.
         """
+        
 
-        # Determine according quantities for different types
-        q_single = int(0.6 * quantity)
-        q_bungalow = int(0.25 * quantity)
-        q_maison = int(0.15 * quantity)
+        # Determine demand for each house type based on total quantity
+        q_single = int(0.6 * self.quantity)
+        q_bungalow = int(0.25 * self.quantity)
+        q_maison = int(0.15 * self.quantity)
 
         # Save houses in dict
         all_houses = {}
 
-        # Create specific quantiy of House instances with according type
+        # Create specified quantiy of House instances with according type
         id_counter = 1
-        for quantity in [q_single, q_bungalow, q_maison]:
-            for i in range(int(quantity)):
-
-                # Check for type
-                if quantity == q_single:
+        for q_type in [q_single, q_bungalow, q_maison]:
+            for h in range(int(q_type)):
+                # Create house an assign correct type
+                if q_type == q_single:
                     house = House("single", id_counter) 
-                elif quantity == q_bungalow:
+                elif q_type == q_bungalow:
                     house = House("bungalow", id_counter)
                 else:
                     house = House("maison", id_counter)
@@ -63,39 +65,35 @@ class Grid():
 
         return all_houses
 
-    def load_water(self, source_file):
+    def load_water(self):
         """
-        Reads a csv file into a dictionary. Returns a dictionary of water 
-        coordinates.
+        Returns a dictionary that maps the water surface(s) on a given
+        map to coordinates.
         """
 
-        with open(source_file, 'r') as in_file:
+        # Load coordinates of water surface(s) from source file
+        with open(self.map, 'r') as in_file:
 
             water = {}
             
-            # Skip the header row
+            # Skip header
             next(in_file)
 
             while True:
-                # Read through file row by row (till blank row)
+                # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
                 if row == "":
                     break
-
-                # Create a list of all items on row
-                row = row.split(",")
-
-                # Remove " from each item in list
-                strip_row = [item.strip("\"") for item in row]
+                items = row.split(",")
+                strip_items = [item.strip("\"") for item in items]
 
                 # Save water coordinates in dict
-                water[strip_row[0]] = {'bottom_left': (int(strip_row[1]), int(strip_row[4])),
-                                    'bottom_right': (int(strip_row[3]), int(strip_row[4])),
-                                    'top_left': (int(strip_row[1]), int(strip_row[2])),
-                                    'top_right': (int(strip_row[3]), int(strip_row[2]))}
+                water[strip_items[0]] = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
+                                    'bottom_right': (int(strip_items[3]), int(strip_items[4])),
+                                    'top_left': (int(strip_items[1]), int(strip_items[2])),
+                                    'top_right': (int(strip_items[3]), int(strip_items[2]))}
 
         return water
-
 
     def create_water(self):
         """
@@ -104,7 +102,7 @@ class Grid():
 
         print("Creating water")
 
-        all_water = self.load_water(self.map)
+        all_water = self.load_water()
         print(f"All water: {all_water}")
 
         # Iterate over all water objects in dict
@@ -127,12 +125,9 @@ class Grid():
     def calculate_extra_free_meters(self, house):
         print("Calculating extra free meters")
 
-        embed()
+        #embed()
         for coordinate in house.coordinates:
             print("coordinate: {coordinate}")
-
-
-
 
     def calculate_worth(self):
         """
@@ -176,7 +171,7 @@ class Grid():
             writer.writerow(fieldnames)
 
             # Load water coordinates from correct map
-            water = self.load_water(self.map)
+            water = self.load_water()
 
             # Add location of water to csv file
             water_list = []

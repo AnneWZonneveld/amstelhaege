@@ -29,7 +29,7 @@ def visualize(grid):
     plt.gca().set_aspect("equal")
 
     # Load water coordinates from correct map
-    water_coord = grid.load_water(grid.map)
+    water_coord = grid.load_water()
 
     # Add representation of water to diagram
     for ident, coordinates in water_coord.items():
@@ -64,8 +64,8 @@ def visualize(grid):
         free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc=color, alpha=0.3)
         objects.extend((house, free_space))
     
-    p = PatchCollection(objects, match_original=True)
-    ax.add_collection(p)
+    representations = PatchCollection(objects, match_original=True)
+    ax.add_collection(representations)
 
     # Save diagram to current directory
     visualization = os.path.join('.','code', 'visualization', 'visualization.png')
