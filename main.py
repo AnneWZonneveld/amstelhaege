@@ -6,14 +6,15 @@ if __name__ == "__main__":
 
 
 	# Create grid
-    test_grid = grid.Grid(20, "data/wijken/wijk_1.csv")
-    # test_grid.print_grid()
+    test_grid = grid.Grid(20, "data/wijken/wijk_3.csv")
+    # print(test_grid.load_houses(20))
+    # print(test_grid.load_water())
     
     # Randomize algorithm
     random_config = randomize.random_assignment(test_grid)
 
-    print("New grid:")
-    random_config.print_grid()
+    # print("New grid:")
+    # print(random_config.cells)
 
     # Visualize case
     vis.visualize(random_config)

@@ -1,2 +1,3 @@
 pip install numpy 
 python -m pip install -U matplotlib (visualisation)
+PathCollection
