@@ -72,6 +72,10 @@ def random_assignment_house(grid, house, random_cell):
 			# Ensure every cell of mandatory free space is empty (not the mandatory free space of another house)
 			if current_cell.type not in [None, 'Water']:
 				occupied = True
+
+			# Ensure free space falls within grid
+			if row < 0 or column < 0:
+				occupied = True
 	
 	# If all cells of possible location are still availabe 
 	if occupied == False:

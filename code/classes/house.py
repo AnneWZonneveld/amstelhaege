@@ -6,7 +6,7 @@ class House():
 		self.min_free_coordinates = None
 		self.min_free_cells = []
 		self.extra_free_cells = []
-		self.extra_free_meters = 0
+		self.extra_free = 0
 		self.placed = False
 
 		if self.type == "single":
@@ -14,19 +14,19 @@ class House():
 			self.depth = 8
 			self.price = 285000
 			self.min_free = 2
-			self.percentage = 3
+			self.percentage = 0.03
 		elif self.type == "bungalow":
 			self.width = 11
 			self.depth = 7
 			self.price = 399000
 			self.min_free = 3
-			self.percentage = 4
+			self.percentage = 0.04
 		else:
 			self.width = 12
 			self.depth = 10
 			self.price = 610000
 			self.min_free = 6
-			self.percentage = 6
+			self.percentage = 0.06
 
 	def __repr__(self):
 		"""

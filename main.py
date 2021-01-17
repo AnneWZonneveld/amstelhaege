@@ -19,4 +19,4 @@ if __name__ == "__main__":
     vis.visualize(random_config)
 
     # Create csv output file
-    test_grid.create_output()
+    random_config.create_output()
