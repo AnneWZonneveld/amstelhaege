@@ -5,8 +5,8 @@ import os
 
 def visualize(grid):
     """
-        Creates a diagram that displays a map of Amstelhaege based
-        on a given grid object.
+    Creates a diagram that displays a map of Amstelhaege based on
+    a given grid object.
     """
 
     # Create diagram representing a map of Amstelhaege

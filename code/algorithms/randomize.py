@@ -3,29 +3,30 @@ import copy
 from code.classes.mandatory import MandatoryFreeSpace
 
 
-def define_empty_cells(grid):
+def define_empty_cells(grid, house):
 	"""
-	Returns a list of all empty cells on grid.
+	Returns a list of all empty cells on grid, where house would fit between 
+	borders of grid.
 	"""
 
 	empty_cells = []
 
 	for row in grid.cells:
 		for cell in row:
-			if cell.type == None:
+			if cell.x_coordinate >= house.min_free and cell.y_coordinate >= house.min_free and cell.type == None:
 				empty_cells.append(cell)
 	
 	return empty_cells
 
 
-def random_empty_cell(grid):
+def random_empty_cell(grid, house):
 	"""
 	Returns a random empty cell from grid.
 	"""
 
 	print("Performing picking empty cell")
 
-	random_cell = random.choice(define_empty_cells(grid))
+	random_cell = random.choice(define_empty_cells(grid, house))
 	return random_cell
 
 
@@ -58,7 +59,7 @@ def random_assignment_house(grid, house, random_cell):
 
 	# Check for all cells of possible mandatory free space location if occupied
 	for current_cell in house_cells_mandatory_free_space:
-		if current_cell.type in ['single', 'bungalow', 'maison']: #AANPASSEN?
+		if current_cell.type in ['single', 'bungalow', 'maison']:
 			occupied = True
 	
 	# If all cells of possible location are still availabe 
@@ -147,6 +148,19 @@ def define_object_cells(grid, coordinates):
 	return object_cells
 
 
+def list_all_houses(houses):
+	"""
+	Returns a list of all houses.
+	"""
+
+	all_houses = []
+	
+	for house in houses.values():
+		all_houses.append(house)
+
+	return all_houses
+
+
 def random_assignment(grid):
 	"""
 	Places all houses randomly on grid. Returns the new grid.
@@ -156,14 +170,15 @@ def random_assignment(grid):
 	copy_grid = copy.deepcopy(grid)
 	houses = copy_grid.all_houses
 	
-	# Try to place all houses on grid at valid location 
-	for house in houses.values():
+	# Try to place all houses on grid at valid location, from large to small (heuristic)
+	all_houses = list_all_houses(houses)
+	for house in reversed(all_houses):
 
-		print(f"HOUSE: {house}")
+		print(f"Trying to place: {house}")
 
 		while house.placed == False:
 			try:
-				random_cell = random_empty_cell(copy_grid)
+				random_cell = random_empty_cell(copy_grid, house)
 				new_grid = random_assignment_house(copy_grid, house, random_cell)
 				house.placed = True
 

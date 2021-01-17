@@ -16,12 +16,11 @@ class Grid():
 
     def load_grid(self):
         """
-        Creates and returns a 2D array filled with cells. Each cell 
-        represents one square meter on the map and is associated with
-        coordinates that point to its unique position in the grid.
+        Creates and returns a 2D array filled with cells. Each cell represents
+        one square meter on the map and is associated with coordinates that
+        point to its unique position in the grid.
         """
         
-
         grid = np.array([])
         for y in range(self.depth + 1 ):
             for x in range(self.width + 1):
@@ -33,25 +32,24 @@ class Grid():
 
     def load_houses(self):
         """
-        Creates the specified quantity of houses with a fixed share of
-        single houses (60%), bungalows (25%) and maisons (15%). Returns
-        a dictionary that maps each house and its type to an ID.
+        Creates the specified quantity of houses with a fixed share of single
+        houses (60%), bungalows (25%) and maisons (15%). Returns a dictionary
+        that maps each house and its type to an ID.
         """
         
-
-        # Determine demand for each house type based on total quantity
+        # Determine quantity for each house type based on total quantity
         q_single = int(0.6 * self.quantity)
         q_bungalow = int(0.25 * self.quantity)
         q_maison = int(0.15 * self.quantity)
 
-        # Save houses in dict
         all_houses = {}
 
-        # Create specified quantiy of House instances with according type
         id_counter = 1
+
+        # Create correct quantiy of houses
         for q_type in [q_single, q_bungalow, q_maison]:
             for h in range(int(q_type)):
-                # Create house an assign correct type
+                # Assign each House instance according type
                 if q_type == q_single:
                     house = House("single", id_counter) 
                 elif q_type == q_bungalow:
@@ -67,17 +65,16 @@ class Grid():
 
     def load_water(self):
         """
-        Returns a dictionary that maps the water surface(s) on a given
-        map to coordinates.
+        Returns a dictionary that maps the water surface(s) on a given map to
+        coordinates.
         """
 
         # Load coordinates of water surface(s) from source file
         with open(self.map, 'r') as in_file:
-
-            water = {}
-            
             # Skip header
             next(in_file)
+
+            water = {}
 
             while True:
                 # For each row, create list of all items
@@ -97,72 +94,58 @@ class Grid():
 
     def create_water(self):
         """
-        Transforms Cell objects into the 'water' type.
+        Assigns cells that overlap with the water surface(s) into type 'Water'.
         """
 
-        print("Creating water")
-
         all_water = self.load_water()
-        print(f"All water: {all_water}")
 
-        # Iterate over all water objects in dict
+        # For each cell that ovelaps with water, update cell type to "Water"       
         for water in all_water:
-
-            # # Define coordinates of water objects
-            # for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):
-            #     for y in range(int(all_water[water]['bottom_left'][1]), int(all_water[water]['top_right'][1]) + 1):
-
-            #         # Transform cells into 'Water' type
-            #         self.cells[y][x].type = "Water"
-
-            # Define coordinates of water objects
             for y in range(int(all_water[water]['top_left'][1]), int(all_water[water]['bottom_right'][1]) + 1):
                 for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):    
-                    
-                    # Transform cells into 'Water' type
                     self.cells[y][x].type = "Water"
 
     def calculate_extra_free_meters(self, house):
-        print("Calculating extra free meters")
+        """
+        Returns how many extra free meters can be assigned to a given house.
+        """
 
-        #embed()
+        # embed()
         for coordinate in house.coordinates:
             print("coordinate: {coordinate}")
 
     def calculate_worth(self):
         """
-        Calculates worth of all House objects on grid. Returns the total net 
-        worth.
+        Returns the total net worth of the map based on house type an extra free
+        space.
         """
 
-        # Create variable to calculate total net worth
-        total_net_worth = 0
+        total_networth = 0
 
+        # Calculate worth of each house placed on the map
         for house in self.all_houses.values():
-            print(house)
-
-            # Calculate extra free meters
-            self.calculate_extra_free_meters(house)
-
             if house.placed == True:
                 # Net worth of house
-                net_worth_house = house.price
-            
-                if house.extra_free_meters != 0:
-                    # Add worth of extra free space to net worth of house
-                    net_worth_house += house.extra_free_meters * house.percentage * house.price
+                worth_house = house.price
 
-                # Add net worth of house to total net worth
-                total_net_worth = total_net_worth + net_worth_house
-    
-        return total_net_worth
+                self.calculate_extra_free_meters(house)
+                
+                # Add worth of extra free space to worth of house, if any
+                if house.extra_free_meters != 0:
+                    worth_house += house.extra_free_meters * house.percentage * house.price
+
+                # Add worth of house to total net worth of the map
+                total_networth += worth_house
+            else:
+                raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
+
+        return total_networth
 
     def create_output(self):
         """
-        Creates csv-file that represents results from running the algorithm.
+        Creates csv-file with results from running an algorithm to place houses.
         """
 
-        # how to create csv file from https://www.programiz.com/python-programming/writing-csv-files
         with open('data/output.csv', 'w', newline='') as file:
             writer = csv.writer(file)
 
@@ -174,15 +157,15 @@ class Grid():
             water = self.load_water()
 
             # Add location of water to csv file
-            water_list = []
             for ident, coordinates in water.items():
                 water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
                 writer.writerow(water_list)
             
+            # Add location of houses to csv file
             for house in self.all_houses.values():
                 house_list = f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()
                 writer.writerow(house_list)
             
-            # Add optimalization function to csv file
-            optimalization = self.calculate_worth()
-            writer.writerow(["networth", optimalization])
+            # Add total networth of map to csv file
+            networth = self.calculate_worth()
+            writer.writerow(["networth", networth])
