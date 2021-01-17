@@ -28,20 +28,50 @@ def visualize(grid):
     plt.grid(True)
     plt.gca().set_aspect("equal")
 
-    # Load water coordinates from correct map
+    # Create representation of water
     water_coord = grid.load_water()
+    water = draw_water(water_coord)
+    objects.extend(water)
 
-    # Add representation of water to diagram
+    # Create representation of houses
+    houses_coord = grid.all_houses.values()
+    houses = draw_houses(houses_coord)
+    objects.extend(houses)
+
+    # Add water and houses to diagram
+    representations = PatchCollection(objects, match_original=True)
+    ax.add_collection(representations)
+
+    # Save diagram to current directory
+    visualization = os.path.join('.','code', 'visualization', 'visualization.png')
+    plt.savefig(visualization)
+    
+def draw_water(water_coord):
+    """
+    Returns a list of patches based on given coordinates that represent the
+    water surface(s).
+    """
+    
+    water = []
+
     for ident, coordinates in water_coord.items():
         bottom_left =  water_coord[ident].get('bottom_left')
         width = water_coord[ident].get('top_right')[0] - bottom_left[0]
         height = water_coord[ident].get('top_right')[1] - bottom_left[1]
 
-        water = plt.Rectangle(bottom_left, width, height, fc="b")
-        objects.append(water)
+        water.append(plt.Rectangle(bottom_left, width, height, fc="b"))
+    
+    return water
 
-    # Add representation of houses to diagram
-    for house in grid.all_houses.values():
+def draw_houses(houses_coord):
+    """
+    Returns a list of patches based on given coordinates that represent the
+    houses and their surrounding mandatory free space.
+    """
+    
+    houses = []
+    
+    for house in houses_coord:
         # Load house coordinates without free space
         bottom_left = house.coordinates['bottom_left']
         width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
@@ -62,11 +92,6 @@ def visualize(grid):
         
         house = plt.Rectangle(bottom_left, width, height, fc=color)
         free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc=color, alpha=0.3)
-        objects.extend((house, free_space))
+        houses.extend((house, free_space))
     
-    representations = PatchCollection(objects, match_original=True)
-    ax.add_collection(representations)
-
-    # Save diagram to current directory
-    visualization = os.path.join('.','code', 'visualization', 'visualization.png')
-    plt.savefig(visualization)
+    return houses
