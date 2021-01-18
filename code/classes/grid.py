@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from .cell import Cell
 from .house import House
+import code.algorithms.randomize as rz
 # from IPython import embed;
 
 class Grid():
@@ -11,7 +12,9 @@ class Grid():
         self.map = source_file
         self.quantity = quantity
         self.cells = self.load_grid()
-        self.all_houses = self.load_houses()    
+        self.all_houses = self.load_houses() # misschien alleen list nodig?
+        self.all_houses_list = rz.list_all_houses(self.all_houses)
+        self.value = 0   
         self.create_water()      
 
     def load_grid(self):
@@ -220,8 +223,10 @@ class Grid():
 
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
-            else:
-                raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
+            # else:
+            #     raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
+
+        self.value = total_networth
 
         return total_networth
 
