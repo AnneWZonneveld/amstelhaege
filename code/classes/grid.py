@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from .cell import Cell
 from .house import House
+import code.algorithms.randomize as rz
 # from IPython import embed;
 
 class Grid():
@@ -11,7 +12,9 @@ class Grid():
         self.map = source_file
         self.quantity = quantity
         self.cells = self.load_grid()
-        self.all_houses = self.load_houses()    
+        self.all_houses = self.load_houses() # misschien alleen list nodig?
+        self.all_houses_list = rz.list_all_houses(self.all_houses)
+        self.value = 0   
         self.create_water()      
 
     def load_grid(self):
@@ -110,9 +113,91 @@ class Grid():
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        # embed()
-        for coordinate in house.coordinates:
-            print("coordinate: {coordinate}")
+        shortest_distance = None
+
+        # Calculate shortest distance for all sides of house
+        for key in house.coordinates:
+
+            # Check for key 
+            if key == "top_right":
+
+                # Loop through depth right side of house per meter
+                for row in range(house.coordinates['top_right'][1], house.coordinates['bottom_right'][1] + 1):
+
+                    # For every meter, loop from side house to side grid until you find other house
+                    for column in range(house.coordinates['top_right'][0], self.width + 1):
+
+                        # Check if cell is a house or if reached end of grid
+                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or column == self.width:
+
+                            # Calculate distance and check if shortest
+                            distance = column - house.coordinates['top_right'][0]
+                            if shortest_distance == None:
+                                shortest_distance = distance
+                            elif distance < shortest_distance:
+                                shortest_distance = distance
+                            break
+
+            elif key == "bottom_right":
+
+                # Loop through width bottom side of house per meter
+                for column in range(house.coordinates['bottom_left'][0], house.coordinates['bottom_right'][0] + 1):
+                    
+                    # For every meter, loop from bottom house to bottom grid
+                    for row in range(house.coordinates['bottom_right'][1], self.depth + 1):
+
+                        # Check if cell is a house or if reached end of grid
+                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or row == self.depth:
+
+                            # Calculate distance and check if shortest
+                            distance = row - house.coordinates['bottom_right'][1]
+                            if shortest_distance == None:
+                                shortest_distance = distance
+                            elif distance < shortest_distance:
+                                shortest_distance = distance
+                            break 
+
+            elif key == "bottom_left":
+
+                # Loop through depth left side of house per meter
+                for row in range(house.coordinates['top_left'][1], house.coordinates['bottom_left'][1] + 1 ):
+                    
+                    # For every meter, loop from side of house to side grid
+                    for column in reversed(range(0, house.coordinates['top_left'][0])):
+
+                        # Check if cell is a house or if reached end of grid
+                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or column == 0:
+
+                            # Calculate distance and check if shortest
+                            distance = house.coordinates['top_left'][0] - column 
+                            if shortest_distance == None:
+                                shortest_distance = distance
+                            elif distance < shortest_distance:
+                                shortest_distance = distance
+                            break
+
+            # Key = top_left
+            else:
+
+                # Loop through width top side of house per meter
+                for column in range(house.coordinates['top_left'][0], house.coordinates['top_right'][0] + 1):
+                    
+                    # For every meter, loop from side of house to side grid
+                    for row in reversed(range(0, house.coordinates['top_left'][1])):
+
+                        # Check if cell is a house or if reached end of grid
+                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or row == 0:
+
+                            # Calculate distance and check if shortest
+                            distance = house.coordinates['top_left'][1] - row
+                            if shortest_distance == None:
+                                shortest_distance = distance
+                            elif distance < shortest_distance:
+                                shortest_distance = distance
+                            break 
+
+        # Calculate smallest extra free space
+        house.extra_free = shortest_distance - house.min_free
 
     def calculate_worth(self):
         """
@@ -125,19 +210,23 @@ class Grid():
         # Calculate worth of each house placed on the map
         for house in self.all_houses.values():
             if house.placed == True:
+
                 # Net worth of house
                 worth_house = house.price
 
+                # Calculate extra free meters
                 self.calculate_extra_free_meters(house)
                 
                 # Add worth of extra free space to worth of house, if any
-                if house.extra_free_meters != 0:
-                    worth_house += house.extra_free_meters * house.percentage * house.price
+                if house.extra_free != 0:
+                    worth_house += house.extra_free * house.percentage * house.price
 
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
-            else:
-                raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
+            # else:
+            #     raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
+
+        self.value = total_networth
 
         return total_networth
 
