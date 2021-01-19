@@ -11,7 +11,7 @@ def visualize(grid):
     a given grid object.
     """
 
-    # Create diagram representing a map of Amstelhaege
+    # Create diagram of size of map
     plt.axis([0, grid.width, grid.depth, 0])
     plt.xlabel("Width")
     plt.ylabel("Depth")
@@ -33,14 +33,13 @@ def visualize(grid):
     # Create representation of water
     water_coord = grid.load_water()
     water = draw_water(water_coord)
-    objects.extend(water)
 
     # Create representation of houses
     houses_coord = grid.all_houses.values()
     houses = draw_houses(houses_coord)
-    objects.extend(houses)
 
     # Add water and houses to diagram
+    objects.extend(water + houses)
     representations = PatchCollection(objects, match_original=True)
     ax.add_collection(representations)
 

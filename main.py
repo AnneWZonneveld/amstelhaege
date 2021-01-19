@@ -1,4 +1,4 @@
-from code.classes import grid, house # niet nodig? 
+from code.classes import grid, house 
 from code.visualization import visualize as vis
 from code.algorithms import randomize as rz
 from code.algorithms import greedy as gr

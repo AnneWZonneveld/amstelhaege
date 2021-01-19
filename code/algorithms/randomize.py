@@ -1,7 +1,7 @@
 import random
 import copy
+
 from IPython import embed
-# from code.classes.mandatory import MandatoryFreeSpace
 
 
 def random_empty_cell(grid, house):
