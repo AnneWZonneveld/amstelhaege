@@ -2,11 +2,11 @@ import random
 import copy
 from code.classes.mandatory import MandatoryFreeSpace
 
-
 def define_empty_cells(grid, house):
 	"""
-	Returns a list of all empty cells on grid, where house would fit between 
-	borders of grid.
+	Returns a list of all cells on grid where house could be placed. Cells
+	must be empty and keep a distance from the map's border that is equal
+	to or bigger than the house's mandatory free space.
 	"""
 
 	empty_cells = []
@@ -18,7 +18,6 @@ def define_empty_cells(grid, house):
 	
 	return empty_cells
 
-
 def random_empty_cell(grid, house):
 	"""
 	Returns a random empty cell from grid.
@@ -29,7 +28,6 @@ def random_empty_cell(grid, house):
 	random_cell = random.choice(define_empty_cells(grid, house))
 	return random_cell
 
-
 def random_assignment_house(grid, house, random_cell):
 	""" 
 	Assigns house to grid, based on coordinates of random cell. Returns the new 
@@ -38,7 +36,7 @@ def random_assignment_house(grid, house, random_cell):
 
 	print("Performing random assignment of house")
 	
-	# Retrieve coordinates random starting cell (top-left)
+	# Retrieve coordinates of random starting cell (top-left)
 	random_cell_x = random_cell.x_coordinate
 	random_cell_y = random_cell.y_coordinate
 
@@ -50,34 +48,30 @@ def random_assignment_house(grid, house, random_cell):
 	house_cells = define_object_cells(grid, house_coordinates)
 	house_cells_mandatory_free_space = define_object_cells(grid, house_coordinates_mandatory_free_space)
 
-	occupied = False
+	# ONLY ONE FOR-LOOP
+	# ADDED "occupied_by_house()" METHOD TO CELL.PY
 
-	# Check for all cells of possible house location if occupied 
-	for current_cell in house_cells:
-		if current_cell.type != None:
-			occupied = True
+	spot_available = True
 
-	# Check for all cells of possible mandatory free space location if occupied
-	for current_cell in house_cells_mandatory_free_space:
-		if current_cell.type in ['single', 'bungalow', 'maison']:
-			occupied = True
+	# For each cell, check if placing a house would be valid
+	for cell in house_cells_mandatory_free_space:
+		# House cells must be empty, mandatory free space may not overlap with a house
+		if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
+			spot_available = False
 	
-	# If all cells of possible location are still availabe 
-	if occupied == False:
-
-		# Set cells to according house type
-		for current_cell in house_cells:
-			current_cell.type = house.type
-
-		# Set cells to according mandatory free space type
+	# Place house if all cells are still availabe 
+	if spot_available:
 		for current_cell in house_cells_mandatory_free_space:
-			if current_cell.type != house.type:
+			# Set cells occupied by house to according house type
+			if current_cell in house_cells:
+				current_cell.type = house.type
+			# Mark cells occupied by mandatory free space 
+			elif current_cell.type != house.type:
 				current_cell.type = MandatoryFreeSpace(house)
 
-		# Save coordinates
+		# Save house coordinates
 		house.coordinates = house_coordinates
 		house.min_free_coordinates = house_coordinates_mandatory_free_space
-
 	else:
 		raise ValueError("Location of house unavailable.")
 
@@ -115,7 +109,6 @@ def set_house_coordinates(house, random_cell_x, random_cell_y):
 		}
 	
 	return house_coordinates
-
 
 def set_house_coordinates_mandatory_free_space(house, house_coordinates):
 	"""

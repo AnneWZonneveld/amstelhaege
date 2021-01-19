@@ -10,4 +10,14 @@ class Cell():
 		Make sure that the object is printed properly if it is in a list/dict.
 		"""
 		return f" ({self.x_coordinate}, {self.y_coordinate}: {self.type})"
+	
+	def occupied_by_house(self):
+		"""
+		Designates cells on which any type of apartment is placed as occupied 
+		by a house.
+		"""
+		if self.type in ['maison', 'bungalow', 'single']:
+			return True
+		else:
+			return False
         

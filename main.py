@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
 
 	# Create grid
-    test_grid = grid.Grid(20, "data/wijken/wijk_3.csv")
+    test_grid = grid.Grid(40, "data/wijken/wijk_3.csv")
     # print(test_grid.load_houses(20))
     # print(test_grid.load_water())
     
