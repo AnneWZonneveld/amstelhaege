@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import numpy as np
 import os
+from IPython import embed;
+
 
 def visualize(grid):
     """
@@ -9,7 +11,7 @@ def visualize(grid):
     a given grid object.
     """
 
-    # Create diagram representing a map of Amstelhaege
+    # Create diagram of size of map
     plt.axis([0, grid.width, grid.depth, 0])
     plt.xlabel("Width")
     plt.ylabel("Depth")
@@ -31,14 +33,13 @@ def visualize(grid):
     # Create representation of water
     water_coord = grid.load_water()
     water = draw_water(water_coord)
-    objects.extend(water)
 
     # Create representation of houses
     houses_coord = grid.all_houses.values()
     houses = draw_houses(houses_coord)
-    objects.extend(houses)
 
     # Add water and houses to diagram
+    objects.extend(water + houses)
     representations = PatchCollection(objects, match_original=True)
     ax.add_collection(representations)
 
@@ -72,26 +73,29 @@ def draw_houses(houses_coord):
     houses = []
     
     for house in houses_coord:
-        # Load house coordinates without free space
-        bottom_left = house.coordinates['bottom_left']
-        width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
-        height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
 
-        # Load house coordinates with free space
-        free_space_bottom_left = house.min_free_coordinates['bottom_left']
-        free_space_width = house.min_free_coordinates['bottom_right'][0] - house.min_free_coordinates['bottom_left'][0]
-        free_space_height = house.min_free_coordinates['top_right'][1] - house.min_free_coordinates['bottom_right'][1]
-        
-        # Represent each type of house with a different color
-        if house.type == "single":
-            color = "r"
-        elif house.type == "bungalow":
-            color = "y"
-        else:
-            color = "g"
-        
-        house = plt.Rectangle(bottom_left, width, height, fc=color)
-        free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc=color, alpha=0.3)
-        houses.extend((house, free_space))
+        if house.placed == True:
+            
+            # Load house coordinates without free space
+            bottom_left = house.coordinates['bottom_left']
+            width = house.coordinates['bottom_right'][0] - house.coordinates['bottom_left'][0]
+            height = house.coordinates['top_right'][1] - house.coordinates['bottom_right'][1]
+
+            # Load house coordinates with free space
+            free_space_bottom_left = house.min_free_coordinates['bottom_left']
+            free_space_width = house.min_free_coordinates['bottom_right'][0] - house.min_free_coordinates['bottom_left'][0]
+            free_space_height = house.min_free_coordinates['top_right'][1] - house.min_free_coordinates['bottom_right'][1]
+            
+            # Represent each type of house with a different color
+            if house.type == "single":
+                color = "r"
+            elif house.type == "bungalow":
+                color = "y"
+            else:
+                color = "g"
+            
+            house = plt.Rectangle(bottom_left, width, height, fc=color)
+            free_space = plt.Rectangle(free_space_bottom_left, free_space_width, free_space_height, fc=color, alpha=0.3)
+            houses.extend((house, free_space))
     
     return houses

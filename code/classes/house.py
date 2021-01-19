@@ -1,3 +1,5 @@
+from code.algorithms import randomize as rz
+
 class House():
 	def __init__(self, type, id):
 		self.type = type
@@ -27,6 +29,46 @@ class House():
 			self.price = 610000
 			self.min_free = 6
 			self.percentage = 0.06
+
+	def calc_house_coordinates(self, cell_x, cell_y, rotation):
+		"""
+		Returns a dictionary of house coordinates (excluding mandatory free space).
+		"""
+
+		# Pick random rotation
+		if rotation == "random":
+			rotation = rz.random_rotation_choice()
+
+		# Assign according width and depth
+		if rotation == "horizontal":
+			width = self.width
+			depth = self.depth
+		else:
+			width = self.depth
+			depth = self.width
+
+		house_coordinates = {
+			'bottom_left': (cell_x, cell_y + depth), 
+			'bottom_right': (cell_x + width, cell_y + depth), 
+			'top_left': (cell_x, cell_y),
+			'top_right': (cell_x + width, cell_y)
+			}
+		
+		return house_coordinates
+
+	def calc_mandatory_free_space_coordinates(self, house_coordinates):
+		"""
+		Returns a dictionary of house coordinates (including mandatory free space).
+		"""
+
+		coordinates_mandatory_free_space = {
+			'bottom_left': (house_coordinates['bottom_left'][0] - self.min_free, house_coordinates['bottom_left'][1] + self.min_free), 
+			'bottom_right': (house_coordinates['bottom_right'][0] + self.min_free, house_coordinates['bottom_right'][1] + self.min_free), 
+			'top_left': (house_coordinates['top_left'][0] - self.min_free, house_coordinates['top_left'][1] - self.min_free),
+			'top_right': (house_coordinates['top_right'][0] + self.min_free, house_coordinates['top_right'][1] - self.min_free)
+			}
+
+		return coordinates_mandatory_free_space
 
 	def __repr__(self):
 		"""
