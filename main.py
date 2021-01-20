@@ -30,13 +30,13 @@ if __name__ == "__main__":
 	# greedy.run()
 
 	# # Value of grid 
-	# print(f"Value greedy config: {greedy.graph.value}")
+	# print(f"Value greedy config: {greedy.value}")
 
 	# # Visualize case
-	# vis.visualize(greedy.graph)
+	# vis.visualize(greedy.grid)
 
 	# # Create csv output file
-	# greedy.graph.create_output()
+	# greedy.grid.create_output()
 
 
 
