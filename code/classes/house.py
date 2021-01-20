@@ -10,6 +10,7 @@ class House():
 		# self.extra_free_cells = []
 		self.extra_free = 0
 		self.placed = False
+		self.rotation =  None
 
 		if self.type == "single":
 			self.width = 8
@@ -41,9 +42,11 @@ class House():
 
 		# Assign according width and depth
 		if rotation == "horizontal":
+			self.rotation = "horizontal"
 			width = self.width
 			depth = self.depth
 		else:
+			self.rotation = "vertical"
 			width = self.depth
 			depth = self.width
 
