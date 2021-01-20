@@ -10,8 +10,8 @@ from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 180
-        self.depth = 160
+        self.width = 18
+        self.depth = 16
         self.quantity = quantity
         self.water = source_file
         self.all_houses = self.load_houses()
@@ -22,22 +22,19 @@ class Grid():
         self.man_free_coordinates = []
         self.value = 0   
 
-
-    def load_grid(self):
+    def load_empty_coordinates(self):
         """
-        Creates and returns a 2D array filled with cells. Each cell represents
-        one square meter on the map and is associated with coordinates that
-        point to its unique position in the grid.
+        Returns a list with all coordinates that make up the map
+        of Amstelhaege.
         """
         
-        grid = np.array([])
-        for y in range(self.depth + 1 ):
-            for x in range(self.width + 1):
-                cell = Cell(x, y)
-                grid = np.append(grid, cell)
-        grid = np.resize(grid,(self.depth + 1, self.width + 1))
+        empty_coordinates = []
 
-        return grid 
+        for x in range(self.width + 1 ):
+            for y in range(self.depth + 1):
+                empty_coordinates.append((x,y))
+
+        return empty_coordinates 
 
     def load_houses(self):
         """
