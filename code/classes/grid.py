@@ -16,7 +16,7 @@ class Grid():
         self.all_houses = self.load_houses()
         self.all_water = self.load_water()
         self.empty_coordinates = self.load_empty_coordinates()
-        self.water_coordinates = []
+        self.water_coordinates = self.load_water_coordinates()
         self.house_coordinates = []
         self.man_free_coordinates = []
         self.value = 0   
@@ -29,14 +29,13 @@ class Grid():
         point to its unique position in the grid.
         """
         
-        grid = np.array([])
+        all_coordinates = []
         for y in range(self.depth + 1 ):
             for x in range(self.width + 1):
-                cell = Cell(x, y)
-                grid = np.append(grid, cell)
-        grid = np.resize(grid,(self.depth + 1, self.width + 1))
-
-        return grid 
+                coordinates = (x, y)
+                all_coordinates = np.append(grid, cell)
+        
+        return all_coordinates
 
     def load_houses(self):
         """

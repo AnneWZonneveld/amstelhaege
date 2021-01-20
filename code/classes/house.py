@@ -4,10 +4,10 @@ class House():
 	def __init__(self, type, id):
 		self.type = type
 		self.id = id
-		self.coordinates = None
-		self.min_free_coordinates = None
-		self.min_free_cells = []
-		self.extra_free_cells = []
+		self.outer_house_coordinates = None
+		self.outer_man_free_coordinates = None
+		self.house_coordinates =[]
+		self.man_free_coordinates = []
 		self.extra_free = 0
 		self.placed = False
 
@@ -30,7 +30,7 @@ class House():
 			self.min_free = 6
 			self.percentage = 0.06
 
-	def calc_house_coordinates(self, cell_x, cell_y, rotation):
+	def calc_house_coordinates(self, coordinates, rotation):
 		"""
 		Returns a dictionary of house coordinates (excluding mandatory free space).
 		"""
@@ -46,6 +46,9 @@ class House():
 		else:
 			width = self.depth
 			depth = self.width
+
+		cell_x = coordinates[0]
+		cell_y = coordinates[1]
 
 		house_coordinates = {
 			'bottom_left': (cell_x, cell_y + depth), 
@@ -69,6 +72,36 @@ class House():
 			}
 
 		return coordinates_mandatory_free_space
+
+	def valid_location(self, grid):
+
+		valid = True
+
+		# Check if coordinates fall within grid 
+		for coordinate in self.outer_man_free_coordinates.values():
+			if (coordinate[0] > grid.width or coordinate[0] < 0) or :
+				valid = False
+				return valid
+			elif coordinate[1] > grid.depth or coordinates[1] < 0:
+				valid = False
+				return valid 
+
+		# Retrieve all coordinates of house
+		house_coordinates = grid.define_object_cells(house.outer_house_coordinates) #lijkt omslachting
+		# man_free_coordinates = grid.define_object_cells(house.outer_man_free_coordinates) 
+
+		# # Save retrieved coordinates
+		# self.house_coordinates = house_coordinates
+		# self.man_free_coordinates = man_free_coordinates
+
+		# Check for every house coordinate if not water or other house
+		for coordinate in house_coordinates:
+			if coordinate in grid.water_coordinates or grid.house_coordinates:
+				valid = False
+				return valid
+
+		return valid
+
 
 	def __repr__(self):
 		"""

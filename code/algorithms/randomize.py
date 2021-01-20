@@ -4,14 +4,14 @@ import copy
 from IPython import embed
 
 
-def random_empty_cell(grid, house):
+def random_empty_cell(grid):
 	"""
 	Returns a random empty cell from grid.
 	"""
 
 	print("Performing picking empty cell")
 
-	random_cell = random.choice(grid.define_empty_cells(house))
+	random_cell = random.choice(grid.empty_coordinates)
 	return random_cell
 
 
@@ -36,21 +36,21 @@ def random_assignment(grid):
 	houses = copy_grid.all_houses
 	
 	# Try to place all houses on grid at valid location, from large to small (heuristic)
-	all_houses = copy_grid.list_all_houses()
-	for house in reversed(all_houses):
+	for house in reversed(houses):
 		# embed()
 
 		print(f"Trying to place: {house}")
 
 		while house.placed == False:
-			try:
-				random_cell = random_empty_cell(copy_grid, house)
-				copy_grid.assignment_house(house, random_cell, rotation = "random")
-				house.placed = True
+				random_cell = random_empty_cell(copy_grid)
+				house.outer_coordinates = house.calc_house_coordinates()
+				house.outer_man_free_coordinates = house.calc_man_free_coordinates()
 
-			except:
-				print("Error")
-				pass
+				if house.valid_location(copy_grid):
+					
+					# if true -- >assign coordinates
+					copy_grid.assignment_house(house, random_cell, rotation = "random")
+					house.placed = True
 
 	print("All houses placed succesfully")
 
