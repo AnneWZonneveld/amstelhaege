@@ -6,8 +6,8 @@ class House():
 		self.id = id
 		self.coordinates = None
 		self.min_free_coordinates = None
-		# self.min_free_cells = []
-		# self.extra_free_cells = []
+		self.min_free_cells = []
+		self.extra_free_cells = []
 		self.extra_free = 0
 		self.placed = False
 		self.rotation =  None

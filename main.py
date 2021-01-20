@@ -16,7 +16,7 @@ if __name__ == "__main__":
 	random_config = rz.random_assignment(test_grid)
 	random_config.calculate_worth()
 
-	# Value of grid
+	Value of grid
 	print(f"Value random config: {random_config.value}")
 
 	# Visualize case
@@ -30,10 +30,10 @@ if __name__ == "__main__":
 	# greedy.run()
 
 	# # Value of grid 
-	# print(f"Value greedy config: {greedy.graph.value}")
+	# print(f"Value greedy config: {greedy.value}")
 
 	# # Visualize case
-	# vis.visualize(greedy.graph)
+	# vis.visualize(greedy.grid)
 
 	# # Create csv output file
 	# greedy.graph.create_output()
