@@ -12,7 +12,7 @@ def visualize(grid):
     """
 
     # Create diagram of size of map
-    plt.axis([0, grid.width, grid.depth, 0])
+    plt.plot([0, grid.width, grid.depth, 0])
     plt.xlabel("Width")
     plt.ylabel("Depth")
 
@@ -28,7 +28,6 @@ def visualize(grid):
 
     # Set grid properties
     plt.grid(True)
-    plt.gca().set_aspect("equal")
 
     # Create representation of water
     water_coord = grid.load_water()
