@@ -9,7 +9,7 @@ class HillClimber:
 
 
 	def switch_house(self, grid):
-
+		pass 
 
 
 	def rotate_house(self, grid):
@@ -24,6 +24,10 @@ class HillClimber:
 		- if possible, set original cells to empty and then new cells to House
 		"""
 
+		# succes = False
+
+		# while succes = False
+
 		# Pick random house
 		house = random.choice(grid.all_houses_list)
 		house_x = house.coordinates['top_left'][0]
@@ -36,12 +40,14 @@ class HillClimber:
 		elif house.rotation == "vertical":
 			house_coordinates = house.calc_house_coordinates(house_x, house_y, "horizontal")
 
-		house_coordinates_mandatroy_free = house.calc_mandatory_free_space_coordinates(house_coordinates)
+		house_coordinates_mandatory_free = house.calc_mandatory_free_space_coordinates(house_coordinates)
 
-
-
-		# Determine new coordinates
-
+		# check if house can be placed on these coordinates
+		# if true
+			# place house on these coordinates
+			# succes == True
+		# else
+			# print could not rotate, picking other house
 
 	def mutate_grid(self, grid, hc_type, nr_houses=1): # type: switch or rotation?
 	    """

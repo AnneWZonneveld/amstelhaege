@@ -1,8 +1,7 @@
 from code.classes import grid, house 
 from code.visualization import visualize as vis
 from code.algorithms import randomize as rz
-from code.algorithms import greedy as gr
-
+# from code.algorithms import greedy as gr
 
 if __name__ == "__main__":
 
@@ -36,7 +35,7 @@ if __name__ == "__main__":
 	# vis.visualize(greedy.grid)
 
 	# # Create csv output file
-	# greedy.graph.create_output()
+	# greedy.grid.create_output()
 
 
 
