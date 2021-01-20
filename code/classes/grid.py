@@ -3,6 +3,7 @@ import itertools
 import numpy as np
 from .cell import Cell
 from .house import House
+from .water import Water
 from code.classes.mandatory import MandatoryFreeSpace
 import code.algorithms.randomize as rz
 from IPython import embed;
@@ -16,7 +17,7 @@ class Grid():
         self.all_houses = self.load_houses()
         self.all_water = self.load_water()
         self.empty_coordinates = self.load_empty_coordinates()
-        self.water_coordinates = []
+        self.water_coordinates = self.define_water_coordinates()
         self.house_coordinates = []
         self.man_free_coordinates = []
         self.value = 0   
@@ -74,16 +75,17 @@ class Grid():
 
     def load_water(self):
         """
-        Returns a dictionary that maps the water surface(s) on a given map to
-        coordinates.
+        Creates water objects with their corresponding coordinates. Returns a 
+        list of water objects.
         """
 
+        # List of water objects
+        all_water = []
+
         # Load coordinates of water surface(s) from source file
-        with open(self.map, 'r') as in_file:
+        with open(self.water, 'r') as in_file:
             # Skip header
             next(in_file)
-
-            water = {}
 
             while True:
                 # For each row, create list of all items
@@ -93,13 +95,51 @@ class Grid():
                 items = row.split(",")
                 strip_items = [item.strip("\"") for item in items]
 
+                # Create a new water object
+                water = Water()
+
                 # Save water coordinates in dict
-                water[strip_items[0]] = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
+                water.coordinates = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
                                     'bottom_right': (int(strip_items[3]), int(strip_items[4])),
                                     'top_left': (int(strip_items[1]), int(strip_items[2])),
                                     'top_right': (int(strip_items[3]), int(strip_items[2]))}
 
-        return water
+                # Add water object to list
+                all_water.append(water)    
+
+        return all_water
+
+    def define_object_coordinates(self, coordinates):
+        """
+        Returns a list of coordinates for a specific object.
+        """
+
+        object_coordinates = []
+
+        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+
+                current_coordinate = (column, row)
+                object_coordinates.append(current_coordinate)
+
+        return object_coordinates 
+
+    def define_water_coordinates(self):
+        """
+        Returns a list of all water coordinates.
+        """
+
+        water_coordinates = []
+
+        for water in self.all_water:
+            coordinates = self.define_object_coordinates(water.coordinates)
+
+            for coordinate in coordinates:
+                water_coordinates.append(coordinate)
+                # Remove from list of empty coordinates
+                self.empty_coordinates.remove(coordinate)
+
+        return water_coordinates
 
     def create_water(self):
         """
