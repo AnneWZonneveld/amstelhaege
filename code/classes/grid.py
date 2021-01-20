@@ -11,14 +11,16 @@ class Grid():
     def __init__(self, quantity, source_file):
         self.width = 180
         self.depth = 160
-        self.map = source_file
         self.quantity = quantity
-        self.cells = self.load_grid()
-        self.all_houses = self.load_houses() # misschien alleen list nodig?
-        # self.all_houses_list = rz.list_all_houses(self.all_houses)
-        self.all_houses_list = self.list_all_houses()
+        self.water = source_file
+        self.all_houses = self.load_houses()
+        self.all_water = self.load_water()
+        self.empty_coordinates = self.load_empty_coordinates()
+        self.water_coordinates = []
+        self.house_coordinates = []
+        self.man_free_coordinates = []
         self.value = 0   
-        self.create_water()      
+
 
     def load_grid(self):
         """
@@ -48,7 +50,7 @@ class Grid():
         q_bungalow = int(0.25 * self.quantity)
         q_maison = int(0.15 * self.quantity)
 
-        all_houses = {}
+        all_houses =[]
 
         id_counter = 1
 
@@ -64,22 +66,11 @@ class Grid():
                     house = House("maison", id_counter)
 
                 # Add House to dictionary and adjust id_counter
-                all_houses[id_counter] = house
+                all_houses.append(house)
                 id_counter = id_counter + 1
 
         return all_houses
 
-    def list_all_houses(self):
-        """
-        Returns a list of all houses.
-        """
-
-        houses = []
-        
-        for house in self.all_houses.values():
-            houses.append(house)
-
-        return houses
 
     def load_water(self):
         """
