@@ -15,7 +15,6 @@ class Greedy():
 	def __init__(self, grid):
 		self.grid = grid
 
-
 	def place_first_house(self):
 		""" 
 		Places first house at random location on grid. 
@@ -30,17 +29,17 @@ class Greedy():
 		while first_house.placed == False:
 			try:
 				random_empty_cell = rz.random_empty_cell(copy_grid, first_house)
-				first_house_grid = rz.random_assignment_house(copy_grid, first_house, random_empty_cell)
+				copy_grid.assignment_house(first_house, random_empty_cell)
 				first_house.placed = True
 			except:
 				pass
 
 		print("Placed first house")
-		return first_house_grid
+		return copy_grid
 
 
 	def run(self):
-		# embed()
+		embed()
 
 		# Place first house
 		first_house_grid = self.place_first_house()
@@ -50,7 +49,7 @@ class Greedy():
 		for i in range(0, len(first_house_grid.all_houses_list)):
 
 			# Determine empty cells
-			empty_cells = rz.define_empty_cells(current_grid, current_grid.all_houses_list[i])
+			empty_cells = current_grid.define_empty_cells(current_grid.all_houses_list[i])
 
 			# Keep track of all possible states 
 			possibilities = []
@@ -66,17 +65,17 @@ class Greedy():
 					copy_grid = copy.deepcopy(current_grid)
 
 					# Place house on copy grid
-					grid = rz.random_assignment_house(copy_grid, copy_grid.all_houses_list[i], cell)
-					grid.all_houses_list[i].placed = True
+					copy_grid.assignment_house(copy_grid.all_houses_list[i], cell)
+					copy_grid.all_houses_list[i].placed = True
 
 					# Calculate worth of grid and add to possible states
-					grid.calculate_worth()
-					possibilities.append(grid)
+					copy_grid.calculate_worth()
+					possibilities.append(copy_grid)
 
 				except:
 					print("House could not be placed on this cell")	
 
-			# Determine possible state with highest value --> best_grid list
+			# Determine possible state with highest value --> best_grid
 			highest_value = 0
 			for grid in possibilities:
 				if grid.value > highest_value:
@@ -88,11 +87,3 @@ class Greedy():
 			print(f"Placed {best_grid.all_houses_list[i]}")
 
 		self.grid = current_grid
-
-
-
-
-
-
-
-

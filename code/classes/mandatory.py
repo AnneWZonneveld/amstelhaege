@@ -1,4 +1,4 @@
-from .house import House
+from code.classes.house import House
 
 class MandatoryFreeSpace():
     def __init__(self, house):

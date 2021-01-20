@@ -1,9 +1,11 @@
 import csv
+import itertools
 import numpy as np
 from .cell import Cell
 from .house import House
+from code.classes.mandatory import MandatoryFreeSpace
 import code.algorithms.randomize as rz
-# from IPython import embed;
+from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
@@ -13,7 +15,8 @@ class Grid():
         self.quantity = quantity
         self.cells = self.load_grid()
         self.all_houses = self.load_houses() # misschien alleen list nodig?
-        self.all_houses_list = rz.list_all_houses(self.all_houses)
+        # self.all_houses_list = rz.list_all_houses(self.all_houses)
+        self.all_houses_list = self.list_all_houses()
         self.value = 0   
         self.create_water()      
 
@@ -66,6 +69,18 @@ class Grid():
 
         return all_houses
 
+    def list_all_houses(self):
+        """
+        Returns a list of all houses.
+        """
+
+        houses = []
+        
+        for house in self.all_houses.values():
+            houses.append(house)
+
+        return houses
+
     def load_water(self):
         """
         Returns a dictionary that maps the water surface(s) on a given map to
@@ -108,96 +123,134 @@ class Grid():
                 for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):    
                     self.cells[y][x].type = "Water"
 
+    def define_empty_cells(self, house):
+        """
+        Returns a list of all empty cells on grid, where certain house would fit between 
+        borders of grid.
+        """
+
+        empty_cells = []
+
+        for row in self.cells:
+            for cell in row:
+                if cell.x_coordinate >= house.min_free and cell.y_coordinate >= house.min_free and cell.type == None:
+                    empty_cells.append(cell)
+        
+        return empty_cells
+
+    def define_object_cells(self, coordinates):
+        """
+        Returns a list of cells for a specific object.
+        """
+
+        object_cells = []
+
+        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+
+                current_cell = self.cells[row, column]
+                object_cells.append(current_cell)
+
+        return object_cells
+
+
+    def assignment_house(self, house, cell, rotation="horizontal"):
+        """ 
+        Assigns house to grid, based on coordinates of cell. Returns the new 
+        grid.
+        """
+
+        print("Performing random assignment of house")
+        
+        # Retrieve coordinates random starting cell (top-left)
+        cell_x = cell.x_coordinate
+        cell_y = cell.y_coordinate
+
+        # Set house coordinates (excluding and including mandatory free space)
+        house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
+        house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
+
+        # embed()
+
+        # Define all cells of possible house location (excluding and including mandatory free space)
+        house_cells = self.define_object_cells(house_coordinates)
+        house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
+
+        spot_available = True
+
+        # For each cell, check if placing a house would be valid
+        for cell in house_cells_mandatory_free_space:
+                
+            # House cells must be empty, mandatory free space may not overlap with a house
+            if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
+                spot_available = False
+   
+        # If all cells of possible location are still availabe 
+        if spot_available:   
+
+            for current_cell in house_cells_mandatory_free_space:
+
+                # Set cells occupied by house to according house type
+                if current_cell in house_cells:
+                    current_cell.type = house.type
+
+                # Mark cells occupied by mandatory free space 
+                elif current_cell.type != house.type:  #Of gewoon else?
+                    current_cell.type = MandatoryFreeSpace(house)
+
+            # Save coordinates
+            house.coordinates = house_coordinates
+            house.min_free_coordinates = house_coordinates_mandatory_free_space
+
+            # Save cells
+            house.min_free_cells = house_cells_mandatory_free_space
+
+        else:
+            raise ValueError("Location of house unavailable.")
+
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        shortest_distance = None
+        print(f"Calculating extra free meters for: {house}")
 
-        # Calculate shortest distance for all sides of house
-        for key in house.coordinates:
+        distance_found = False
 
-            # Check for key 
-            if key == "top_right":
+        # i is number of extra free meters, starting from 1
+        for i in itertools.count(start=1):
 
-                # Loop through depth right side of house per meter
-                for row in range(house.coordinates['top_right'][1], house.coordinates['bottom_right'][1] + 1):
+            list_of_cells = []
 
-                    # For every meter, loop from side house to side grid until you find other house
-                    for column in range(house.coordinates['top_right'][0], self.width + 1):
-
-                        # Check if cell is a house or if reached end of grid
-                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or column == self.width:
-
-                            # Calculate distance and check if shortest
-                            distance = column - house.coordinates['top_right'][0]
-                            if shortest_distance == None:
-                                shortest_distance = distance
-                            elif distance < shortest_distance:
-                                shortest_distance = distance
-                            break
-
-            elif key == "bottom_right":
-
-                # Loop through width bottom side of house per meter
-                for column in range(house.coordinates['bottom_left'][0], house.coordinates['bottom_right'][0] + 1):
+            # Save all cells, including i extra free meters in list
+            for row in range((house.min_free_coordinates['top_left'][1] - i), (house.min_free_coordinates['bottom_right'][1] + i)):
+                for column in range((house.min_free_coordinates['top_left'][0] - i), (house.min_free_coordinates['bottom_right'][0] + i)):
                     
-                    # For every meter, loop from bottom house to bottom grid
-                    for row in range(house.coordinates['bottom_right'][1], self.depth + 1):
+                    # Check if cell is within borders of grid
+                    if row >= 0 and row <= 160 and column >= 0 and column <= 180:
+                        current_cell = self.cells[row, column]
+                        list_of_cells.append(current_cell)
+        
+            # Save cells that are extra free meters in list
+            for cell_1 in list_of_cells:
+                if cell_1 not in house.min_free_cells:
+                    house.extra_free_cells.append(cell_1)
 
-                        # Check if cell is a house or if reached end of grid
-                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or row == self.depth:
+            # Check for all cells if it is a house
+            for cell_2 in house.extra_free_cells:
+                if cell_2.type in ["single", "bungalow", "maison"]:
 
-                            # Calculate distance and check if shortest
-                            distance = row - house.coordinates['bottom_right'][1]
-                            if shortest_distance == None:
-                                shortest_distance = distance
-                            elif distance < shortest_distance:
-                                shortest_distance = distance
-                            break 
+                    # Calculate distance
+                    shortest_distance = i - 1
+                    # Set to True, as shortest distance is found
+                    distance_found = True
+                    break
+            
+            if distance_found == True:
+                break
 
-            elif key == "bottom_left":
-
-                # Loop through depth left side of house per meter
-                for row in range(house.coordinates['top_left'][1], house.coordinates['bottom_left'][1] + 1 ):
-                    
-                    # For every meter, loop from side of house to side grid
-                    for column in reversed(range(0, house.coordinates['top_left'][0])):
-
-                        # Check if cell is a house or if reached end of grid
-                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or column == 0:
-
-                            # Calculate distance and check if shortest
-                            distance = house.coordinates['top_left'][0] - column 
-                            if shortest_distance == None:
-                                shortest_distance = distance
-                            elif distance < shortest_distance:
-                                shortest_distance = distance
-                            break
-
-            # Key = top_left
-            else:
-
-                # Loop through width top side of house per meter
-                for column in range(house.coordinates['top_left'][0], house.coordinates['top_right'][0] + 1):
-                    
-                    # For every meter, loop from side of house to side grid
-                    for row in reversed(range(0, house.coordinates['top_left'][1])):
-
-                        # Check if cell is a house or if reached end of grid
-                        if self.cells[row, column].type in ['bungalow', 'single', 'maison'] or row == 0:
-
-                            # Calculate distance and check if shortest
-                            distance = house.coordinates['top_left'][1] - row
-                            if shortest_distance == None:
-                                shortest_distance = distance
-                            elif distance < shortest_distance:
-                                shortest_distance = distance
-                            break 
-
-        # Calculate smallest extra free space
-        house.extra_free = shortest_distance - house.min_free
+        # Assign extra free meters to house
+        house.extra_free = shortest_distance
 
     def calculate_worth(self):
         """
