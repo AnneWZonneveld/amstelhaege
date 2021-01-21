@@ -5,11 +5,17 @@ import copy
 from IPython import embed
 from code.visualization import visualize as vis
 
-        print("Performing picking empty coordinate")
+def random_empty_coordinate(grid):
+	"""
+	Returns a random empty coordinate from grid.
+	"""
 
-        random_coordinate = random.choice(grid.all_empty_coordinates)
-        
-        return random_coordinate
+	print("Performing picking empty coordinate")
+
+	random_coordinate = random.choice(grid.all_empty_coordinates)
+
+	return random_coordinate
+
 
 def random_rotation():
 	"""
@@ -40,8 +46,8 @@ def random_assignment(grid):
 
 		while house.placed == False:
 
-				random_coordinate = random_empty_coordinate(copy_grid)
-				print(f"random cell: {random_coordinate}")
+				random_cell = random_empty_coordinate(copy_grid)
+				print(f"random cell: {random_cell}")
 
 				rotation = random_rotation()
 

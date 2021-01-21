@@ -211,11 +211,11 @@ class Grid():
         print("Performing assignment of house")
 
         # Add coordinates to grid 
-        self.all_house_coordinates.append(house.house_coordinates)
+        self.all_house_coordinates.append(house.coordinates)
         self.all_man_free_coordinates.append(house.man_free_coordinates)
 
         # Remove from empty coordinates
-        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
+        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.coordinates) - set(house.man_free_coordinates))
     
     
     def calculate_extra_free_meters(self, house):
@@ -244,7 +244,7 @@ class Grid():
 
             # Save coordinates that are extra free meters in list
             for coordinate in all_coordinates:
-                if coordinate not in house.house_coordinates and coordinate not in house.man_free_coordinates:
+                if coordinate not in house.coordinates and coordinate not in house.man_free_coordinates:
                     extra_free_coordinates.append(coordinate)
 
             # Check for all extra free coordinates if it is a house
