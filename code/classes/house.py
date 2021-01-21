@@ -7,7 +7,7 @@ class House():
 		self.id = id
 		self.outer_house_coordinates = None
 		self.outer_man_free_coordinates = None
-		self.house_coordinates =[]
+		self.coordinates =[]
 		self.man_free_coordinates = []
 		self.extra_free = 0
 		self.placed = False

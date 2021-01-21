@@ -6,10 +6,11 @@ from code.algorithms import randomize as rz
 if __name__ == "__main__":
 
 	quantity = 20
-	map_source = "data/wijken/wijk_3.csv"
+	map_source = "data/wijken/wijk_2.csv"
 
 	# Create grid from data
 	test_grid = grid.Grid(quantity, map_source)
+	test_grid.define_object_coordinates
 
 	# ----------------------- Randomize algorithm ---------------------------------
 	random_config = rz.random_assignment(test_grid)
