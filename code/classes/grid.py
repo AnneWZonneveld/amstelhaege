@@ -10,8 +10,8 @@ from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 18
-        self.depth = 16
+        self.width = 180
+        self.depth = 160
         self.quantity = quantity
         self.water = source_file
         self.all_houses = self.load_houses()
@@ -37,12 +37,10 @@ class Grid():
 
         return empty_coordinates 
 
-
     def load_houses(self):
         """
-        Creates the specified quantity of houses with a fixed share of single
-        houses (60%), bungalows (25%) and maisons (15%). Returns a dictionary
-        that maps each house and its type to an ID.
+        Returns a list of house objects based on the specified quantity with a
+        fixed share of single houses (60%), bungalows (25%) and maisons (15%). 
         """
         
         # Determine quantity for each house type based on total quantity
@@ -50,42 +48,40 @@ class Grid():
         q_bungalow = int(0.25 * self.quantity)
         q_maison = int(0.15 * self.quantity)
 
-        all_houses =[]
-
+        all_houses = []
         id_counter = 1
 
         # Create correct quantiy of houses
         for q_type in [q_single, q_bungalow, q_maison]:
-            for h in range(int(q_type)):
+            for house in range(int(q_type)):
                 # Assign each House instance according type
                 if q_type == q_single:
-                    house = House("single", id_counter) 
+                    new_house = House("single", id_counter) 
                 elif q_type == q_bungalow:
-                    house = House("bungalow", id_counter)
+                    new_house = House("bungalow", id_counter)
                 else:
-                    house = House("maison", id_counter)
+                    new_house = House("maison", id_counter)
 
                 # Add House to dictionary and adjust id_counter
-                all_houses.append(house)
+                all_houses.append(new_house)
                 id_counter = id_counter + 1
 
         return all_houses
 
-
     def load_water(self):
         """
-        Creates water objects with their corresponding coordinates. Returns a 
-        list of water objects.
+        Creates a Water object for each water surface and sets its
+        coordinates based on source file. Returns a list of all
+        Water objects.
         """
 
-        # List of water objects
         all_water = []
 
         # Load coordinates of water surface(s) from source file
         with open(self.water, 'r') as in_file:
             # Skip header
             next(in_file)
-
+        
             while True:
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
@@ -96,16 +92,16 @@ class Grid():
 
                 # Create a new water object
                 water = Water()
-
+            
                 # Save water coordinates in dict
                 water.coordinates = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
                                     'bottom_right': (int(strip_items[3]), int(strip_items[4])),
                                     'top_left': (int(strip_items[1]), int(strip_items[2])),
                                     'top_right': (int(strip_items[3]), int(strip_items[2]))}
-
+        
                 # Add water object to list
-                all_water.append(water)    
-
+                all_water.append(water)   
+        
         return all_water
 
     def define_object_coordinates(self, coordinates):
@@ -139,50 +135,6 @@ class Grid():
                 self.empty_coordinates.remove(coordinate)
 
         return water_coordinates
-
-    def create_water(self):
-        """
-        Assigns cells that overlap with the water surface(s) into type 'Water'.
-        """
-
-        all_water = self.load_water()
-
-        # For each cell that ovelaps with water, update cell type to "Water"       
-        for water in all_water:
-            for y in range(int(all_water[water]['top_left'][1]), int(all_water[water]['bottom_right'][1]) + 1):
-                for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):    
-                    self.cells[y][x].type = "Water"
-
-    def define_empty_cells(self, house):
-        """
-        Returns a list of all empty cells on grid, where certain house would fit between 
-        borders of grid.
-        """
-
-        empty_cells = []
-
-        for row in self.cells:
-            for cell in row:
-                if cell.x_coordinate >= house.min_free and cell.y_coordinate >= house.min_free and cell.type == None:
-                    empty_cells.append(cell)
-        
-        return empty_cells
-
-    def define_object_cells(self, coordinates):
-        """
-        Returns a list of cells for a specific object.
-        """
-
-        object_cells = []
-
-        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
-
-                current_cell = self.cells[row, column]
-                object_cells.append(current_cell)
-
-        return object_cells
-
 
     def assignment_house(self, house, cell, rotation="horizontal"):
         """ 

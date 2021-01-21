@@ -79,7 +79,7 @@ class House():
 
 		# Check if coordinates fall within grid 
 		for coordinate in self.outer_man_free_coordinates.values():
-			if (coordinate[0] > grid.width or coordinate[0] < 0) or :
+			if (coordinate[0] > grid.width or coordinate[0] < 0):
 				valid = False
 				return valid
 			elif coordinate[1] > grid.depth or coordinates[1] < 0:
