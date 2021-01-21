@@ -52,21 +52,27 @@ class Greedy():
 		# Place first house
 		copy_grid = self.place_first_house()
 
-		value = copy_grid.calculate_worth()
+		highest_value = copy_grid.calculate_worth()
 
 		# For each house, find location that adds most value to map
 		for house in copy_grid.all_houses:
-			for position in copy_grid.empty_coordinates:
-				# Preliminary placement of house
-				copy_grid.assignment_house(house, position)
-				
-				# Save configuration if valid and value exceeds all previous ones
-				if house.valid_location(copy_grid) and copy_grid.calculate_worth() > value:
-					value = copy_grid.calculate_worth()
-					greedy_solution = copy_grid
-				elif house.valid_location(copy_grid):
-					copy_grid.undo_assignment(house)
-		
-		return greedy_solution
+			for starting_coordinate in copy_grid.empty_coordinates:
 
-# PERFORM VALID_LOCATION CHECK IN ASSIGNMENT_HOUSE?
+				# HOW TO ADDRESS ROTATION?
+				rotation = random_rotation()
+
+				# Define potential coordinates based on starting coordinate
+				house.outer_house_coordinates = house.calc_house_coordinates(starting_coordinate, rotation)
+				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
+
+				if house.valid_location(copy_grid) and copy_grid.calculate_worth() > highest_value:
+					print("Update greedy house and highest value")
+					# Save house with (preliminary) best coordinates
+					greedy_house = house 
+					highest_value = copy_grid.calculate_worth()
+			
+			# Place house that 
+			copy_grid.assignment_house(greedy_house)
+			greedy_house.placed = True
+		
+		return copy_grid
