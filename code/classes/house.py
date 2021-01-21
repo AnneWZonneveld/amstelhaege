@@ -85,7 +85,7 @@ class House():
 			if coordinate[0] > grid.width or coordinate[0] < 0:
 				valid = False
 				return valid
-			if coordinate[1] > grid.depth or coordinate[1] < 0:
+			elif coordinate[1] > grid.depth or coordinate[1] < 0:
 				valid = False
 				return valid 
 
@@ -97,11 +97,13 @@ class House():
 		self.house_coordinates = house_coordinates
 		self.man_free_coordinates = man_free_coordinates
 
+		not_available = [grid.all_water_coordinates, grid.all_house_coordinates, grid.all_man_free_coordinates]
+
 		# Check for every house coordinate if not water or other house
 		for coordinate in house_coordinates:
-			if coordinate in grid.all_water_coordinates or grid.all_house_coordinates or grid.all_man_free_coordinates: 
+
+			if any(coordinate in sublist for sublist in not_available):
 				valid = False
-				return valid
 
 		return valid
 

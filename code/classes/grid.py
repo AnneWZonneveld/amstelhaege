@@ -136,7 +136,8 @@ class Grid():
 
         return water_coordinates
 
-    #def assignment_house(self, house, cell, rotation="horizontal"):
+
+    # def assignment_house(self, house, cell, rotation="horizontal"):
         """ 
         Places house on map and returns new map.
         """
@@ -205,6 +206,7 @@ class Grid():
         Assigns house to grid, based on coordinates of cell. Returns the new 
         grid.
         """
+
         # embed()
         print("Performing assignment of house")
 
@@ -247,7 +249,7 @@ class Grid():
 
             # Check for all extra free coordinates if it is a house
             for coordinate in extra_free_coordinates:
-                if coordinate in self.house_coordinates:
+                if coordinate in self.all_house_coordinates:
 
                     # Calculate distance
                     shortest_distance = i - 1
