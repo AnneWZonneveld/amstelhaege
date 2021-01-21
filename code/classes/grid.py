@@ -142,42 +142,11 @@ class Grid():
         return water_coordinates
 
 
-    def define_empty_cells(self, house):
+    def assignment_house(self, house, cell, rotation="horizontal"):
+        """ 
+        Assigns house to grid, based on coordinates of cell. Returns the new 
+        grid.
         """
-        Returns a list of all empty cells on grid, where certain house would fit between 
-        borders of grid.
-        """
-
-        empty_cells = []
-
-        for row in self.cells:
-            for cell in row:
-                if cell.x_coordinate >= house.min_free and cell.y_coordinate >= house.min_free and cell.type == None:
-                    empty_cells.append(cell)
-        
-        return empty_cells
-
-    def define_object_cells(self, coordinates):
-        """
-        Returns a list of cells for a specific object.
-        """
-
-        object_cells = []
-
-        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
-
-                current_cell = self.cells[row, column]
-                object_cells.append(current_cell)
-
-        return object_cells
-
-
-    # def assignment_house(self, house, cell, rotation="horizontal"):
-    #     """ 
-    #     Assigns house to grid, based on coordinates of cell. Returns the new 
-    #     grid.
-    #     """
 
     #     print("Performing random assignment of house")
         
@@ -255,25 +224,26 @@ class Grid():
         # i is number of extra free meters, starting from 1
         for i in itertools.count(start=1):
 
-            list_of_cells = []
+            all_coordinates = []
+            extra_free_coordinates = []
 
-            # Save all cells, including i extra free meters in list
-            for row in range((house.min_free_coordinates['top_left'][1] - i), (house.min_free_coordinates['bottom_right'][1] + i)):
-                for column in range((house.min_free_coordinates['top_left'][0] - i), (house.min_free_coordinates['bottom_right'][0] + i)):
+            # Loop through all house coordinates including mandatory free space and i extra free space
+            for row in range((house.outer_man_free_coordinates['top_left'][0] - i), (house.outer_man_free_coordinates['bottom_right'][0] + i)):
+                for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
                     
-                    # Check if cell is within borders of grid
-                    if row >= 0 and row <= 160 and column >= 0 and column <= 180:
-                        current_cell = self.cells[row, column]
-                        list_of_cells.append(current_cell)
-        
-            # Save cells that are extra free meters in list
-            for cell_1 in list_of_cells:
-                if cell_1 not in house.min_free_cells:
-                    house.extra_free_cells.append(cell_1)
+                    # Check if coordinates are within borders of grid
+                    if row >= 0 and row <= 180 and column >= 0 and column <= 160:
+                        current_coordinate = (row, column)
+                        all_coordinates.append(current_coordinate)
 
-            # Check for all cells if it is a house
-            for cell_2 in house.extra_free_cells:
-                if cell_2.type in ["single", "bungalow", "maison"]:
+            # Save coordinates that are extra free meters in list
+            for coordinate in all_coordinates:
+                if coordinate not in house.house_coordinates and coordinate not in house.man_free_coordinates:
+                    extra_free_coordinates.append(coordinate)
+
+            # Check for all extra free coordinates if it is a house
+            for coordinate in extra_free_coordinates:
+                if coordinate in self.house_coordinates:
 
                     # Calculate distance
                     shortest_distance = i - 1
@@ -296,7 +266,7 @@ class Grid():
         total_networth = 0
 
         # Calculate worth of each house placed on the map
-        for house in self.all_houses.values():
+        for house in self.all_houses:
             if house.placed == True:
 
                 # Net worth of house
@@ -311,10 +281,9 @@ class Grid():
 
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
-            # else:
-            #     raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
 
-        self.value = total_networth
+        # # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
+        # self.value = total_networth
 
         return total_networth
 
