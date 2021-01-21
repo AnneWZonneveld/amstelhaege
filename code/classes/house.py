@@ -7,7 +7,7 @@ class House():
 		self.id = id
 		self.outer_house_coordinates = None
 		self.outer_man_free_coordinates = None
-		self.coordinates =[]
+		self.house_coordinates =[]
 		self.man_free_coordinates = []
 		self.extra_free = 0
 		self.placed = False
@@ -31,7 +31,12 @@ class House():
 			self.min_free = 6
 			self.percentage = 0.06
 
-	def calc_house_coordinates(self, coordinates, rotation):
+	def calc_all_coordinates(self, coordinates, rotation):
+		self.outer_house_coordinates = self.calc_house_coordinates(random_cell, rotation)
+		self.outer_man_free_coordinates = calc_man_free_coordinates(self.outer_house_coordinates)
+
+
+	def calc_house_coordinates(self, cell_coordinates, rotation):
 		"""
 		Returns a dictionary of house coordinates (excluding mandatory free space).
 		"""
@@ -42,14 +47,16 @@ class House():
 
 		# Assign according width and depth
 		if rotation == "horizontal":
+			self.rotation = 'horizontal'
 			width = self.width
 			depth = self.depth
 		else:
+			self.rotation = 'vertical'
 			width = self.depth
 			depth = self.width
 
-		cell_x = coordinates[0]
-		cell_y = coordinates[1]
+		cell_x = cell_coordinates[0]
+		cell_y = cell_coordinates[1]
 
 		house_coordinates = {
 			'bottom_left': (cell_x, cell_y + depth), 
@@ -97,6 +104,7 @@ class House():
 		self.house_coordinates = house_coordinates
 		self.man_free_coordinates = man_free_coordinates
 
+		# Location of water, house or man free space other hous unavailable to place house
 		not_available = [grid.all_water_coordinates, grid.all_house_coordinates, grid.all_man_free_coordinates]
 
 		# Check for every house coordinate if not water or other house
