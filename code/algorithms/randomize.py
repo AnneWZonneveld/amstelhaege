@@ -11,11 +11,11 @@ def random_empty_cell(grid):
 
 	print("Performing picking empty cell")
 
-	random_cell = random.choice(grid.empty_coordinates)
+	random_cell = random.choice(grid.all_empty_coordinates)
 	return random_cell
 
 
-def random_rotation_choice():
+def random_rotation():
 	"""
 	Returns a random rotation.
 	"""
@@ -37,20 +37,30 @@ def random_assignment(grid):
 	
 	# Try to place all houses on grid at valid location, from large to small (heuristic)
 	for house in reversed(houses):
-		# embed()
+		
+		embed()
 
 		print(f"Trying to place: {house}")
 
 		while house.placed == False:
+
 				random_cell = random_empty_cell(copy_grid)
-				house.outer_coordinates = house.calc_house_coordinates()
-				house.outer_man_free_coordinates = house.calc_man_free_coordinates()
+				print(f"random cell: {random_cell}")
+
+				rotation = random_rotation()
+
+				# Samenvoegen tot 1 functie die ook rotatie parameter heeft? returnt dictionary 
+				house.outer_house_coordinates = house.calc_house_coordinates(random_cell, rotation)
+				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
 
 				if house.valid_location(copy_grid):
-					
-					# if true -- >assign coordinates
-					copy_grid.assignment_house(house, random_cell, rotation = "random")
+					print("Valid location")
+
+					#Assign house to grid
+					copy_grid.assignment_house(house)
 					house.placed = True
+				else:
+					print("Invalid location, retry")
 
 	print("All houses placed succesfully")
 
