@@ -211,8 +211,11 @@ class Grid():
         print("Performing assignment of house")
 
         # Add coordinates to grid 
-        self.all_house_coordinates.append(house.coordinates)
-        self.all_man_free_coordinates.append(house.man_free_coordinates)
+        for coordinate in house.house_coordinates:
+            self.all_house_coordinates.append(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_man_free_coordinates.append(coordinate)
 
         # Remove from empty coordinates
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.coordinates) - set(house.man_free_coordinates))
@@ -229,7 +232,6 @@ class Grid():
 
         # i is number of extra free meters, starting from 1
         for i in itertools.count(start=1):
-
             all_coordinates = []
             extra_free_coordinates = []
 
@@ -241,7 +243,7 @@ class Grid():
                     if row >= 0 and row <= 180 and column >= 0 and column <= 160:
                         current_coordinate = (row, column)
                         all_coordinates.append(current_coordinate)
-
+            
             # Save coordinates that are extra free meters in list
             for coordinate in all_coordinates:
                 if coordinate not in house.coordinates and coordinate not in house.man_free_coordinates:
@@ -250,7 +252,6 @@ class Grid():
             # Check for all extra free coordinates if it is a house
             for coordinate in extra_free_coordinates:
                 if coordinate in self.all_house_coordinates:
-
                     # Calculate distance
                     shortest_distance = i - 1
                     # Set to True, as shortest distance is found

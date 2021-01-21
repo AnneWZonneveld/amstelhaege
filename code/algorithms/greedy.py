@@ -62,12 +62,7 @@ class Greedy():
 
 		# For each house, find location that adds most value to map
 		for house in copy_grid.all_houses:
-			print(house)
-			counter = 0
 			for starting_coordinate in copy_grid.all_empty_coordinates:
-				print(starting_coordinate)
-				counter += 1
-				print(counter)
 				rotation = rz.random_rotation()
 
 				# Define potential coordinates based on starting coordinate
@@ -80,7 +75,6 @@ class Greedy():
 					highest_value = copy_grid.calculate_worth()
 			
 			# Place house that 
-			print("Made it outside inner for loop")
 			copy_grid.assignment_house(greedy_house)
 			greedy_house.placed = True
 		
