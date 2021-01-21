@@ -80,8 +80,11 @@ class Grid():
         with open(self.water, 'r') as in_file:
             # Skip header
             next(in_file)
-        
+
+            id_counter = 1
+
             while True:
+
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
                 if row == "":
@@ -91,7 +94,9 @@ class Grid():
 
                 # Create a new water object
                 water = Water()
-            
+
+                water.id = id_counter
+
                 # Save water coordinates in dict
                 water.coordinates = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
                                     'bottom_right': (int(strip_items[3]), int(strip_items[4])),
@@ -100,6 +105,8 @@ class Grid():
         
                 # Add water object to list
                 all_water.append(water)   
+
+                id_counter += 1
         
         return all_water
 
@@ -306,19 +313,23 @@ class Grid():
             fieldnames =["structure", "corner_1 (bottom_left)", "corner_2 (bottom_right)", "corner_3 (top_left)", "corner_4 (top_right)", "type"]
             writer.writerow(fieldnames)
 
-            # Load water coordinates from correct map
-            water = self.load_water()
-
             # Add location of water to csv file
-            for ident, coordinates in water.items():
-                water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
+            for water_object in self.load_water():
+                bottom_left = water_object.coordinates['bottom_left']
+                bottom_right = water_object.coordinates['bottom_right']
+                top_left = water_object.coordinates['top_left']
+                top_right = water_object.coordinates['top_left']
+                water_list = [water_object, bottom_left, bottom_right, top_left, top_right, "WATER"]
                 writer.writerow(water_list)
             
-            # Add location of houses to csv file
-            for house in self.all_houses.values():
-                house_list = f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()
+            for house in self.all_houses:
+                bottom_left = house.outer_house_coordinates['bottom_left']
+                bottom_right = house.outer_house_coordinates['bottom_right']
+                top_left = house.outer_house_coordinates['top_left']
+                top_right = house.outer_house_coordinates['top_left']
+                house_list = [f"{house.type}_{house.id}", bottom_left, bottom_right, top_left, top_right, house.type.upper()]
                 writer.writerow(house_list)
-            
+
             # Add total networth of map to csv file
             networth = self.calculate_worth()
             writer.writerow(["networth", networth])
