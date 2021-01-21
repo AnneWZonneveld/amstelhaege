@@ -76,7 +76,7 @@ class House():
 
 	def valid_location(self, grid):
 
-		embed()
+		# embed()
 
 		valid = True
 

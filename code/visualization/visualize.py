@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import numpy as np
 import os
-from IPython import embed;
+# from IPython import embed;
 
 
 def visualize(grid):

@@ -1,10 +1,10 @@
 import random
 import copy
 
-from IPython import embed
+# from IPython import embed
 
 
-def random_empty_cell(grid):
+def random_empty_coordinate(grid):
 	"""
 	Returns a random empty cell from grid.
 	"""
@@ -38,7 +38,7 @@ def random_assignment(grid):
 	# Try to place all houses on grid at valid location, from large to small (heuristic)
 	for house in reversed(houses):
 		
-		embed()
+		# embed()
 
 		print(f"Trying to place: {house}")
 

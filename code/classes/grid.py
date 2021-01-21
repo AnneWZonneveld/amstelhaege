@@ -1,12 +1,11 @@
 import csv
 import itertools
 import numpy as np
-from .cell import Cell
 from .house import House
 from .water import Water
 from code.classes.mandatory import MandatoryFreeSpace
 import code.algorithms.randomize as rz
-from IPython import embed;
+# from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
@@ -137,11 +136,7 @@ class Grid():
 
         return water_coordinates
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 137c9116c8be73ee927cac41dc03ef36adaf4332
-    def assignment_house(self, house, cell, rotation="horizontal"):
+    #def assignment_house(self, house, cell, rotation="horizontal"):
         """ 
         Places house on map and returns new map.
         """
@@ -193,6 +188,17 @@ class Grid():
 
     #     else:
     #         raise ValueError("Location of house unavailable.")
+
+    def random_empty_coordinate(self):
+        """
+        Returns a random empty coordinate from grid.
+        """
+
+        print("Performing picking empty coordinate")
+
+        random_coordinate = random.choice(self.all_empty_coordinates)
+        
+        return random_coordinate
 
     def undo_assignment_house(self, house):
         """
