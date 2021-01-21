@@ -16,10 +16,10 @@ class Grid():
         self.water = source_file
         self.all_houses = self.load_houses()
         self.all_water = self.load_water()
-        self.empty_coordinates = self.load_empty_coordinates()
-        self.water_coordinates = self.define_water_coordinates()
-        self.house_coordinates = []
-        self.man_free_coordinates = []
+        self.all_empty_coordinates = self.load_empty_coordinates()
+        self.all_water_coordinates = self.define_water_coordinates()
+        self.all_house_coordinates = []
+        self.all_man_free_coordinates = []
         self.value = 0   
 
     def load_empty_coordinates(self):
@@ -131,63 +131,68 @@ class Grid():
 
             for coordinate in coordinates:
                 water_coordinates.append(coordinate)
+
                 # Remove from list of empty coordinates
-                self.empty_coordinates.remove(coordinate)
+                self.all_empty_coordinates.remove(coordinate)
 
         return water_coordinates
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 137c9116c8be73ee927cac41dc03ef36adaf4332
     def assignment_house(self, house, cell, rotation="horizontal"):
         """ 
         Places house on map and returns new map.
         """
 
-        print("Performing random assignment of house")
+    #     print("Performing random assignment of house")
         
-        # Retrieve coordinates random starting coo (top-left)
-        cell_x = cell.x_coordinate
-        cell_y = cell.y_coordinate
+    #     # Retrieve coordinates random starting cell (top-left)
+    #     cell_x = cell.x_coordinate
+    #     cell_y = cell.y_coordinate
 
-        # Set house coordinates (excluding and including mandatory free space)
-        house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
-        house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
+    #     # Set house coordinates (excluding and including mandatory free space)
+    #     house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
+    #     house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
 
-        # embed()
+    #     # embed()
 
-        # Define all cells of possible house location (excluding and including mandatory free space)
-        house_cells = self.define_object_cells(house_coordinates)
-        house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
+    #     # Define all cells of possible house location (excluding and including mandatory free space)
+    #     house_cells = self.define_object_cells(house_coordinates)
+    #     house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
 
-        spot_available = True
+    #     spot_available = True
 
-        # For each cell, check if placing a house would be valid
-        for cell in house_cells_mandatory_free_space:
+    #     # For each cell, check if placing a house would be valid
+    #     for cell in house_cells_mandatory_free_space:
                 
-            # House cells must be empty, mandatory free space may not overlap with a house
-            if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
-                spot_available = False
+    #         # House cells must be empty, mandatory free space may not overlap with a house
+    #         if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
+    #             spot_available = False
    
-        # If all cells of possible location are still availabe 
-        if spot_available:   
+    #     # If all cells of possible location are still availabe 
+    #     if spot_available:   
 
-            for current_cell in house_cells_mandatory_free_space:
+    #         for current_cell in house_cells_mandatory_free_space:
 
-                # Set cells occupied by house to according house type
-                if current_cell in house_cells:
-                    current_cell.type = house.type
+    #             # Set cells occupied by house to according house type
+    #             if current_cell in house_cells:
+    #                 current_cell.type = house.type
 
-                # Mark cells occupied by mandatory free space 
-                elif current_cell.type != house.type:  #Of gewoon else?
-                    current_cell.type = MandatoryFreeSpace(house)
+    #             # Mark cells occupied by mandatory free space 
+    #             elif current_cell.type != house.type:  #Of gewoon else?
+    #                 current_cell.type = MandatoryFreeSpace(house)
 
-            # Save coordinates
-            house.coordinates = house_coordinates
-            house.min_free_coordinates = house_coordinates_mandatory_free_space
+    #         # Save coordinates
+    #         house.coordinates = house_coordinates
+    #         house.min_free_coordinates = house_coordinates_mandatory_free_space
 
-            # Save cells
-            house.min_free_cells = house_cells_mandatory_free_space
+    #         # Save cells
+    #         house.min_free_cells = house_cells_mandatory_free_space
 
-        else:
-            raise ValueError("Location of house unavailable.")
+    #     else:
+    #         raise ValueError("Location of house unavailable.")
 
     def undo_assignment_house(self, house):
         """
@@ -200,6 +205,22 @@ class Grid():
         
         house.coordinates.clear()
 
+    def assignment_house(self, house):
+        """ 
+        Assigns house to grid, based on coordinates of cell. Returns the new 
+        grid.
+        """
+        # embed()
+        print("Performing assignment of house")
+
+        # Add coordinates to grid 
+        self.all_house_coordinates.append(house.house_coordinates)
+        self.all_man_free_coordinates.append(house.man_free_coordinates)
+
+        # Remove from empty coordinates
+        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
+    
+    
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
@@ -212,25 +233,26 @@ class Grid():
         # i is number of extra free meters, starting from 1
         for i in itertools.count(start=1):
 
-            list_of_cells = []
+            all_coordinates = []
+            extra_free_coordinates = []
 
-            # Save all cells, including i extra free meters in list
-            for row in range((house.min_free_coordinates['top_left'][1] - i), (house.min_free_coordinates['bottom_right'][1] + i)):
-                for column in range((house.min_free_coordinates['top_left'][0] - i), (house.min_free_coordinates['bottom_right'][0] + i)):
+            # Loop through all house coordinates including mandatory free space and i extra free space
+            for row in range((house.outer_man_free_coordinates['top_left'][0] - i), (house.outer_man_free_coordinates['bottom_right'][0] + i)):
+                for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
                     
-                    # Check if cell is within borders of grid
-                    if row >= 0 and row <= 160 and column >= 0 and column <= 180:
-                        current_cell = self.cells[row, column]
-                        list_of_cells.append(current_cell)
-        
-            # Save cells that are extra free meters in list
-            for cell_1 in list_of_cells:
-                if cell_1 not in house.min_free_cells:
-                    house.extra_free_cells.append(cell_1)
+                    # Check if coordinates are within borders of grid
+                    if row >= 0 and row <= 180 and column >= 0 and column <= 160:
+                        current_coordinate = (row, column)
+                        all_coordinates.append(current_coordinate)
 
-            # Check for all cells if it is a house
-            for cell_2 in house.extra_free_cells:
-                if cell_2.type in ["single", "bungalow", "maison"]:
+            # Save coordinates that are extra free meters in list
+            for coordinate in all_coordinates:
+                if coordinate not in house.house_coordinates and coordinate not in house.man_free_coordinates:
+                    extra_free_coordinates.append(coordinate)
+
+            # Check for all extra free coordinates if it is a house
+            for coordinate in extra_free_coordinates:
+                if coordinate in self.house_coordinates:
 
                     # Calculate distance
                     shortest_distance = i - 1
@@ -253,7 +275,7 @@ class Grid():
         total_networth = 0
 
         # Calculate worth of each house placed on the map
-        for house in self.all_houses.values():
+        for house in self.all_houses:
             if house.placed == True:
 
                 # Net worth of house
@@ -268,10 +290,9 @@ class Grid():
 
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
-            # else:
-            #     raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
 
-        self.value = total_networth
+        # # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
+        # self.value = total_networth
 
         return total_networth
 

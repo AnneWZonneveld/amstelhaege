@@ -1,4 +1,5 @@
 from code.algorithms import randomize as rz
+from IPython import embed
 
 class House():
 	def __init__(self, type, id):
@@ -59,7 +60,7 @@ class House():
 		
 		return house_coordinates
 
-	def calc_mandatory_free_space_coordinates(self, house_coordinates):
+	def calc_man_free_coordinates(self, house_coordinates):
 		"""
 		Returns a dictionary of house coordinates (including mandatory free space).
 		"""
@@ -75,28 +76,30 @@ class House():
 
 	def valid_location(self, grid):
 
+		embed()
+
 		valid = True
 
 		# Check if coordinates fall within grid 
 		for coordinate in self.outer_man_free_coordinates.values():
-			if (coordinate[0] > grid.width or coordinate[0] < 0):
+			if coordinate[0] > grid.width or coordinate[0] < 0:
 				valid = False
 				return valid
-			elif coordinate[1] > grid.depth or coordinates[1] < 0:
+			if coordinate[1] > grid.depth or coordinate[1] < 0:
 				valid = False
 				return valid 
 
 		# Retrieve all coordinates of house
-		house_coordinates = grid.define_object_cells(house.outer_house_coordinates) #lijkt omslachting
-		# man_free_coordinates = grid.define_object_cells(house.outer_man_free_coordinates) 
+		house_coordinates = grid.define_object_coordinates(self.outer_house_coordinates) #lijkt omslachting
+		man_free_coordinates = list(set(grid.define_object_coordinates(self.outer_man_free_coordinates)) - set(house_coordinates))
 
-		# # Save retrieved coordinates
-		# self.house_coordinates = house_coordinates
-		# self.man_free_coordinates = man_free_coordinates
+		# Save retrieved coordinates
+		self.house_coordinates = house_coordinates
+		self.man_free_coordinates = man_free_coordinates
 
 		# Check for every house coordinate if not water or other house
 		for coordinate in house_coordinates:
-			if coordinate in grid.water_coordinates or grid.house_coordinates:
+			if coordinate in grid.all_water_coordinates or grid.all_house_coordinates or grid.all_man_free_coordinates: 
 				valid = False
 				return valid
 
