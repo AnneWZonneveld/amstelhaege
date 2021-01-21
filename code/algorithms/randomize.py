@@ -1,7 +1,9 @@
 import random
 import copy
 
+# Tools
 from IPython import embed
+from code.visualization import visualize as vis
 
 
 def random_empty_cell(grid):
@@ -38,7 +40,7 @@ def random_assignment(grid):
 	# Try to place all houses on grid at valid location, from large to small (heuristic)
 	for house in reversed(houses):
 		
-		embed()
+		#embed()
 
 		print(f"Trying to place: {house}")
 

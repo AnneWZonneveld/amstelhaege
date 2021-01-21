@@ -201,6 +201,7 @@ class Grid():
         Assigns house to grid, based on coordinates of cell. Returns the new 
         grid.
         """
+
         # embed()
         print("Performing assignment of house")
 
@@ -243,7 +244,7 @@ class Grid():
 
             # Check for all extra free coordinates if it is a house
             for coordinate in extra_free_coordinates:
-                if coordinate in self.house_coordinates:
+                if coordinate in self.all_house_coordinates:
 
                     # Calculate distance
                     shortest_distance = i - 1
