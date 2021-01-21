@@ -111,10 +111,10 @@ class Grid():
 
         object_coordinates = []
 
-        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+        for column in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+            for row in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
 
-                current_coordinate = (column, row)
+                current_coordinate = (row, column)
                 object_coordinates.append(current_coordinate)
 
         return object_coordinates 
@@ -138,13 +138,12 @@ class Grid():
 
     def assignment_house(self, house, cell, rotation="horizontal"):
         """ 
-        Assigns house to grid, based on coordinates of cell. Returns the new 
-        grid.
+        Places house on map and returns new map.
         """
 
         print("Performing random assignment of house")
         
-        # Retrieve coordinates random starting cell (top-left)
+        # Retrieve coordinates random starting coo (top-left)
         cell_x = cell.x_coordinate
         cell_y = cell.y_coordinate
 
@@ -189,6 +188,17 @@ class Grid():
 
         else:
             raise ValueError("Location of house unavailable.")
+
+    def undo_assignment_house(self, house):
+        """
+        Reverts the placement of a house at a certain position.
+        """
+    
+        for coordinate in house.coordinates:
+            self.empty_coordinates.append(coordinate)
+            self.house_coordinates.remove(coordinate)
+        
+        house.coordinates.clear()
 
     def calculate_extra_free_meters(self, house):
         """
