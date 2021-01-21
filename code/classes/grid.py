@@ -9,14 +9,14 @@ import code.algorithms.randomize as rz
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 180
-        self.depth = 160
+        self.width = 18
+        self.depth = 16
         self.quantity = quantity
         self.water = source_file
         self.all_houses = self.load_houses()
-        self.all_water = self.load_water()
+        # self.all_water = self.load_water()
         self.all_empty_coordinates = self.load_empty_coordinates()
-        self.all_water_coordinates = self.define_water_coordinates()
+        # self.all_water_coordinates = self.define_water_coordinates()
         self.all_house_coordinates = []
         self.all_man_free_coordinates = []
         self.value = 0   
@@ -43,9 +43,9 @@ class Grid():
         """
         
         # Determine quantity for each house type based on total quantity
-        q_single = int(0.6 * self.quantity)
-        q_bungalow = int(0.25 * self.quantity)
-        q_maison = int(0.15 * self.quantity)
+        q_single = int(1 * self.quantity)
+        q_bungalow = int(0 * self.quantity)
+        q_maison = int(0 * self.quantity)
 
         all_houses = []
         id_counter = 1
@@ -201,12 +201,16 @@ class Grid():
         """
         Reverts the placement of a house at a certain position.
         """
-    
-        for coordinate in house.coordinates:
-            self.empty_coordinates.append(coordinate)
-            self.house_coordinates.remove(coordinate)
         
-        house.coordinates.clear()
+        for coordinate in house.house_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_house_coordinates.remove(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_man_free_coordinates.remove(coordinate)
+        
+        house.house_coordinates.clear()
 
     def assignment_house(self, house):
         """ 
@@ -225,8 +229,8 @@ class Grid():
             self.all_man_free_coordinates.append(coordinate)
 
         # Remove from empty coordinates
-        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.coordinates) - set(house.man_free_coordinates))
-    
+        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
+
     
     def calculate_extra_free_meters(self, house):
         """
@@ -247,13 +251,13 @@ class Grid():
                 for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
                     
                     # Check if coordinates are within borders of grid
-                    if row >= 0 and row <= 180 and column >= 0 and column <= 160:
+                    if row >= 0 and row <= self.width and column >= 0 and column <= self.depth:
                         current_coordinate = (row, column)
                         all_coordinates.append(current_coordinate)
             
             # Save coordinates that are extra free meters in list
             for coordinate in all_coordinates:
-                if coordinate not in house.coordinates and coordinate not in house.man_free_coordinates:
+                if coordinate not in house.house_coordinates and coordinate not in house.man_free_coordinates:
                     extra_free_coordinates.append(coordinate)
 
             # Check for all extra free coordinates if it is a house

@@ -31,14 +31,14 @@ def visualize(grid):
 
     # Create representation of water
     water_coord= grid.load_water()
-    water = draw_water(water_coord)
+    # water = draw_water(water_coord)
 
     # Create representation of houses
     houses_coord = grid.all_houses
     houses = draw_houses(houses_coord)
 
     # Add water and houses to diagram
-    objects.extend(water + houses)
+    objects.extend(houses)
     representations = PatchCollection(objects, match_original=True)
     ax.add_collection(representations)
 
