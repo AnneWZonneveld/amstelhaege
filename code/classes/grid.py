@@ -189,17 +189,6 @@ class Grid():
     #     else:
     #         raise ValueError("Location of house unavailable.")
 
-    def random_empty_coordinate(self):
-        """
-        Returns a random empty coordinate from grid.
-        """
-
-        print("Performing picking empty coordinate")
-
-        random_coordinate = random.choice(self.all_empty_coordinates)
-        
-        return random_coordinate
-
     def undo_assignment_house(self, house):
         """
         Reverts the placement of a house at a certain position.

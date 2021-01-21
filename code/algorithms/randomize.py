@@ -2,18 +2,16 @@ import random
 import copy
 
 # from IPython import embed
-
-
 def random_empty_coordinate(grid):
-	"""
-	Returns a random empty cell from grid.
-	"""
+        """
+        Returns a random empty coordinate from grid.
+        """
 
-	print("Performing picking empty cell")
+        print("Performing picking empty coordinate")
 
-	random_cell = random.choice(grid.all_empty_coordinates)
-	return random_cell
-
+        random_coordinate = random.choice(grid.all_empty_coordinates)
+        
+        return random_coordinate
 
 def random_rotation():
 	"""
@@ -44,8 +42,8 @@ def random_assignment(grid):
 
 		while house.placed == False:
 
-				random_cell = random_empty_cell(copy_grid)
-				print(f"random cell: {random_cell}")
+				random_coordinate = random_empty_coordinate(copy_grid)
+				print(f"random cell: {random_coordinate}")
 
 				rotation = random_rotation()
 
