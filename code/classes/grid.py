@@ -249,9 +249,8 @@ class Grid():
             # Loop through all house coordinates including mandatory free space and i extra free space
             for row in range((house.outer_man_free_coordinates['top_left'][0] - i), (house.outer_man_free_coordinates['bottom_right'][0] + i)):
                 for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
-                    
                     # Check if coordinates are within borders of grid
-                    if row >= 0 and row <= self.width and column >= 0 and column <= self.depth:
+                    if (row >= 0 and row <= self.depth) and (column >= 0 and column <= self.width):
                         current_coordinate = (row, column)
                         all_coordinates.append(current_coordinate)
             
