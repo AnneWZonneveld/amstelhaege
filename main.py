@@ -1,29 +1,39 @@
 from code.classes import grid, house 
 from code.visualization import visualize as vis
 from code.algorithms import randomize as rz
-# from code.algorithms import greedy as gr
+from code.algorithms import greedy as gr
+from code.algorithms import hillclimber as hc
+
+from statistics import mean 
 
 if __name__ == "__main__":
 
 	quantity = 20
-	map_source = "data/wijken/wijk_2.csv"
+	map_source = "data/wijken/wijk_1.csv"
 
 	# Create grid from data
 	test_grid = grid.Grid(quantity, map_source)
-	test_grid.define_object_coordinates
 
 	# ----------------------- Randomize algorithm ---------------------------------
-	random_config = rz.random_assignment(test_grid)
-	random_config.calculate_worth()
+	print("PERFORMING RANDOMIZE")
 
-	#Value of grid
-	print(f"Value random config: {random_config.value}")
+	randomize = rz.Randomize(test_grid)
 
-	#Visualize case
-	vis.visualize(random_config)
+	randomize.run(iterations=10)
 
-	#Create csv output file
-	random_config.create_output()
+	#Visualize best case
+	vis.visualize(randomize.best_grid)
+
+	# Visualize histogram
+	vis.hist_plot(randomize.all_values, "randomize_histogram")
+
+	#Create csv output file best case
+	randomize.best_grid.create_output()
+
+	# Determine highest value and mean
+	print(f"HIGHEST RANDOMIZE VALUE: {randomize.best_value}")
+	print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")
+
 
 	# ------------------------ Greedy algorithm -----------------------------------
 	# greedy = gr.Greedy(test_grid)
@@ -35,8 +45,29 @@ if __name__ == "__main__":
 	# # Visualize case
 	# vis.visualize(greedy.grid)
 
-	# # Create csv output file
+	# # # Create csv output file
 	# greedy.grid.create_output()
+
+	# ------------------------- Hill Climber algortihm ------------------------------
+	print("PERFORMING HC")
+
+	hillclimber = hc.HillClimber(randomize.best_grid)
+	hillclimber.run(iterations=30)
+
+	# Value of grid
+	print(f"HILLCLIMBER VALUE: {hillclimber.value}")
+
+	# Visualize case
+	vis.visualize(hillclimber.grid)
+
+	# Visualize iterations
+	vis.iteration_plot(hillclimber.all_values, "hillclimber_plot")
+
+	# Create csv output file
+	hillclimber.grid.create_output()
+
+
+
 
 
 

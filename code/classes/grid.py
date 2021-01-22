@@ -145,69 +145,21 @@ class Grid():
         return water_coordinates
 
 
-    # def assignment_house(self, house, cell, rotation="horizontal"):
-        """ 
-        Places house on map and returns new map.
-        """
-
-    #     print("Performing random assignment of house")
-        
-    #     # Retrieve coordinates random starting cell (top-left)
-    #     cell_x = cell.x_coordinate
-    #     cell_y = cell.y_coordinate
-
-    #     # Set house coordinates (excluding and including mandatory free space)
-    #     house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
-    #     house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
-
-    #     # embed()
-
-    #     # Define all cells of possible house location (excluding and including mandatory free space)
-    #     house_cells = self.define_object_cells(house_coordinates)
-    #     house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
-
-    #     spot_available = True
-
-    #     # For each cell, check if placing a house would be valid
-    #     for cell in house_cells_mandatory_free_space:
-                
-    #         # House cells must be empty, mandatory free space may not overlap with a house
-    #         if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
-    #             spot_available = False
-   
-    #     # If all cells of possible location are still availabe 
-    #     if spot_available:   
-
-    #         for current_cell in house_cells_mandatory_free_space:
-
-    #             # Set cells occupied by house to according house type
-    #             if current_cell in house_cells:
-    #                 current_cell.type = house.type
-
-    #             # Mark cells occupied by mandatory free space 
-    #             elif current_cell.type != house.type:  #Of gewoon else?
-    #                 current_cell.type = MandatoryFreeSpace(house)
-
-    #         # Save coordinates
-    #         house.coordinates = house_coordinates
-    #         house.min_free_coordinates = house_coordinates_mandatory_free_space
-
-    #         # Save cells
-    #         house.min_free_cells = house_cells_mandatory_free_space
-
-    #     else:
-    #         raise ValueError("Location of house unavailable.")
-
     def undo_assignment_house(self, house):
         """
         Reverts the placement of a house at a certain position.
         """
-    
-        for coordinate in house.coordinates:
-            self.empty_coordinates.append(coordinate)
-            self.house_coordinates.remove(coordinate)
         
-        house.coordinates.clear()
+        for coordinate in house.house_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_house_coordinates.remove(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_man_free_coordinates.remove(coordinate)
+        
+        house.house_coordinates.clear()
+        house.placed = False
 
     def assignment_house(self, house):
         """ 
@@ -226,8 +178,10 @@ class Grid():
             self.all_man_free_coordinates.append(coordinate)
 
         # Remove from empty coordinates
-        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.coordinates) - set(house.man_free_coordinates))
+        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
 
+        house.placed = True
+    
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
@@ -331,8 +285,8 @@ class Grid():
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
 
-        # # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
-        # self.value = total_networth
+        # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
+        self.value = total_networth
 
         return total_networth
 
@@ -366,5 +320,5 @@ class Grid():
                 writer.writerow(house_list)
 
             # Add total networth of map to csv file
-            networth = self.calculate_worth()
+            networth = self.value
             writer.writerow(["networth", networth])

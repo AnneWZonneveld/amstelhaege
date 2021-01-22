@@ -5,65 +5,91 @@ import copy
 from IPython import embed
 from code.visualization import visualize as vis
 
-def random_empty_coordinate(grid):
-	"""
-	Returns a random empty coordinate from grid.
-	"""
+class Randomize():
+	def __init__(self, grid):
+		self.grid = grid
+		self.best_grid = None
+		self.best_value = 0 
+		self.all_values = []
 
-	print("Performing picking empty coordinate")
+	def random_empty_coordinate(self, grid):
+		"""
+		Returns a random empty coordinate from grid.
+		"""
 
-	random_coordinate = random.choice(grid.all_empty_coordinates)
+		random_coordinate = random.choice(grid.all_empty_coordinates)
 
-	return random_coordinate
-
-
-def random_rotation():
-	"""
-	Returns a random rotation.
-	"""
-
-	rotation = ['horizontal', 'vertical']
-	random_rotation = random.choice(rotation)
-
-	return random_rotation
+		return random_coordinate
 
 
-def random_assignment(grid):
-	"""
-	Places all houses randomly on grid. Returns the new grid.
-	"""
+	def random_rotation(self):
+		"""
+		Returns a random rotation.
+		"""
 
-	# Copy empty grid 
-	copy_grid = copy.deepcopy(grid)
-	houses = copy_grid.all_houses
-	
-	# Try to place all houses on grid at valid location, from large to small (heuristic)
-	for house in reversed(houses):
+		rotation = ['horizontal', 'vertical']
+		random_rotation = random.choice(rotation)
+
+		return random_rotation
+
+
+	def random_assignment(self, grid):
+		"""
+		Places all houses randomly on grid. Returns the new grid.
+		"""
+
+		# Copy empty grid 
+		copy_grid = copy.deepcopy(grid)
+		houses = copy_grid.all_houses
 		
-		#embed()
+		# Try to place all houses on grid at valid location, from large to small (heuristic)
+		for house in reversed(houses):
+			
+			# embed()
 
-		print(f"Trying to place: {house}")
+			print(f"Trying to place: {house}")
 
-		while house.placed == False:
+			while house.placed == False:
 
-				random_cell = random_empty_coordinate(copy_grid)
-				print(f"random cell: {random_cell}")
+					random_cell = self.random_empty_coordinate(copy_grid)
+					
+					rotation = self.random_rotation()
 
-				rotation = random_rotation()
+					house.calc_all_coordinates(random_cell, rotation)
 
-				# Samenvoegen tot 1 functie die ook rotatie parameter heeft? returnt dictionary 
-				house.outer_house_coordinates = house.calc_house_coordinates(random_cell, rotation)
-				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
+					if house.valid_location(copy_grid):
+						print("Valid location")
 
-				if house.valid_location(copy_grid):
-					print("Valid location")
+						#Assign house to grid
+						copy_grid.assignment_house(house)
 
-					#Assign house to grid
-					copy_grid.assignment_house(house)
-					house.placed = True
-				else:
-					print("Invalid location, retry")
+					else:
+						print("Invalid location, retry")
 
-	print("All houses placed succesfully")
+		print("All houses placed succesfully")
 
-	return copy_grid
+		return copy_grid
+
+	def check_solution(self, grid):
+		new_value = grid.value
+		old_value = self.best_value
+
+		if new_value > old_value:
+			self.best_grid = grid
+			self.best_value = new_value
+
+	def run(self, iterations):
+
+		for i in range(0, iterations):
+
+			random_grid = self.random_assignment(self.grid)
+			random_grid.calculate_worth()
+
+			#Value of grid
+			print(f"RANDOMIZE ITERATION {i}: {random_grid.value}")
+
+			self.all_values.append(random_grid.value)
+
+			self.check_solution(random_grid)
+
+
