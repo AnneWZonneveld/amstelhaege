@@ -16,7 +16,7 @@ class House():
 			self.width = 8
 			self.depth = 8
 			self.price = 285000
-			self.min_free = 2
+			self.min_free = 1
 			self.percentage = 0.03
 		elif self.type == "bungalow":
 			self.width = 11
@@ -32,8 +32,9 @@ class House():
 			self.percentage = 0.06
 
 	def calc_all_coordinates(self, coordinates, rotation):
-		self.outer_house_coordinates = self.calc_house_coordinates(random_cell, rotation)
+		self.outer_house_coordinates = self.calc_house_coordinates(coordinates, rotation)
 		self.outer_man_free_coordinates = calc_man_free_coordinates(self.outer_house_coordinates)
+		self.rotation = rotation
 
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):
@@ -106,6 +107,7 @@ class House():
 
 		# Location of water, house or man free space other hous unavailable to place house
 		not_available = [grid.all_water_coordinates, grid.all_house_coordinates, grid.all_man_free_coordinates]
+		# not_available = [grid.all_house_coordinates, grid.all_man_free_coordinates]
 
 		# Check for every house coordinate if not water or other house
 		for coordinate in house_coordinates:

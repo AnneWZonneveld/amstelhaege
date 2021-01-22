@@ -5,16 +5,21 @@ import copy
 from IPython import embed
 from code.visualization import visualize as vis
 
+# class Random():
+# 	def __init__(self, grid):
+# 		self.grid = grid
+# 		self.value = 0 
 
-def random_empty_cell(grid):
+def random_empty_coordinate(grid):
 	"""
-	Returns a random empty cell from grid.
+	Returns a random empty coordinate from grid.
 	"""
 
-	print("Performing picking empty cell")
+	print("Performing picking empty coordinate")
 
-	random_cell = random.choice(grid.all_empty_coordinates)
-	return random_cell
+	random_coordinate = random.choice(grid.all_empty_coordinates)
+
+	return random_coordinate
 
 
 def random_rotation():
@@ -46,12 +51,13 @@ def random_assignment(grid):
 
 		while house.placed == False:
 
-				random_cell = random_empty_cell(copy_grid)
+				random_cell = random_empty_coordinate(copy_grid)
 				print(f"random cell: {random_cell}")
 
 				rotation = random_rotation()
 
-				# Samenvoegen tot 1 functie die ook rotatie parameter heeft? returnt dictionary 
+				house.calc_all_coordinates(random_cell, rotation)
+
 				house.outer_house_coordinates = house.calc_house_coordinates(random_cell, rotation)
 				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
 

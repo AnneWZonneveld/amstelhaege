@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import numpy as np
 import os
-from IPython import embed;
+# from IPython import embed;
 
 
 def visualize(grid):
@@ -38,7 +38,7 @@ def visualize(grid):
     houses = draw_houses(houses_coord)
 
     # Add water and houses to diagram
-    objects.extend(water + houses)
+    objects.extend(houses + water)
     representations = PatchCollection(objects, match_original=True)
     ax.add_collection(representations)
 
@@ -60,13 +60,6 @@ def draw_water(water_coord):
         height = water_object.coordinates['top_right'][1] - bottom_left[1]
 
         water.append(plt.Rectangle(bottom_left, width, height, fc="b"))
-
-    # for ident, coordinates in water_coord.items():
-    #     bottom_left =  water_coord[ident].get('bottom_left')
-    #     width = water_coord[ident].get('top_right')[0] - bottom_left[0]
-    #     height = water_coord[ident].get('top_right')[1] - bottom_left[1]
-
-    #     water.append(plt.Rectangle(bottom_left, width, height, fc="b"))
     
     return water
 

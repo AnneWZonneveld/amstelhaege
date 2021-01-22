@@ -1,12 +1,11 @@
 import csv
 import itertools
 import numpy as np
-from .cell import Cell
 from .house import House
 from .water import Water
 from code.classes.mandatory import MandatoryFreeSpace
 import code.algorithms.randomize as rz
-from IPython import embed;
+# from IPython import embed;
 
 class Grid():
     def __init__(self, quantity, source_file):
@@ -81,8 +80,11 @@ class Grid():
         with open(self.water, 'r') as in_file:
             # Skip header
             next(in_file)
-        
+
+            id_counter = 1
+
             while True:
+
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
                 if row == "":
@@ -92,7 +94,9 @@ class Grid():
 
                 # Create a new water object
                 water = Water()
-            
+
+                water.id = id_counter
+
                 # Save water coordinates in dict
                 water.coordinates = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
                                     'bottom_right': (int(strip_items[3]), int(strip_items[4])),
@@ -101,6 +105,8 @@ class Grid():
         
                 # Add water object to list
                 all_water.append(water)   
+
+                id_counter += 1
         
         return all_water
 
@@ -138,69 +144,20 @@ class Grid():
         return water_coordinates
 
 
-    # def assignment_house(self, house, cell, rotation="horizontal"):
-        """ 
-        Places house on map and returns new map.
-        """
-
-    #     print("Performing random assignment of house")
-        
-    #     # Retrieve coordinates random starting cell (top-left)
-    #     cell_x = cell.x_coordinate
-    #     cell_y = cell.y_coordinate
-
-    #     # Set house coordinates (excluding and including mandatory free space)
-    #     house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
-    #     house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
-
-    #     # embed()
-
-    #     # Define all cells of possible house location (excluding and including mandatory free space)
-    #     house_cells = self.define_object_cells(house_coordinates)
-    #     house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
-
-    #     spot_available = True
-
-    #     # For each cell, check if placing a house would be valid
-    #     for cell in house_cells_mandatory_free_space:
-                
-    #         # House cells must be empty, mandatory free space may not overlap with a house
-    #         if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
-    #             spot_available = False
-   
-    #     # If all cells of possible location are still availabe 
-    #     if spot_available:   
-
-    #         for current_cell in house_cells_mandatory_free_space:
-
-    #             # Set cells occupied by house to according house type
-    #             if current_cell in house_cells:
-    #                 current_cell.type = house.type
-
-    #             # Mark cells occupied by mandatory free space 
-    #             elif current_cell.type != house.type:  #Of gewoon else?
-    #                 current_cell.type = MandatoryFreeSpace(house)
-
-    #         # Save coordinates
-    #         house.coordinates = house_coordinates
-    #         house.min_free_coordinates = house_coordinates_mandatory_free_space
-
-    #         # Save cells
-    #         house.min_free_cells = house_cells_mandatory_free_space
-
-    #     else:
-    #         raise ValueError("Location of house unavailable.")
-
     def undo_assignment_house(self, house):
         """
         Reverts the placement of a house at a certain position.
         """
-    
-        for coordinate in house.coordinates:
-            self.empty_coordinates.append(coordinate)
-            self.house_coordinates.remove(coordinate)
         
-        house.coordinates.clear()
+        for coordinate in house.house_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_house_coordinates.remove(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_man_free_coordinates.remove(coordinate)
+        
+        house.house_coordinates.clear()
 
     def assignment_house(self, house):
         """ 
@@ -220,7 +177,7 @@ class Grid():
 
         # Remove from empty coordinates
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
-    
+
     
     def calculate_extra_free_meters(self, house):
         """
@@ -241,7 +198,7 @@ class Grid():
                 for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
                     
                     # Check if coordinates are within borders of grid
-                    if row >= 0 and row <= 180 and column >= 0 and column <= 160:
+                    if row >= 0 and row <= self.width and column >= 0 and column <= self.depth:
                         current_coordinate = (row, column)
                         all_coordinates.append(current_coordinate)
             
@@ -307,19 +264,23 @@ class Grid():
             fieldnames =["structure", "corner_1 (bottom_left)", "corner_2 (bottom_right)", "corner_3 (top_left)", "corner_4 (top_right)", "type"]
             writer.writerow(fieldnames)
 
-            # Load water coordinates from correct map
-            water = self.load_water()
-
             # Add location of water to csv file
-            for ident, coordinates in water.items():
-                water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
+            for water_object in self.load_water():
+                bottom_left = water_object.coordinates['bottom_left']
+                bottom_right = water_object.coordinates['bottom_right']
+                top_left = water_object.coordinates['top_left']
+                top_right = water_object.coordinates['top_left']
+                water_list = [water_object, bottom_left, bottom_right, top_left, top_right, "WATER"]
                 writer.writerow(water_list)
             
-            # Add location of houses to csv file
-            for house in self.all_houses.values():
-                house_list = f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()
+            for house in self.all_houses:
+                bottom_left = house.outer_house_coordinates['bottom_left']
+                bottom_right = house.outer_house_coordinates['bottom_right']
+                top_left = house.outer_house_coordinates['top_left']
+                top_right = house.outer_house_coordinates['top_left']
+                house_list = [f"{house.type}_{house.id}", bottom_left, bottom_right, top_left, top_right, house.type.upper()]
                 writer.writerow(house_list)
-            
+
             # Add total networth of map to csv file
             networth = self.calculate_worth()
             writer.writerow(["networth", networth])
