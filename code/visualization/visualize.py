@@ -2,8 +2,35 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import numpy as np
 import os
-# from IPython import embed;
+from IPython import embed
 
+def hist_plot(values, name):
+    
+    fig, ax = plt.subplots()
+
+    plt.hist(values)
+    plt.xlabel("Value (€)")
+    plt.ylabel("Frequency")
+
+    path = os.path.join('.','code', 'visualization', f'{name}.png')
+    plt.savefig(path)
+
+def iteration_plot(values, name):
+    embed()
+
+    fig, ax = plt.subplots()
+
+    # Deterimen x 
+    q_iterations = len(values)
+    x = np.arange(1, q_iterations + 1)
+
+    plt.plot(x, values)
+    plt.xticks(np.arange(0, q_iterations +1, 0.25*q_iterations))
+    plt.xlabel("Iterations")
+    plt.ylabel("Value (€)")
+
+    path = os.path.join('.','code', 'visualization', f'{name}.png')
+    plt.savefig(path)
 
 def visualize(grid):
     """

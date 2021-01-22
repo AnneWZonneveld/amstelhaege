@@ -158,6 +158,7 @@ class Grid():
             self.all_man_free_coordinates.remove(coordinate)
         
         house.house_coordinates.clear()
+        house.placed = False
 
     def assignment_house(self, house):
         """ 
@@ -178,6 +179,7 @@ class Grid():
         # Remove from empty coordinates
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
 
+        house.placed = True
     
     def calculate_extra_free_meters(self, house):
         """
@@ -247,8 +249,8 @@ class Grid():
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
 
-        # # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
-        # self.value = total_networth
+        # Assign value to grid (MISSCHIEN NIET HANDIG VOOR GREEDY?)
+        self.value = total_networth
 
         return total_networth
 
@@ -282,5 +284,5 @@ class Grid():
                 writer.writerow(house_list)
 
             # Add total networth of map to csv file
-            networth = self.calculate_worth()
+            networth = self.value
             writer.writerow(["networth", networth])
