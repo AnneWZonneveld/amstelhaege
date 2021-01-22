@@ -4,6 +4,7 @@ import numpy as np
 from .house import House
 from .water import Water
 from code.classes.mandatory import MandatoryFreeSpace
+from shapely.geometry import Point
 import code.algorithms.randomize as rz
 # from IPython import embed;
 
@@ -226,8 +227,7 @@ class Grid():
 
         # Remove from empty coordinates
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.coordinates) - set(house.man_free_coordinates))
-    
-    
+
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
@@ -235,41 +235,76 @@ class Grid():
 
         print(f"Calculating extra free meters for: {house}")
 
-        distance_found = False
+        # MISSCHIEN NOG AANPASSEN?
+        house.extra_free = 10000
 
-        # i is number of extra free meters, starting from 1
-        for i in itertools.count(start=1):
-            all_coordinates = []
-            extra_free_coordinates = []
+        # For all houses other than the selected one
+        for other_house in self.all_houses:
+            if other_house != house and other_house.placed:
+                
+                # other_house linksboven van house
+                if other_house.outer_house_coordinates['bottom_right'][0] <= house.outer_house_coordinates['top_left'][0] and other_house.outer_house_coordinates['bottom_right'][1] <= house.outer_house_coordinates['top_left'][1]:
+                    house_x = house.outer_house_coordinates['top_left'][0]
+                    house_y = house.outer_house_coordinates['top_left'][1]
+                    other_house_x = other_house.outer_house_coordinates['bottom_right'][0]
+                    other_house_y = other_house.outer_house_coordinates['bottom_right'][1]
+                    distance = Point(house_x,house_y).distance(Point(other_house_x,other_house_y))
+                    extra_free_space = distance - house.min_free
 
-            # Loop through all house coordinates including mandatory free space and i extra free space
-            for row in range((house.outer_man_free_coordinates['top_left'][0] - i), (house.outer_man_free_coordinates['bottom_right'][0] + i)):
-                for column in range((house.outer_man_free_coordinates['top_left'][1] - i), (house.outer_man_free_coordinates['bottom_right'][1] + i)):
+                # other_house rechtsboven van house
+                elif other_house.outer_house_coordinates['bottom_left'][0] >= house.outer_house_coordinates['top_right'][0] and other_house.outer_house_coordinates['bottom_left'][1] <= house.outer_house_coordinates['top_right'][1]:
+                    house_x = house.outer_house_coordinates['top_right'][0]
+                    house_y = house.outer_house_coordinates['top_right'][1]
+                    other_house_x = other_house.outer_house_coordinates['bottom_left'][0]
+                    other_house_y = other_house.outer_house_coordinates['bottom_left'][1]
+                    distance = Point(house_x,house_y).distance(Point(other_house_x,other_house_y))
+                    extra_free_space = distance - house.min_free
+                
+                # other_house rechtsonder van house
+                elif other_house.outer_house_coordinates['top_left'][0] >= house.outer_house_coordinates['bottom_right'][0] and other_house.outer_house_coordinates['top_left'][1] >= house.outer_house_coordinates['bottom_right'][1]:
+                    house_x = house.outer_house_coordinates['bottom_right'][0]
+                    house_y = house.outer_house_coordinates['bottom_right'][1]
+                    other_house_x = other_house.outer_house_coordinates['top_left'][0]
+                    other_house_y = other_house.outer_house_coordinates['top_left'][1]
+                    distance = Point(house_x,house_y).distance(Point(other_house_x,other_house_y))
+                    extra_free_space = distance - house.min_free
+
+                # other_house linksonder van house
+                elif other_house.outer_house_coordinates['top_right'][0] <= house.outer_house_coordinates['bottom_left'][0] and other_house.outer_house_coordinates['top_right'][1] >= house.outer_house_coordinates['bottom_left'][1]:
+                    house_x = house.outer_house_coordinates['bottom_left'][0]
+                    house_y = house.outer_house_coordinates['bottom_left'][1]
+                    other_house_x = other_house.outer_house_coordinates['top_right'][0]
+                    other_house_y = other_house.outer_house_coordinates['top_right'][1]
+                    distance = Point(house_x,house_y).distance(Point(other_house_x,other_house_y))
+                    extra_free_space = distance - house.min_free
+
+                # other_house boven house
+                elif other_house.outer_house_coordinates['bottom_left'][1] < house.outer_house_coordinates['top_left'][1]:
+                    distance = house.outer_house_coordinates['top_left'][1] - other_house.outer_house_coordinates['bottom_left'][1]
+                    extra_free_space = distance - house.min_free
+
+                # other_house rechts van house
+                elif other_house.outer_house_coordinates['bottom_left'][0] > house.outer_house_coordinates['bottom_right'][0]:
+                    distance = other_house.outer_house_coordinates['bottom_left'][0] - house.outer_house_coordinates['bottom_right'][0]
+                    extra_free_space = distance - house.min_free
+
+                # other_house onder house
+                elif other_house.outer_house_coordinates['top_left'][1] > house.outer_house_coordinates['bottom_left'][1]:
+                    distance = other_house.outer_house_coordinates['top_left'][1] - house.outer_house_coordinates['bottom_left'][1]
+                    extra_free_space = distance - house.min_free
+
+                # other_house links van house
+                elif other_house.outer_house_coordinates['bottom_right'][0] < house.outer_house_coordinates['bottom_left'][0]:
+                    distance = house.outer_house_coordinates['bottom_left'][0] - other_house.outer_house_coordinates['bottom_right'][0]
+                    extra_free_space = distance - house.min_free
+
+                print(f"Extra free space: {extra_free_space}")
+
+                # If extra free space is shorter than the current one, replace
+                if extra_free_space < house.extra_free:
+                    house.extra_free = extra_free_space
                     
-                    # Check if coordinates are within borders of grid
-                    if row >= 0 and row <= 180 and column >= 0 and column <= 160:
-                        current_coordinate = (row, column)
-                        all_coordinates.append(current_coordinate)
-            
-            # Save coordinates that are extra free meters in list
-            for coordinate in all_coordinates:
-                if coordinate not in house.coordinates and coordinate not in house.man_free_coordinates:
-                    extra_free_coordinates.append(coordinate)
-
-            # Check for all extra free coordinates if it is a house
-            for coordinate in extra_free_coordinates:
-                if coordinate in self.all_house_coordinates:
-                    # Calculate distance
-                    shortest_distance = i - 1
-                    # Set to True, as shortest distance is found
-                    distance_found = True
-                    break
-            
-            if distance_found == True:
-                break
-
-        # Assign extra free meters to house
-        house.extra_free = shortest_distance
+                    print(f"NEW SHORTEST EXTRA FREE SPACE: {house.extra_free}")
 
     def calculate_worth(self):
         """

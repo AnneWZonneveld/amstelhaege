@@ -10,6 +10,7 @@ class House():
 		self.coordinates =[]
 		self.man_free_coordinates = []
 		self.extra_free = 0
+		self.rotation = None
 		self.placed = False
 
 		if self.type == "single":
