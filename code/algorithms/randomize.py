@@ -5,6 +5,11 @@ import copy
 from IPython import embed
 from code.visualization import visualize as vis
 
+# class Random():
+# 	def __init__(self, grid):
+# 		self.grid = grid
+# 		self.value = 0 
+
 def random_empty_coordinate(grid):
 	"""
 	Returns a random empty coordinate from grid.
@@ -40,7 +45,7 @@ def random_assignment(grid):
 	# Try to place all houses on grid at valid location, from large to small (heuristic)
 	for house in reversed(houses):
 		
-		#embed()
+		# embed()
 
 		print(f"Trying to place: {house}")
 
@@ -51,7 +56,8 @@ def random_assignment(grid):
 
 				rotation = random_rotation()
 
-				# Samenvoegen tot 1 functie die ook rotatie parameter heeft? returnt dictionary 
+				house.calc_all_coordinates(random_cell, rotation)
+
 				house.outer_house_coordinates = house.calc_house_coordinates(random_cell, rotation)
 				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
 
