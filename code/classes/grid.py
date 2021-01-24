@@ -290,12 +290,12 @@ class Grid():
 
         return total_networth
 
-    def create_output(self):
+    def create_output(self, name):
         """
         Creates csv-file with results from running an algorithm to place houses.
         """
 
-        with open('data/output.csv', 'w', newline='') as file:
+        with open(f'data/output/csv/output_{name}.csv', 'w', newline='') as file:
             writer = csv.writer(file)
 
             # Create header

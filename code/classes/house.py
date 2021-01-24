@@ -50,7 +50,7 @@ class House():
 		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
 		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
 
-		self.rotation = rotation
+		# self.rotation = rotation
 
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):

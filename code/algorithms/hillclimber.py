@@ -65,17 +65,21 @@ class HillClimber:
 			succes = True
 
 		else:
+
+			# Set houses to old original coordinates
 			house_1.outer_house_coordinates = info_house_1['outer_house_coordinates']
 			house_1.outer_man_free_coordinates = info_house_1['outer_man_free_coordinates']
 			house_1.house_coordinates = info_house_1['house_coordinates']
 			house_1.man_free_coordinats = info_house_1['man_free_coordinats']
+			house_1.rotation = info_house_1['rotation']
 
 			house_2.outer_house_coordinates = info_house_2['outer_house_coordinates']
 			house_2.outer_man_free_coordinates = info_house_2['outer_man_free_coordinates']
 			house_2.house_coordinates = info_house_2['house_coordinates']
 			house_2.man_free_coordinats = info_house_2['man_free_coordinats']
+			house_2.rotation = info_house_2['rotation']
 
-			# Assign houses to new location on grid
+			# Reassign houses to old location on grid
 			grid.assignment_house(house_1)
 			grid.assignment_house(house_2)
 
@@ -87,50 +91,53 @@ class HillClimber:
 	def rotate_house(self, grid):
 		"""
 		Rotates house if possible.
-
-		- pick random house
-		- check rotation
-		- set rotation to opposite value
-		- calculate new possible coordinates
-		- see if possible
-		- if possible, set original cells to empty and then new cells to House
 		"""
 
-		success = False
+		# Pick random house
+		house = random.choice(grid.all_houses)
+		house_starting_xy = house.outer_house_coordinates['top_left']
 
-		while success == False:
+		# Save current coordinates
+		info_house = {
+			"outer_house_coordinates": house.outer_house_coordinates,
+			"outer_man_free_coordinates": house.outer_man_free_coordinates,
+			"house_coordinates": house.house_coordinates,
+			"man_free_coordinats": house.man_free_coordinates,
+			"rotation": house.rotation
+		}
 
-			# Pick random house
-			house = random.choice(grid.all_houses)
-			house_starting_xy = house.outer_house_coordinates['top_left']
+		# Remove house from map and set new coordinates
+		grid.undo_assignment_house(house)
 
-			# Save current coordinates
-			old_outer_house_coordinates = house.outer_house_coordinates
-			old_outer_man_free_coordinates = house.outer_man_free_coordinates
+		# Check rotation and calculate new outer house coordinates
+		if house.rotation == "horizontal":
+			house.calc_all_coordinates(house_starting_xy, "vertical")
 
-			# Check rotation and calculate new outer house coordinates
-			if house.rotation == "horizontal":
-				house.outer_house_coordinates = house.calc_house_coordinates(house_starting_xy, "vertical")
+		elif house.rotation == "vertical":
+			house.calc_all_coordinates(house_starting_xy, "horizontal")
 
-			elif house.rotation == "vertical":
-				house.outer_house_coordinates = house.calc_house_coordinates(house_starting_xy, "horizontal")
+		# Check if house can be placed on these coordinates 
+		if house.valid_location(grid):
+			print("Rotated house")
 
-			# Calculate new outer mandatory free space coordinates
-			house.outer_man_free_coordinates = house.calc_mandatory_free_space_coordinates(house.outer_house_coordinates)
+			# Do the new assignment
+			grid.assignment_house(house)
+			succes = True
+		else:
 
-			# Check if house can be placed on these coordinates 
-			if house.valid_location(grid):
-				# Undo the old assignment
-				grid.undo_assignment_house(house)
-				# Do the new assignment
-				grid.assignment_house(house)
-				success = True
-			else:
-				print("Could not rotate this house, retry")
+			# Set house to old original coordinates
+			house.outer_house_coordinates = info_house['outer_house_coordinates']
+			house.outer_man_free_coordinates = info_house['outer_man_free_coordinates']
+			house.house_coordinates = info_house['house_coordinates']
+			house.man_free_coordinats = info_house['man_free_coordinats']
+			house.rotation = info_house['rotation']
+			
+			# Reassign house to old orignal location on grid
+			grid.assignment_house(house)
 
-				# Set outer house coordinates back to old values
-				house.outer_house_coordinates = old_outer_house_coordinates
-				house.outer_man_free_coordinates = old_outer_man_free_coordinates
+			succes = False
+
+		return succes
 
 	def mutate_grid(self, grid, hc_type, nr_houses=1): # type: switch or rotation
 		"""
