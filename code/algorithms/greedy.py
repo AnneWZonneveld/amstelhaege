@@ -10,7 +10,7 @@
 """
 
 import copy, random
-import code.algorithms.randomize as rz
+import code.algorithms.randomize as rz 
 from code.visualization import visualize as vis
 
 # Tools
@@ -44,10 +44,9 @@ class Greedy():
 		
 			rotation = rz.random_rotation()
 			
-			# Define house coordinates based on randomly picked coordinate
-			first_house.outer_house_coordinates = first_house.calc_house_coordinates(random_empty_coordinate, rotation)
-			first_house.outer_man_free_coordinates = first_house.calc_man_free_coordinates(first_house.outer_house_coordinates)
-			
+			# Define house coordinates based on randomly picked coordinate			
+			first_house.calc_all_coordinates(random_empty_coordinate,rotation)
+
 			# Check if location is valid
 			if first_house.valid_location(copy_grid):
 				print("Valid location")
@@ -55,6 +54,18 @@ class Greedy():
 				first_house.placed = True
 	
 		return copy_grid
+
+
+	def check_solution(self, new_grid, house):
+
+		new_value = new_grid.calculate_worth()
+		old_value = self.value
+
+		if new_value > old_value:
+			print("FOUND NEW BEST VALUE")
+			greedy_house = copy.deepcopy(new_grid)
+			self.value = new_value
+
 
 	def run(self):
 		
@@ -74,34 +85,31 @@ class Greedy():
 				print(f"Try {counter} for {house}")
 				counter += 1
 				
-				rotation = rz.random_rotation()
-
-				# Define potential coordinates based on starting coordinate
-				house.outer_house_coordinates = house.calc_house_coordinates(starting_coordinate, rotation)
-				house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinates)
+				# Set house coordinates
+				house.calc_all_coordinates(starting_coordinates, rotation="random")
 				
 				if house.valid_location(copy_grid):
 					print("Valid location")
 					# Preliminary assignment of house
 					copy_grid.assignment_house(house)
-					house.placed = True
-					new_worth = copy_grid.calculate_worth()
 
-					# aparte functie (check_solution)
-					if new_worth > highest_value:
-						best_rotation = rotation
-						best_starting_coordinate = starting_coordinate
-						highest_value = new_worth
+					# Check solution
+					greedy_house = self.check_solution(copy_grid, house)
+
+					# new_worth = copy_grid.calculate_worth()
+				
+					# if new_worth > highest_value:
+
+					# 	# Save house with (preliminary) best coordinates
+					# 	greedy_house = copy.deepcopy(house)
+					# 	highest_value = new_worth
+					# 	print(f"New highest value: {highest_value}")
 					
 					copy_grid.undo_assignment_house(house)
-					
-			# Place house with best location
-			house.outer_house_coordinates = house.calc_house_coordinates(best_starting_coordinate, best_rotation)
-			house.outer_man_free_coordinates = house.calc_man_free_coordinates(house.outer_house_coordinate)
 			
-			copy_grid.assignment_house(house)
-			house.placed = True
-			copy_grid.all_houses[i + 1] = house
+			# Place house with best location
+			copy_grid.assignment_house(greedy_house)
+			copy_grid.all_houses[i + 1] = greedy_house
 		
 		self.value = highest_value
 		self.grid = copy_grid

@@ -10,6 +10,7 @@ class House():
 		self.house_coordinates =[]
 		self.man_free_coordinates = []
 		self.extra_free = 0
+		self.rotation = None
 		self.placed = False
 
 		if self.type == "single":
@@ -31,10 +32,25 @@ class House():
 			self.min_free = 6
 			self.percentage = 0.06
 
+	def load_coordinates(self, coordinates):
+		object_coordinates = []
+
+		for column in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+			for row in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+				current_coordinate = (row, column)
+				object_coordinates.append(current_coordinate)
+
+		return object_coordinates 
+
 	def calc_all_coordinates(self, coordinates, rotation):
 		self.outer_house_coordinates = self.calc_house_coordinates(coordinates, rotation)
 		self.outer_man_free_coordinates = self.calc_man_free_coordinates(self.outer_house_coordinates)
-		self.rotation = rotation
+		
+		# Retrieve all coordinates of house
+		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
+		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
+
+		# self.rotation = rotation
 
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):
@@ -97,20 +113,11 @@ class House():
 				valid = False
 				return valid 
 
-		# Retrieve all coordinates of house
-		house_coordinates = grid.define_object_coordinates(self.outer_house_coordinates) #lijkt omslachting
-		man_free_coordinates = list(set(grid.define_object_coordinates(self.outer_man_free_coordinates)) - set(house_coordinates))
-
-		# Save retrieved coordinates
-		self.house_coordinates = house_coordinates
-		self.man_free_coordinates = man_free_coordinates
-
 		# Location of water, house or man free space other hous unavailable to place house
 		not_available = [grid.all_water_coordinates, grid.all_house_coordinates, grid.all_man_free_coordinates]
-		# not_available = [grid.all_house_coordinates, grid.all_man_free_coordinates]
-
+		
 		# Check for every house coordinate if not water or other house
-		for coordinate in house_coordinates:
+		for coordinate in self.house_coordinates:
 
 			if any(coordinate in sublist for sublist in not_available):
 				valid = False

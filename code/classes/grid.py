@@ -5,6 +5,7 @@ from .house import House
 from .water import Water
 from shapely.geometry import Point
 from code.classes.mandatory import MandatoryFreeSpace
+from shapely.geometry import Point
 import code.algorithms.randomize as rz
 # from IPython import embed;
 
@@ -175,13 +176,15 @@ class Grid():
 
         # Remove from empty coordinates
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
+
+        house.placed = True
     
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        #print(f"Calculating extra free meters for: {house}")
+        print(f"Calculating extra free meters for: {house}")
 
         # MISSCHIEN NOG AANPASSEN?
         house.extra_free = 10000
@@ -246,13 +249,13 @@ class Grid():
                     distance = house.outer_house_coordinates['bottom_left'][0] - other_house.outer_house_coordinates['bottom_right'][0]
                     extra_free_space = distance - house.min_free
 
-                #print(f"Extra free space: {extra_free_space}")
+                print(f"Extra free space: {extra_free_space}")
 
                 # If extra free space is shorter than the current one, replace
                 if extra_free_space < house.extra_free:
                     house.extra_free = extra_free_space
                     
-                    #print(f"NEW SHORTEST EXTRA FREE SPACE: {house.extra_free}")
+                    print(f"NEW SHORTEST EXTRA FREE SPACE: {house.extra_free}")
 
     def calculate_worth(self):
         """
@@ -284,12 +287,12 @@ class Grid():
 
         return total_networth
 
-    def create_output(self):
+    def create_output(self, name):
         """
         Creates csv-file with results from running an algorithm to place houses.
         """
 
-        with open('data/output.csv', 'w', newline='') as file:
+        with open(f'data/output/csv/output_{name}.csv', 'w', newline='') as file:
             writer = csv.writer(file)
 
             # Create header

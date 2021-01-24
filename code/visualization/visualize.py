@@ -2,10 +2,40 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 import numpy as np
 import os
-# from IPython import embed;
+from IPython import embed
 
+def hist_plot(values, name):
+    
+    fig, ax = plt.subplots()
 
-def visualize(grid):
+    q_iterations = len(values)
+
+    plt.hist(values)
+    plt.title(f"{name.capitalize()}: {q_iterations} iterations")
+    plt.xlabel("Value (€)")
+    plt.ylabel("Frequency")
+
+    path = os.path.join('.','data', 'output', 'figures', f'{name}_hist.png')
+    plt.savefig(path)
+
+def iteration_plot(values, hc_type):
+
+    fig, ax = plt.subplots()
+
+    # Deterimen x 
+    q_iterations = len(values)
+    x = np.arange(1, q_iterations + 1)
+
+    plt.plot(x, values)
+    plt.title(f"Hillclimber; type {hc_type}")
+    plt.xticks(np.arange(0, q_iterations +1, int(0.25*q_iterations)))
+    plt.xlabel("Iterations")
+    plt.ylabel("Value (€)")
+
+    path = os.path.join('.','data', 'output', 'figures', f'hill_climber_{hc_type}.png')
+    plt.savefig(path)
+
+def visualize(grid, name=""):
     """
     Creates a diagram that displays a map of Amstelhaege based on
     a given grid object.
@@ -29,6 +59,9 @@ def visualize(grid):
     # Set grid properties
     plt.grid(True)
 
+    # Title
+    plt.title(f"{name.capitalize()}: €{str(round(grid.value, 2))}")
+
     # Create representation of water
     water_coord= grid.load_water()
     water = draw_water(water_coord)
@@ -38,12 +71,12 @@ def visualize(grid):
     houses = draw_houses(houses_coord, grid)
 
     # Add water and houses to diagram
-    objects.extend(houses + water)
+    objects.extend(water + houses)
     representations = PatchCollection(objects, match_original=True)
     ax.add_collection(representations)
 
     # Save diagram to current directory
-    visualization = os.path.join('.','code', 'visualization', 'visualization.png')
+    visualization = os.path.join('.','data', 'output', 'figures', f'{name}_visualization.png')
     plt.savefig(visualization)
     
 def draw_water(water_coord):
