@@ -37,13 +37,13 @@ if __name__ == "__main__":
 
 	# ------------------------ Greedy algorithm -----------------------------------
 	#greedy = gr.Greedy(test_grid)
-	#greedy.run()
+	#greedy.run(gr_type="random")
 
 	# # Value of grid 
 	#print(f"Value greedy config: {greedy.value}")
 
 	# # Visualize case
-	#vis.visualize(greedy.grid)
+	#vis.visualize(greedy.grid, "greedy")
 
 	# # # Create csv output file
 	#greedy.grid.create_output("greedy")
