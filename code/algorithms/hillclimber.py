@@ -11,10 +11,12 @@ class HillClimber:
 		self.grid = copy.deepcopy(grid)
 		self.value = self.grid.value
 		self.all_values = []
+		self.conv_count = 0
 
 	def switch_house(self, grid):
 		"""
-		Switches two houses of different types if possible
+		Switches two random houses of different types if possible. Returns true 
+		if succesfully switched. 
 		"""
 
 		# Pick random house
@@ -22,37 +24,24 @@ class HillClimber:
 		different_houses = [house for house in grid.all_houses if house.type != house_1.type]
 		house_2 = random.choice(different_houses)
 
-
-		houses = [house_1, house_2]
-
+		# Save relevant info
 		info_house_1 = {
-			"outer_house_coordinates": house_1.outer_house_coordinates,
-			"outer_man_free_coordinates": house_1.outer_man_free_coordinates,
-			"house_coordinates": house_1.house_coordinates,
-			"man_free_coordinats": house_1.man_free_coordinates,
+			"top_left": house_1.outer_house_coordinates['top_left'],
 			"rotation": house_1.rotation
 		}
 
-		# Retrieve list of all houses of different type and pick random one
 		info_house_2 = {
-			"outer_house_coordinates": house_2.outer_house_coordinates,
-			"outer_man_free_coordinates": house_2.outer_man_free_coordinates,
-			"house_coordinates": house_2.house_coordinates,
-			"man_free_coordinats": house_2.man_free_coordinates,
-			"rotation": house_1.rotation
+			"top_left": house_2.outer_house_coordinates['top_left'],
+			"rotation": house_2.rotation
 		}
 
 		# Remove houses from map and set new coordinates
 		grid.undo_assignment_house(house_1)
 		grid.undo_assignment_house(house_2)
 
-		house_1_top_left = house_1.outer_house_coordinates['top_left']
-		house_2_top_left = house_2.outer_house_coordinates['top_left']
-		house_1_rotation = house_1.rotation
-		house_2_rotation = house_2.rotation
-
-		house_1.calc_all_coordinates(house_2_top_left, house_2_rotation)
-		house_2.calc_all_coordinates(house_1_top_left, house_1_rotation)
+		# Calculate new coordinates
+		house_1.calc_all_coordinates(info_house_2['top_left'], info_house_2['rotation'])
+		house_2.calc_all_coordinates(info_house_1['top_left'], info_house_1['rotation'])
 
 		# Check if new locations are valid
 		if house_1.valid_location(grid) and house_2.valid_location(grid):
@@ -64,20 +53,12 @@ class HillClimber:
 
 			succes = True
 
+		# Switch not possible
 		else:
 
-			# Set houses to old original coordinates
-			house_1.outer_house_coordinates = info_house_1['outer_house_coordinates']
-			house_1.outer_man_free_coordinates = info_house_1['outer_man_free_coordinates']
-			house_1.house_coordinates = info_house_1['house_coordinates']
-			house_1.man_free_coordinats = info_house_1['man_free_coordinats']
-			house_1.rotation = info_house_1['rotation']
-
-			house_2.outer_house_coordinates = info_house_2['outer_house_coordinates']
-			house_2.outer_man_free_coordinates = info_house_2['outer_man_free_coordinates']
-			house_2.house_coordinates = info_house_2['house_coordinates']
-			house_2.man_free_coordinats = info_house_2['man_free_coordinats']
-			house_2.rotation = info_house_2['rotation']
+			# Calculate old coordinates
+			house_1.calc_all_coordinates(info_house_1['top_left'], info_house_1['rotation'])
+			house_2.calc_all_coordinates(info_house_2['top_left'], info_house_2['rotation'])
 
 			# Reassign houses to old location on grid
 			grid.assignment_house(house_1)
@@ -90,19 +71,16 @@ class HillClimber:
 
 	def rotate_house(self, grid):
 		"""
-		Rotates house if possible.
+		Rotates house if possible. Returns true if succesfully rotated.
 		"""
 
 		# Pick random house
 		house = random.choice(grid.all_houses)
 		house_starting_xy = house.outer_house_coordinates['top_left']
 
-		# Save current coordinates
+		# Save relvant inf
 		info_house = {
-			"outer_house_coordinates": house.outer_house_coordinates,
-			"outer_man_free_coordinates": house.outer_man_free_coordinates,
-			"house_coordinates": house.house_coordinates,
-			"man_free_coordinats": house.man_free_coordinates,
+			"top_left": house.outer_house_coordinates['top_left'],
 			"rotation": house.rotation
 		}
 
@@ -116,21 +94,19 @@ class HillClimber:
 		elif house.rotation == "vertical":
 			house.calc_all_coordinates(house_starting_xy, "horizontal")
 
-		# Check if house can be placed on these coordinates 
+		# Check if new location is valid 
 		if house.valid_location(grid):
 			print("Rotated house")
 
-			# Do the new assignment
+			# Assign house to new location
 			grid.assignment_house(house)
 			succes = True
+
+		# Rotation not possible
 		else:
 
-			# Set house to old original coordinates
-			house.outer_house_coordinates = info_house['outer_house_coordinates']
-			house.outer_man_free_coordinates = info_house['outer_man_free_coordinates']
-			house.house_coordinates = info_house['house_coordinates']
-			house.man_free_coordinats = info_house['man_free_coordinats']
-			house.rotation = info_house['rotation']
+			# Calculate old coordinates
+			house.calc_all_coordinates(info_house['top_left'], info_house['rotation'])
 			
 			# Reassign house to old orignal location on grid
 			grid.assignment_house(house)
@@ -139,13 +115,12 @@ class HillClimber:
 
 		return succes
 
-	def mutate_grid(self, grid, hc_type, nr_houses=1): # type: switch or rotation
+
+	def mutate_grid(self, grid, hc_type, nr_houses=1): 
 		"""
-		Depending on hc_type, this function performs a switch or rotates a house
+		Depending on hc_type, this function performs a nr_houses switches or rotates a house
 		for nr_houses. 
 		"""
-
-		# Misschien nr-houses weghalen, overbodig en incompatible met succes boolean
 
 		if hc_type == "switch":
 			for _ in range(nr_houses):	
@@ -157,32 +132,53 @@ class HillClimber:
 		return succes 
 
 	def check_solution(self, new_grid):
+		"""
+		Checks if value of new grid is higher than current highest value.
+		If so, current best grid and value are replaced by new grid and value.
+		Also keeps track of the convergence count.
+		"""
 
 		new_value = new_grid.calculate_worth()
 		old_value = self.value
 
 		if new_value > old_value:
 			print("FOUND NEW BEST VALUE")
+
+			# Replace best grid and value 
 			self.grid = new_grid
 			self.value = new_value
 
+			# Reset convergence count
+			self.conv_count = 0
 
-	def run(self, iterations, hc_type="switch", mutate_nr_houses=1):
+		# No improvement
+		else:
+			self.conv_count += 1
+
+
+	def run(self, iterations, hc_type="switch", limit=200, mutate_nr_houses=1):
+		"""
+		Runs the hill climber algorithm for certain amount of iterations. 
+		"""
 
 		self.iterations = iterations
 
 		for iteration in range(iterations):
 
-			print(f'Iteration {iteration}/{iterations}, current value: {self.value}')
+			# Check for convergence
+			if self.conv_count < limit:
 
-			new_grid = copy.deepcopy(self.grid)
+				print(f"Iteration {iteration}/{iterations}, current value: {self.value}")
+				print(f"Conv counter: {self.conv_count}")
 
-			succes = self.mutate_grid(new_grid, hc_type)
+				new_grid = copy.deepcopy(self.grid)
 
-			if succes:
+				succes = self.mutate_grid(new_grid, hc_type)
 
-				# Add solution to all solutions
-				self.all_values.append(new_grid.value)
+				if succes:
 
-				# Check if new solution is better 
-				self.check_solution(new_grid)
+					# Add solution to all solutions
+					self.all_values.append(new_grid.value)
+
+					# Check if new solution is better 
+					self.check_solution(new_grid)

@@ -5,14 +5,8 @@ import copy
 from IPython import embed
 from code.visualization import visualize as vis
 
-class Randomize():
-	def __init__(self, grid):
-		self.grid = grid
-		self.best_grid = None
-		self.best_value = 0 
-		self.all_values = []
 
-	def random_empty_coordinate(self, grid):
+def random_empty_coordinate(grid):
 		"""
 		Returns a random empty coordinate from grid.
 		"""
@@ -22,7 +16,7 @@ class Randomize():
 		return random_coordinate
 
 
-	def random_rotation(self):
+def random_rotation():
 		"""
 		Returns a random rotation.
 		"""
@@ -32,6 +26,13 @@ class Randomize():
 
 		return random_rotation
 
+
+class Randomize():
+	def __init__(self, grid):
+		self.grid = grid
+		self.best_grid = None
+		self.best_value = 0 
+		self.all_values = []
 
 	def random_assignment(self, grid):
 		"""
@@ -45,18 +46,17 @@ class Randomize():
 		# Try to place all houses on grid at valid location, from large to small (heuristic)
 		for house in reversed(houses):
 			
-			# embed()
-
 			print(f"Trying to place: {house}")
 
 			while house.placed == False:
 
-					random_cell = self.random_empty_coordinate(copy_grid)
+					# Pick random cell
+					random_cell = random_empty_coordinate(copy_grid)
 					
-					rotation = self.random_rotation()
+					# Calculate all coordinates for random cell and random rotation
+					house.calc_all_coordinates(random_cell, rotation="random")
 
-					house.calc_all_coordinates(random_cell, rotation)
-
+					# Check if location is valid
 					if house.valid_location(copy_grid):
 						print("Valid location")
 
@@ -71,6 +71,11 @@ class Randomize():
 		return copy_grid
 
 	def check_solution(self, grid):
+		"""
+		Checks if value of new grid is higher than current highest value.
+		If so, current best grid and value are replaced by new grid and value.
+		"""
+
 		new_value = grid.value
 		old_value = self.best_value
 
@@ -79,6 +84,9 @@ class Randomize():
 			self.best_value = new_value
 
 	def run(self, iterations):
+		"""
+		Runs rondimize for specifc amount of iteration.
+		"""
 
 		for i in range(0, iterations):
 
@@ -91,5 +99,3 @@ class Randomize():
 			self.all_values.append(random_grid.value)
 
 			self.check_solution(random_grid)
-
-

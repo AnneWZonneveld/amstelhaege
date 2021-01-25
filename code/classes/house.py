@@ -1,5 +1,5 @@
 from code.algorithms import randomize as rz
-from IPython import embed
+# from IPython import embed
 
 class House():
 	def __init__(self, type, id):
@@ -32,7 +32,12 @@ class House():
 			self.min_free = 6
 			self.percentage = 0.06
 
+
 	def load_coordinates(self, coordinates):
+		"""
+		Loads all coordinates based on dictionary with the four outer coordinates. 
+		"""
+
 		object_coordinates = []
 
 		for column in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
@@ -42,16 +47,6 @@ class House():
 
 		return object_coordinates 
 
-	def calc_all_coordinates(self, coordinates, rotation):
-		self.outer_house_coordinates = self.calc_house_coordinates(coordinates, rotation)
-		self.outer_man_free_coordinates = self.calc_man_free_coordinates(self.outer_house_coordinates)
-		
-		# Retrieve all coordinates of house
-		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
-		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
-
-		# self.rotation = rotation
-
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):
 		"""
@@ -60,7 +55,7 @@ class House():
 
 		# Pick random rotation
 		if rotation == "random":
-			rotation = rz.random_rotation_choice()
+			rotation = rz.random_rotation()
 
 		# Assign according width and depth
 		if rotation == "horizontal":
@@ -84,6 +79,7 @@ class House():
 		
 		return house_coordinates
 
+
 	def calc_man_free_coordinates(self, house_coordinates):
 		"""
 		Returns a dictionary of house coordinates (including mandatory free space).
@@ -98,9 +94,28 @@ class House():
 
 		return coordinates_mandatory_free_space
 
-	def valid_location(self, grid):
 
-		# embed()
+	def calc_all_coordinates(self, coordinates, rotation):
+		"""
+		Sets all outer coordinates and loads all according coordinates. 
+		"""
+
+		self.outer_house_coordinates = self.calc_house_coordinates(coordinates, rotation)
+		self.outer_man_free_coordinates = self.calc_man_free_coordinates(self.outer_house_coordinates)
+		
+		# Retrieve all coordinates of house
+		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
+		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
+
+
+	def valid_location(self, grid):
+		"""
+		Checks if coordinates of house are located:
+		- within grid
+		- not on water
+		- not on another house
+		- not on mandatory free space of other house
+		"""
 
 		valid = True
 

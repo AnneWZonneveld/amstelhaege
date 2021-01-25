@@ -3,7 +3,6 @@ import itertools
 import numpy as np
 from .house import House
 from .water import Water
-from code.classes.mandatory import MandatoryFreeSpace
 from shapely.geometry import Point
 import code.algorithms.randomize as rz
 # from IPython import embed;
@@ -22,20 +21,6 @@ class Grid():
         self.all_man_free_coordinates = []
         self.value = 0   
 
-    def load_empty_coordinates(self):
-        """
-        Returns a list with all coordinates that make up the map
-        of Amstelhaege.
-        """
-        
-        empty_coordinates = []
-
-        for x in range(self.width + 1 ):
-            for y in range(self.depth + 1):
-                coordinate = (x,y)
-                empty_coordinates.append(coordinate)
-
-        return empty_coordinates 
 
     def load_houses(self):
         """
@@ -53,7 +38,9 @@ class Grid():
 
         # Create correct quantiy of houses
         for q_type in [q_single, q_bungalow, q_maison]:
+
             for house in range(int(q_type)):
+
                 # Assign each House instance according type
                 if q_type == q_single:
                     new_house = House("single", id_counter) 
@@ -68,6 +55,7 @@ class Grid():
 
         return all_houses
 
+
     def load_water(self):
         """
         Creates a Water object for each water surface and sets its
@@ -79,6 +67,7 @@ class Grid():
 
         # Load coordinates of water surface(s) from source file
         with open(self.water, 'r') as in_file:
+
             # Skip header
             next(in_file)
 
@@ -88,8 +77,10 @@ class Grid():
 
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
+
                 if row == "":
                     break
+
                 items = row.split(",")
                 strip_items = [item.strip("\"") for item in items]
 
@@ -111,20 +102,22 @@ class Grid():
         
         return all_water
 
-    def define_object_coordinates(self, coordinates):
+
+    def load_empty_coordinates(self):
         """
-        Returns a list of coordinates for a specific object.
+        Returns a list with all coordinates that make up the map
+        of Amstelhaege.
         """
+        
+        empty_coordinates = []
 
-        object_coordinates = []
+        for x in range(self.width + 1 ):
+            for y in range(self.depth + 1):
+                coordinate = (x,y)
+                empty_coordinates.append(coordinate)
 
-        for column in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-            for row in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+        return empty_coordinates 
 
-                current_coordinate = (row, column)
-                object_coordinates.append(current_coordinate)
-
-        return object_coordinates 
 
     def define_water_coordinates(self):
         """
@@ -145,21 +138,27 @@ class Grid():
         return water_coordinates
 
 
-    def undo_assignment_house(self, house):
+    def define_object_coordinates(self, coordinates):
         """
-        Reverts the placement of a house at a certain position.
+        Returns a list of coordinates for a specific object.
         """
+
+        object_coordinates = []
+
+        # for column in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+        #     for row in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+
+        #         current_coordinate = (row, column)
+        #         object_coordinates.append(current_coordinate)
+
+        for x in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+            for y in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
         
-        for coordinate in house.house_coordinates:
-            self.all_empty_coordinates.append(coordinate)
-            self.all_house_coordinates.remove(coordinate)
-        
-        for coordinate in house.man_free_coordinates:
-            self.all_empty_coordinates.append(coordinate)
-            self.all_man_free_coordinates.remove(coordinate)
-        
-        house.house_coordinates.clear()
-        house.placed = False
+                current_coordinate = (x, y)
+                object_coordinates.append(current_coordinate)
+
+        return object_coordinates 
+
 
     def assignment_house(self, house):
         """ 
@@ -167,7 +166,6 @@ class Grid():
         grid.
         """
 
-        # embed()
         print("Performing assignment of house")
 
         # Add coordinates to grid 
@@ -181,6 +179,23 @@ class Grid():
         self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
 
         house.placed = True
+
+
+    def undo_assignment_house(self, house):
+        """
+        Reverts the placement of a house at a certain position.
+        """
+        
+        for coordinate in house.house_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_house_coordinates.remove(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_man_free_coordinates.remove(coordinate)
+        
+        house.placed = False
+
     
     def calculate_extra_free_meters(self, house):
         """
@@ -270,6 +285,7 @@ class Grid():
 
         # Calculate worth of each house placed on the map
         for house in self.all_houses:
+
             if house.placed == True:
 
                 # Net worth of house

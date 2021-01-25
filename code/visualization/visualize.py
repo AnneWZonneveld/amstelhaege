@@ -1,10 +1,13 @@
-import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
 import numpy as np
 import os
+import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
 from IPython import embed
 
-def hist_plot(values, name):
+def hist_plot(values, map_name, quantity, name):
+    """
+    Creates a histogram.
+    """
     
     fig, ax = plt.subplots()
 
@@ -15,14 +18,22 @@ def hist_plot(values, name):
     plt.xlabel("Value (€)")
     plt.ylabel("Frequency")
 
-    path = os.path.join('.','data', 'output', 'figures', f'{name}_hist.png')
-    plt.savefig(path)
+    path = os.path.join(".","data", "output", f"{map_name}", f"{quantity}", "figures", "analysis")
 
-def iteration_plot(values, hc_type):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    new_path = os.path.join(path, f"{name}_hist.png" )
+    plt.savefig(new_path)
+
+def iteration_plot(values, start_state, hc_type):
+    """
+    Creates a plot that shows the development of grid value over iterations.
+    """
 
     fig, ax = plt.subplots()
 
-    # Deterimen x 
+    # Determine x
     q_iterations = len(values)
     x = np.arange(1, q_iterations + 1)
 
@@ -32,10 +43,15 @@ def iteration_plot(values, hc_type):
     plt.xlabel("Iterations")
     plt.ylabel("Value (€)")
 
-    path = os.path.join('.','data', 'output', 'figures', f'hill_climber_{hc_type}.png')
-    plt.savefig(path)
+    path = os.path.join(".","data", "output", f"{map_name}", f"{quantity}", "figures", "maps")
 
-def visualize(grid, name=""):
+    if not os.path.exists(path):
+        os.makedirs(path)
+        
+    new_path = os.path.join(path, f"{start_state}_hill_climber_{hc_type}.png")
+    plt.savefig(new_path)
+
+def visualize(grid, map_name, quantity, name=""):
     """
     Creates a diagram that displays a map of Amstelhaege based on
     a given grid object.
@@ -76,7 +92,12 @@ def visualize(grid, name=""):
     ax.add_collection(representations)
 
     # Save diagram to current directory
-    visualization = os.path.join('.','data', 'output', 'figures', f'{name}_visualization.png')
+    path = os.path.join(".","data", "output", f"{map_name}", f"{quantity}", "figures", "maps")
+
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    new_path = os.path.join(path, f"{name}_visualization.png")
     plt.savefig(visualization)
     
 def draw_water(water_coord):
