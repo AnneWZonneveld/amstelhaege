@@ -1,4 +1,5 @@
 import csv
+import os
 from .house import House
 from .water import Water
 from shapely.geometry import Point
@@ -295,15 +296,19 @@ class Grid():
         self.value = total_networth
         
         return total_networth
-        
 
-    def create_output(self, name):
+
+    def create_output(self, map_name, quantity, name):
         """
         Creates a csv-file with results from running an algorithm to place 
         houses.
         """
+        path = f"data/output/{map_name}/{quantity}/csv/output_{name}.csv"
 
-        with open(f"data/output/csv/output_{name}.csv", "w", newline='') as file:
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        with open(f"{path}/output_{name}.csv", "w", newline='') as file:
             writer = csv.writer(file)
 
             # Create header
