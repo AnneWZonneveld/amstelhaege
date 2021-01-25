@@ -55,20 +55,20 @@ class Grid():
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
+        for q_type in [q_maison, q_bungalow, q_single]:
             for house in range(int(q_type)):
                 # Assign each House instance according type
-                if q_type == q_single:
-                    new_house = House("single", id_counter) 
+                if q_type == q_maison:
+                    new_house = House("maison", id_counter) 
                 elif q_type == q_bungalow:
                     new_house = House("bungalow", id_counter)
                 else:
-                    new_house = House("maison", id_counter)
-
+                    new_house = House("single", id_counter)
+                    
                 # Add House to dictionary and adjust id_counter
                 all_houses.append(new_house)
                 id_counter = id_counter + 1
-
+        print(all_houses)
         return all_houses
 
     def load_water(self):
@@ -185,7 +185,7 @@ class Grid():
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        print(f"Calculating extra free meters for: {house}")
+        #print(f"Calculating extra free meters for: {house}")
 
         # Set extra free meters to a bit more than the possible maximum
         house.extra_free = MAX_EXTRA_FREE

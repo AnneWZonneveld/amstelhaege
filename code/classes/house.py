@@ -1,5 +1,6 @@
 from code.algorithms import randomize as rz
 from IPython import embed
+import random
 
 class House():
 	def __init__(self, type, id):
@@ -50,8 +51,6 @@ class House():
 		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
 		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
 
-		# self.rotation = rotation
-
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):
 		"""
@@ -60,7 +59,9 @@ class House():
 
 		# Pick random rotation
 		if rotation == "random":
-			rotation = rz.random_rotation_choice()
+			#self.rotation = random_algorithm.random_rotation_choice()
+			rotation = ['horizontal', 'vertical']
+			self.rotation = random.choice(rotation)
 
 		# Assign according width and depth
 		if rotation == "horizontal":
