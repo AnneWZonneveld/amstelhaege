@@ -1,4 +1,5 @@
 from code.algorithms import randomize as rz
+from code.constants import *
 import random
 
 
@@ -15,24 +16,23 @@ class House():
 		self.placed = False
 
 		if self.type == "single":
-			self.width = 8
-			self.depth = 8
-			self.price = 285000
-			self.min_free = 2
-			self.percentage = 0.03
+			self.width = SINGLE_WIDTH
+			self.depth = SINGLE_DEPTH
+			self.price = SINGLE_PRICE
+			self.min_free = SINGLE_MIN_FREE
+			self.percentage = SINGLE_PERC
 		elif self.type == "bungalow":
-			self.width = 11
-			self.depth = 7
-			self.price = 399000
-			self.min_free = 3
-			self.percentage = 0.04
+			self.width = BUNGALOW_WIDTH
+			self.depth = BUNGALOW_DEPTH
+			self.price = BUNGALOW_PRICE
+			self.min_free = BUNGALOW_MIN_FREE
+			self.percentage = BUNGALOW_PERC
 		else:
-			self.width = 12
-			self.depth = 10
-			self.price = 610000
-			self.min_free = 6
-			self.percentage = 0.06
-
+			self.width = MAISON_WIDTH
+			self.depth = MAISON_DEPTH
+			self.price = MAISON_PRICE
+			self.min_free = MAISON_MIN_FREE
+			self.percentage = MAISON_PERC
 
 	def load_coordinates(self, coordinates):
 		"""
