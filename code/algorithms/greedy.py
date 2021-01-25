@@ -1,16 +1,5 @@
-"""
-	Pseudocode
-	- Place first house randomly
-	- Repeat until no houses left
-		- Draw a house from list
-		- For each valid location of the house
-			- If new worth of map > current worth of map
-				- Save location as best solution
-		- Place house at location of best solution
-"""
-
 import copy, random
-import code.algorithms.randomize as rz 
+from code.algorithms import randomize as rz 
 from code.visualization import visualize as vis
 
 # Tools
@@ -18,8 +7,9 @@ from IPython import embed;
 
 class Greedy():
 	"""
-	Greedy class that assigns the best possible location (that results 
-	in highest map value) for a house one by one.
+	Greedy class that places houses one after another. It assigns the
+	first house randomly. For each subsequent house, it chooses the
+	location that adds most value to the map (i.e. local optimum).
 	"""
 
 	def __init__(self, grid):
@@ -31,21 +21,20 @@ class Greedy():
 		Places first house on a random valid location on grid copy and
 		returns updated grid copy. 
 		"""
-		print("Placing first house")
-
 		copy_grid = copy.deepcopy(self.grid)
+		random = rz.Randomize(copy_grid)
 
 		# Retrieve first house
 		first_house = copy_grid.all_houses[0]
 
 		# Place house on random valid spot on grid
 		while first_house.placed == False:
-			random_empty_coordinate = (rz.random_empty_coordinate(copy_grid))
-		
-			rotation = rz.random_rotation()
+			# Randomly determine bottom left corner and rotation of first house
+			random_empty_coordinate = random.random_empty_coordinate(copy_grid)
+			rotation = random.random_rotation()
 			
 			# Define house coordinates based on randomly picked coordinate			
-			first_house.calc_all_coordinates(random_empty_coordinate,rotation)
+			first_house.calc_all_coordinates(random_empty_coordinate, rotation)
 
 			# Check if location is valid
 			if first_house.valid_location(copy_grid):
@@ -56,23 +45,28 @@ class Greedy():
 		return copy_grid
 
 
-	def check_solution(self, new_grid, house):
+	def check_solution(self, new_grid):
+		"""
+		Returns true if placement of house on new_grid adds more value
+		to map than all previously tested locations, else false.
+		"""
+
+		success = False
 
 		new_value = new_grid.calculate_worth()
 		old_value = self.value
 
 		if new_value > old_value:
-			print("FOUND NEW BEST VALUE")
-			greedy_house = copy.deepcopy(new_grid)
 			self.value = new_value
-
+			success = True
+			
+		return success
 
 	def run(self):
 		
 		# Randomly place first house on map
 		copy_grid = self.place_first_house()
-		
-		highest_value = 0
+		print("Placed first house")
 
 		spare_houses = copy_grid.all_houses[1:]
 
@@ -86,30 +80,24 @@ class Greedy():
 				counter += 1
 				
 				# Set house coordinates
-				house.calc_all_coordinates(starting_coordinates, rotation="random")
+				house.calc_all_coordinates(starting_coordinate, rotation="random")
 				
 				if house.valid_location(copy_grid):
 					print("Valid location")
 					# Preliminary assignment of house
 					copy_grid.assignment_house(house)
-
+					
 					# Check solution
-					greedy_house = self.check_solution(copy_grid, house)
-
-					# new_worth = copy_grid.calculate_worth()
-				
-					# if new_worth > highest_value:
-
-					# 	# Save house with (preliminary) best coordinates
-					# 	greedy_house = copy.deepcopy(house)
-					# 	highest_value = new_worth
-					# 	print(f"New highest value: {highest_value}")
+					if self.check_solution(copy_grid):
+						best_coordinate = starting_coordinate
+						best_rotation = house.rotation
 					
 					copy_grid.undo_assignment_house(house)
 			
-			# Place house with best location
-			copy_grid.assignment_house(greedy_house)
-			copy_grid.all_houses[i + 1] = greedy_house
+			# Definite assignment of house at location that yiedl
+			house.calc_all_coordinates(best_coordinate, rotation=best_rotation)
+			copy_grid.assignment_house(house)
+			copy_grid.all_houses[i + 1] = house
 		
-		self.value = highest_value
 		self.grid = copy_grid
+		

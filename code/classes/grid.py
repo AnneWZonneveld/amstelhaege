@@ -53,20 +53,20 @@ class Grid():
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
+        for q_type in [q_maison, q_bungalow, q_single]:
             for house in range(int(q_type)):
                 # Assign each House instance according type
-                if q_type == q_single:
-                    new_house = House("single", id_counter) 
+                if q_type == q_maison:
+                    new_house = House("maison", id_counter) 
                 elif q_type == q_bungalow:
                     new_house = House("bungalow", id_counter)
                 else:
-                    new_house = House("maison", id_counter)
-
+                    new_house = House("single", id_counter)
+                    
                 # Add House to dictionary and adjust id_counter
                 all_houses.append(new_house)
                 id_counter = id_counter + 1
-
+        print(all_houses)
         return all_houses
 
     def load_water(self):
@@ -184,7 +184,7 @@ class Grid():
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        print(f"Calculating extra free meters for: {house}")
+        #print(f"Calculating extra free meters for: {house}")
 
         # MISSCHIEN NOG AANPASSEN?
         house.extra_free = 10000
@@ -249,13 +249,13 @@ class Grid():
                     distance = house.outer_house_coordinates['bottom_left'][0] - other_house.outer_house_coordinates['bottom_right'][0]
                     extra_free_space = distance - house.min_free
 
-                print(f"Extra free space: {extra_free_space}")
+                #print(f"Extra free space: {extra_free_space}")
 
                 # If extra free space is shorter than the current one, replace
                 if extra_free_space < house.extra_free:
                     house.extra_free = extra_free_space
                     
-                    print(f"NEW SHORTEST EXTRA FREE SPACE: {house.extra_free}")
+                    #print(f"NEW SHORTEST EXTRA FREE SPACE: {house.extra_free}")
 
     def calculate_worth(self):
         """
