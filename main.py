@@ -26,28 +26,29 @@ if __name__ == "__main__":
 	# vis.visualize(randomize.best_grid, map, quantity, "randomize")
 
 	# Visualize histogram
+
 	# vis.hist_plot(randomize.all_values, map_name, quantity, "randomize")
 
-	#Create csv output file best case
+	# Create csv output file best case
 	# randomize.best_grid.create_output("random")
 
 	# Determine highest value and mean
-	print(f"HIGHEST RANDOMIZE VALUE: {randomize.best_value}")
-	print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")
+	#print(f"HIGHEST RANDOMIZE VALUE: {randomize.best_value}")
+	#print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")
 
 
 	# ------------------------ Greedy algorithm -----------------------------------
-	# greedy = gr.Greedy(test_grid)
-	# greedy.run()
+	#greedy = gr.Greedy(test_grid)
+	#greedy.run(gr_type="random")
 
 	# # Value of grid 
-	# print(f"Value greedy config: {greedy.value}")
+	#print(f"Value greedy config: {greedy.value}")
 
 	# # Visualize case
 	# vis.visualize(greedy.grid, map, quantity, "greedy")
 
-	# # # Create csv output file
-	# greedy.grid.create_output("greedy")
+	# # Create csv output file
+	#greedy.grid.create_output("greedy")
 
 	# ------------------------- Hill Climber algorithm ------------------------------
 	print("PERFORMING HC")
@@ -60,13 +61,13 @@ if __name__ == "__main__":
 	hillclimber.run(iterations=2000, hc_type=hc_type)
 
 	# Value of grid
-	print(f"HILLCLIMBER VALUE: {hillclimber.value}")
+	#print(f"HILLCLIMBER VALUE: {hillclimber.value}")
 
 	# Visualize case
 	# vis.visualize(hillclimber.grid, map, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	# Visualize iterations
-	# vis.iteration_plot(hillclimber.all_values, start_state, hc_type)
+	# vis.iteration_plot(hillclimber.all_values, map, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	# Create csv output file
 	# hillclimber.grid.create_output(f"hillclimber_{hc_type}")
@@ -78,19 +79,15 @@ if __name__ == "__main__":
 	hillclimber.run(iterations=2000, hc_type=hc_type)
 
 	# Value of grid
-	print(f"HILLCLIMBER VALUE: {hillclimber.value}")
+	#print(f"HILLCLIMBER VALUE: {hillclimber.value}")
 
 	# Visualize case
 	# vis.visualize(hillclimber.grid, map, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	# Visualize iterations
-	# vis.iteration_plot(hillclimber.all_values, start_state, hc_type)
+	# vis.iteration_plot(hillclimber.all_values, map, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	# Create csv output file
 	# hillclimber.grid.create_output(f"hillclimber_{hc_type}")
-
-
-
-
 
 

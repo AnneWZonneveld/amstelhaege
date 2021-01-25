@@ -1,5 +1,6 @@
 from code.algorithms import randomize as rz
-# from IPython import embed
+import random
+
 
 class House():
 	def __init__(self, type, id):
@@ -46,6 +47,15 @@ class House():
 				object_coordinates.append(current_coordinate)
 
 		return object_coordinates 
+
+
+	def calc_all_coordinates(self, coordinates, rotation):
+		self.outer_house_coordinates = self.calc_house_coordinates(coordinates, rotation)
+		self.outer_man_free_coordinates = self.calc_man_free_coordinates(self.outer_house_coordinates)
+		
+		# Retrieve all coordinates of house
+		self.house_coordinates = self.load_coordinates(self.outer_house_coordinates) 
+		self.man_free_coordinates = list(set(self.load_coordinates(self.outer_man_free_coordinates)) - set(self.house_coordinates))
 
 
 	def calc_house_coordinates(self, cell_coordinates, rotation):

@@ -1,3 +1,4 @@
-pip install numpy 
-python -m pip install -U matplotlib (visualisation)
-PathCollection
+numpy==1.19.5
+geos==0.2.2
+Shapely==1.7.1
+matplotlib==3.3.3

@@ -43,8 +43,8 @@ class Randomize():
 		copy_grid = copy.deepcopy(grid)
 		houses = copy_grid.all_houses
 		
-		# Try to place all houses on grid at valid location, from large to small (heuristic)
-		for house in reversed(houses):
+		# Try to place all houses on grid at valid location
+		for house in houses:
 			
 			print(f"Trying to place: {house}")
 
