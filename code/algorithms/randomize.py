@@ -1,10 +1,6 @@
 import random
 import copy
 
-# Tools
-from IPython import embed
-from code.visualization import visualize as vis
-
 
 def random_empty_coordinate(grid):
 		"""

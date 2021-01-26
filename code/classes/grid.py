@@ -4,6 +4,8 @@ from .house import House
 from .water import Water
 from shapely.geometry import Point
 
+from IPython import embed
+
 # Constants
 MAX_EXTRA_FREE = 250
 GRID_WIDTH = 180
@@ -42,7 +44,7 @@ class Grid():
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
+        for q_type in [q_maison, q_bungalow, q_single]:
 
             for house in range(int(q_type)):
 
@@ -303,33 +305,43 @@ class Grid():
         Creates a csv-file with results from running an algorithm to place 
         houses.
         """
-        path = f"data/output/{map_name}/{quantity}/csv/output_{name}.csv"
+
+        # embed()
+
+        path = f"data/output/{map_name}/{quantity}/csv/{name}"
 
         if not os.path.exists(path):
             os.makedirs(path)
 
-        with open(f"{path}/output_{name}.csv", "w", newline='') as file:
+        with open(f"{path}/output.csv", "w", newline='') as file:
             writer = csv.writer(file)
 
             # Create header
-            fieldnames =["structure", "corner_1 (bottom_left)", "corner_2 (bottom_right)", "corner_3 (top_left)", "corner_4 (top_right)", "type"]
+            fieldnames =["structure", "corner_1", "corner_2", "corner_3", "corner_4", "type"]
             writer.writerow(fieldnames)
 
             # Add location of water to csv file
             for water_object in self.load_water():
-                bottom_left = water_object.coordinates["bottom_left"]
-                bottom_right = water_object.coordinates["bottom_right"]
-                top_left = water_object.coordinates["top_left"]
-                top_right = water_object.coordinates["top_left"]
-                water_list = [water_object, bottom_left, bottom_right, top_left, top_right, "WATER"]
+                bottom_left = f"{water_object.coordinates['bottom_left'][0]},{water_object.coordinates['bottom_left'][1]}"
+                bottom_right = f"{water_object.coordinates['bottom_right'][0]},{water_object.coordinates['bottom_right'][1]}"
+                top_left = f"{water_object.coordinates['top_left'][0]},{water_object.coordinates['top_left'][1]}"
+                top_right = f"{water_object.coordinates['top_right'][0]},{water_object.coordinates['top_right'][1]}"
+                water_list = [water_object, bottom_left, top_left, top_right, bottom_right, "WATER"]
                 writer.writerow(water_list)
             
             for house in self.all_houses:
-                bottom_left = house.outer_house_coordinates["bottom_left"]
-                bottom_right = house.outer_house_coordinates["bottom_right"]
-                top_left = house.outer_house_coordinates["top_left"]
-                top_right = house.outer_house_coordinates["top_left"]
-                house_list = [f"{house.type}_{house.id}", bottom_left, bottom_right, top_left, top_right, house.type.upper()]
+
+                # Determine label
+                if house.type == "single":
+                    label = "eengezinswoning"
+                else:
+                    label = house.type
+
+                bottom_left = f"{house.outer_house_coordinates['bottom_left'][0]},{house.outer_house_coordinates['bottom_left'][1]}"
+                bottom_right = f"{house.outer_house_coordinates['bottom_right'][0]},{house.outer_house_coordinates['bottom_right'][1]}"
+                top_left = f"{house.outer_house_coordinates['top_left'][0]},{house.outer_house_coordinates['top_left'][1]}"
+                top_right = f"{house.outer_house_coordinates['top_right'][0]},{house.outer_house_coordinates['top_right'][1]}"
+                house_list = [f"{label}_{house.id}", bottom_left, top_left, top_right, bottom_right, label.upper()]
                 writer.writerow(house_list)
 
             # Add total networth of map to csv file

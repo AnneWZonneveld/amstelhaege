@@ -2,8 +2,6 @@ import copy, random
 from code.algorithms import randomize as rz 
 from code.visualization import visualize as vis
 
-# Tools
-from IPython import embed; 
 
 class Greedy():
 	"""
@@ -22,7 +20,6 @@ class Greedy():
 		returns updated grid copy. 
 		"""
 		copy_grid = copy.deepcopy(self.grid)
-		random = rz.Randomize(copy_grid)
 
 		# Randomly pick first house
 		first_house = copy_grid.all_houses[0]
@@ -30,9 +27,8 @@ class Greedy():
 		# Place house on random valid spot on grid
 		while first_house.placed == False:
 			# Define house coordinates based on randomly picked rotation and top left corner
-			random_empty_coordinate = random.random_empty_coordinate(copy_grid)
-			rotation = random.random_rotation()			
-			first_house.calc_all_coordinates(random_empty_coordinate, rotation)
+			random_empty_coordinate = rz.random_empty_coordinate(copy_grid)		
+			first_house.calc_all_coordinates(random_empty_coordinate,"random")
 
 			# If location is valid, place house
 			if first_house.valid_location(copy_grid):

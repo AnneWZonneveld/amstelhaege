@@ -1,10 +1,6 @@
 import copy
 import random
 
-# Tools
-from IPython import embed
-from code.visualization import visualize as vis
-
 
 class HillClimber:
 	def __init__(self, grid):
