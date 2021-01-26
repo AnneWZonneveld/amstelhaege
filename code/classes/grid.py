@@ -2,9 +2,9 @@ import csv
 import os
 from .house import House
 from .water import Water
+from code.constants import *
 from shapely.geometry import Point
 
-from IPython import embed
 
 # Constants
 MAX_EXTRA_FREE = 250
@@ -209,8 +209,8 @@ class Grid():
 
         #print(f"Calculating extra free meters for: {house}")
 
-        # Set extra free meters to a bit more than the possible maximum
-        house.extra_free = MAX_EXTRA_FREE
+        # Set extra free meters to the possible maximum
+        house.extra_free = Point(0,0).distance(Point(GRID_WIDTH,GRID_DEPTH))
 
         # For all placed houses other than the selected one
         for other_house in self.all_houses:

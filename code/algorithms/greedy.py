@@ -26,6 +26,7 @@ class Greedy():
 
 		# Place house on random valid spot on grid
 		while first_house.placed == False:
+
 			# Define house coordinates based on randomly picked rotation and top left corner
 			random_empty_coordinate = rz.random_empty_coordinate(copy_grid)		
 			first_house.calc_all_coordinates(random_empty_coordinate,"random")
@@ -105,8 +106,6 @@ class Greedy():
 			# Place first house based on heuristics
 			copy_grid = self.place_first_house_strategically()
 		
-		print("Placed first house")
-
 		spare_houses = copy_grid.all_houses[1:]
 
 		# For each remaining house, find location that adds most value to map
@@ -140,4 +139,3 @@ class Greedy():
 			copy_grid.all_houses[house_nr + 1] = house
 		
 		self.grid = copy_grid
-		
