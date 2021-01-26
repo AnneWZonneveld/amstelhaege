@@ -1,5 +1,5 @@
 # Amstelhaege
-Dicht bij Ouderkerk aan de Amstel wordt een nieuwe wijk gebouwd. De wijk zal bestaande uit vrijstaande huizen en oppervlakte water. De gemeente overweegt drie varianten van de wijk: één met 20 huizen, één met 40 huizen en één met 60 huizen. Een huis is meer waard, wanneer hij meer vrijstand heeft. Er zijn verschillende typen huizen (eengezinswoning, bungalow en maison) met verschillende hoeveelheden verplichte vrijstand en verschillende rekenpercentages. Verder zijn er nog enkele restricties:
+Dicht bij Ouderkerk aan de Amstel wordt een nieuwe wijk gebouwd. De wijk zal bestaan uit vrijstaande huizen en oppervlakte water. De gemeente overweegt drie varianten van de wijk: één met 20 huizen, één met 40 huizen en één met 60 huizen. Een huis is meer waard, wanneer hij meer vrijstand heeft. Er zijn verschillende typen huizen (eengezinswoning, bungalow en maison) met verschillende hoeveelheden verplichte vrijstand en verschillende rekenpercentages. Verder zijn er nog enkele restricties:
 -  Een huis mag niet op water staan, maar zijn vrijstand wel.
 -  De verplichte vrijstand moet binnen de kaart vallen. Dit geldt niet voor extra vrijstand. 
 Het doel van het probleem is om een valide indeling van de wijk te vinden die een zo hoog mogelijke waarde oplevert. 
