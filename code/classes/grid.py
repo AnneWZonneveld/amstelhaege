@@ -5,6 +5,8 @@ from .water import Water
 from code.constants import *
 from shapely.geometry import Point
 
+from IPython import embed
+
 
 # Constants
 MAX_EXTRA_FREE = 250
@@ -190,14 +192,26 @@ class Grid():
         """
         Reverts the placement of a house at a certain position.
         """
+
+        other_houses = [other_house for other_house in self.all_houses if not other_house.id == house.id]
         
         for coordinate in house.house_coordinates:
             self.all_empty_coordinates.append(coordinate)
             self.all_house_coordinates.remove(coordinate)
         
         for coordinate in house.man_free_coordinates:
-            self.all_empty_coordinates.append(coordinate)
-            self.all_man_free_coordinates.remove(coordinate)
+
+            # Check if coordinate does not also belong to man free space other house
+            overlap = False
+            for other_house in other_houses:
+                for mandatory_coordinate in other_house.man_free_coordinates:
+                    if coordinate == mandatory_coordinate:
+                        overlap = True
+                        break
+
+            if overlap == False:
+                self.all_empty_coordinates.append(coordinate)
+                self.all_man_free_coordinates.remove(coordinate)
         
         house.placed = False
 
