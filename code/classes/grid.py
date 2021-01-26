@@ -1,15 +1,9 @@
 import csv
+import os
 from .house import House
 from .water import Water
+from code.constants import *
 from shapely.geometry import Point
-
-# Constants
-MAX_EXTRA_FREE = 250
-GRID_WIDTH = 180
-GRID_DEPTH = 160
-PERC_SINGLE = 0.6
-PERC_BUNGALOW = 0.25
-PERC_MAISON = 0.15
 
 class Grid():
     def __init__(self, quantity, source_file):
@@ -41,7 +35,7 @@ class Grid():
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
+        for q_type in [q_maison, q_bungalow, q_single]:
 
             for house in range(int(q_type)):
 
@@ -206,8 +200,8 @@ class Grid():
 
         #print(f"Calculating extra free meters for: {house}")
 
-        # Set extra free meters to a bit more than the possible maximum
-        house.extra_free = MAX_EXTRA_FREE
+        # Set extra free meters to the possible maximum
+        house.extra_free = Point(0,0).distance(Point(GRID_WIDTH,GRID_DEPTH))
 
         # For all placed houses other than the selected one
         for other_house in self.all_houses:
@@ -295,15 +289,19 @@ class Grid():
         self.value = total_networth
         
         return total_networth
-        
 
-    def create_output(self, name):
+
+    def create_output(self, map_name, quantity, name):
         """
         Creates a csv-file with results from running an algorithm to place 
         houses.
         """
+        path = f"data/output/{map_name}/{quantity}/csv/output_{name}.csv"
 
-        with open(f"data/output/csv/output_{name}.csv", "w", newline='') as file:
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        with open(f"{path}/output_{name}.csv", "w", newline='') as file:
             writer = csv.writer(file)
 
             # Create header
