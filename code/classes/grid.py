@@ -35,7 +35,7 @@ class Grid():
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
+        for q_type in [q_maison, q_bungalow, q_single]:
 
             for house in range(int(q_type)):
 
