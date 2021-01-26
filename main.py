@@ -42,6 +42,8 @@ def implement_random(grid, iterations, map_name, quantity):
 	# Visualize map and create output file for best result 
 	vis.visualize(randomize.best_grid, map_name, quantity, "randomize")
 	randomize.best_grid.create_output(map_name, quantity, "randomize")
+
+	return randomize.best_grid
 	
 def implement_greedy(grid, map_name, quantity, gr_type):
 	"""
@@ -57,6 +59,8 @@ def implement_greedy(grid, map_name, quantity, gr_type):
 	vis.visualize(greedy.grid, map_name, quantity, f"greedy_{gr_type}")
 	greedy.grid.create_output(map_name, quantity, f"greedy_{gr_type}")
 
+	return greedy.grid
+
 def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
 	"""
 	Runs a specified number of iterations of hillclimber algorithm on
@@ -67,15 +71,17 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
 	"""
 	if start_state == "greedy":
 		# Run greedy algorithm on grid with type that user specified
-		starting_grid = gr.Greedy(grid)
-		starting_grid.run(gr_type="strategy")
+		greedy = gr.Greedy(grid)
+		greedy.run(gr_type="strategy")
+		starting_grid = greedy.grid
 	else:
 		# Run randomize algorithm on grid as often as user specified
-		starting_grid = rz.Randomize(grid)
-		starting_grid.run(iterations=1000)
+		randomize = rz.Randomize(grid)
+		randomize.run(iterations=5)
+		starting_grid = randomize.best_grid
 	
-	hillclimber = hc.HillClimber(starting_grid.best_grid)
-	hillclimber.run(iterations=2000, hc_type=hc_type)
+	hillclimber = hc.HillClimber(starting_grid)
+	hillclimber.run(iterations=5, hc_type=hc_type)
 
 	# Create histogram of all results
 	vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
@@ -83,6 +89,8 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
 	# Visualize map and create output file for best result
 	vis.visualize(hillclimber.grid, map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
 	hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
+
+	return hillclimber.grid
 
 if __name__ == "__main__":
 	
@@ -107,7 +115,7 @@ if __name__ == "__main__":
 			else:
 				print("Invalid input: Please enter an integer that is equal to or bigger than 1")
 
-		best_grid = implement_random(grid, int(iterations), map_name, quantity)
+		result = implement_random(grid, int(iterations), map_name, quantity)
 	elif algorithm in ["greedy", "gr"]:
 		# Prompt for type of greedy algorithm until user provides valid input
 		while True:
@@ -123,7 +131,7 @@ if __name__ == "__main__":
 			else:
 				print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
 		
-		implement_greedy(grid, map_name, quantity, gr_type)
+		result = implement_greedy(grid, map_name, quantity, gr_type)
 	elif algorithm in ["greedy_hill_climber", "gr_hc", "random_hill_climber", "r_hc"]:
 		# Prompt for type of greedy algorithm until user provides valid input
 		while True:
@@ -144,10 +152,10 @@ if __name__ == "__main__":
 		else:
 			start_state = "randomize"
 
-		implement_hill_climber(grid, map_name, quantity, start_state, hc_type)
+		result = implement_hill_climber(grid, map_name, quantity, start_state, hc_type)
 
 	# Add runtime?
-	print(f"Best result: {grid.value}\n",
+	print(f"Highest total map value: {result.value}\n",
 	f"You can find a csv file and visualizations of the results at data/output/{map_name}/{quantity}")
 
 	"""quantity = 20

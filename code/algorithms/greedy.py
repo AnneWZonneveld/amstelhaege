@@ -14,7 +14,6 @@ class Greedy():
 
 	def __init__(self, grid):
 		self.grid = grid
-		self.best_grid = None
 		self.value = 0
 
 	def place_first_house_randomly(self):
@@ -91,7 +90,6 @@ class Greedy():
 
 		if new_value > old_value:
 			self.value = new_value
-			self.best_grid = new_grid
 			success = True
 			
 		return success
