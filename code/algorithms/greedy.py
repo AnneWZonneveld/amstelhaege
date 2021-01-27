@@ -1,89 +1,141 @@
-import copy
-import random
-import code.algorithms.randomize as rz
-
-# Tools
-from IPython import embed; 
+import copy, random
+from code.algorithms import randomize as rz 
 from code.visualization import visualize as vis
+
 
 class Greedy():
 	"""
-	Greedy class that assigns the best possible location (that results 
-	in highest map value) for a house one by one.
+	Greedy class that places houses one after another. It assigns the
+	first house randomly. For each subsequent house, it chooses the
+	location that adds most value to the map (i.e. local optimum).
 	"""
 
 	def __init__(self, grid):
 		self.grid = grid
+		self.value = 0
 
-	def place_first_house(self):
+	def place_first_house_randomly(self):
 		""" 
-		Places first house at random location on grid. 
+		Places first house on a random valid location on grid copy and
+		returns updated grid copy. 
 		"""
-
 		copy_grid = copy.deepcopy(self.grid)
 
-		# Retrieve first house 
-		first_house = copy_grid.all_houses_list.pop(0)
+		# Randomly pick first house
+		first_house = copy_grid.all_houses[0]
 
-		# Succesfully place house on grid
+		# Place house on random valid spot on grid
 		while first_house.placed == False:
-			try:
-				random_empty_cell = rz.random_empty_cell(copy_grid, first_house)
-				copy_grid.assignment_house(first_house, random_empty_cell)
-				first_house.placed = True
-			except:
-				pass
 
-		print("Placed first house")
+			# Define house coordinates based on randomly picked rotation and top left corner
+			random_empty_coordinate = rz.random_empty_coordinate(copy_grid)		
+			first_house.calc_all_coordinates(random_empty_coordinate,"random")
+
+			# If location is valid, place house
+			if first_house.valid_location(copy_grid):
+				print("Valid location")
+				copy_grid.assignment_house(first_house)
+	
 		return copy_grid
 
+	def place_first_house_strategically(self):
+		"""
+		Places first house in one of the corners of the map if possible,
+		else randomly. Places the biggest type of house first. Returns
+		updated grid copy.
+		"""
+		
+		copy_grid = copy.deepcopy(self.grid)
 
-	def run(self):
-		embed()
+		# Pick one of the biggest houses first
+		first_house = copy_grid.all_houses[0]
+		
+		# For each corner of the map, define coordinates of top left corner of house
+		bl_corner = (first_house.min_free, copy_grid.depth - first_house.depth - first_house.min_free)
+		tl_corner = (first_house.min_free, first_house.min_free)
+		br_corner = (copy_grid.width - first_house.width - first_house.min_free, copy_grid.depth - first_house.depth - first_house.min_free)
+		tr_corner = (copy_grid.width - first_house.width - first_house.min_free, first_house.min_free)
+		
+		corner_coordinates = [bl_corner, tl_corner, br_corner, tr_corner]
+		
+		# Place house in one of the corners of the map if possible
+		for coordinate in corner_coordinates:
 
-		# Place first house
-		first_house_grid = self.place_first_house()
-		current_grid = first_house_grid
+			first_house.calc_all_coordinates(coordinate, "horizontal")
 
-		# Loop through all houses 
-		for i in range(0, len(first_house_grid.all_houses_list)):
+			# Check if location is valid
+			if first_house.valid_location(copy_grid):
+				print("Valid location")
+				copy_grid.assignment_house(first_house)
+				break
+		
+		# Place house randomly if it cannot be placed in one of the corners
+		if first_house.placed == False:
+			copy_grid = self.place_first_house_randomly()
+	
+		return copy_grid
 
-			# Determine empty cells
-			empty_cells = current_grid.define_empty_cells(current_grid.all_houses_list[i])
+	def check_solution(self, new_grid):
+		"""
+		Returns true if current placement of house on new_grid adds more
+		value to map than all previously tested locations, else false.
+		"""
 
-			# Keep track of all possible states 
-			possibilities = []
+		success = False
 
-			# Try placing next house on one of empty cells
-			for cell in empty_cells:
+		new_value = new_grid.calculate_worth()
+		old_value = self.value
 
-				# print(f"current cell: {cell}")
+		if new_value > old_value:
+			self.value = new_value
+			success = True
+			
+		return success
 
-				try:
+	def run(self, gr_type):
+		"""
+		Runs greedy algortihm. Depending on "gr_type" first house is either
+		placed randomly or strategically based on heuristics. Each remaining 
+		house is placed at the location that adds most value to the map.
+		"""
+		
+		if gr_type == "random":
+			# Randomly place first house on map
+			copy_grid = self.place_first_house_randomly()
+		elif gr_type == "strategy":
+			# Place first house based on heuristics
+			copy_grid = self.place_first_house_strategically()
+		
+		spare_houses = copy_grid.all_houses[1:]
 
-					# Create new grid for new possible state
-					copy_grid = copy.deepcopy(current_grid)
+		# For each remaining house, find location that adds most value to map
+		for house_nr in range(len(spare_houses)):
+			house = spare_houses[house_nr]
+			counter = 1
 
-					# Place house on copy grid
-					copy_grid.assignment_house(copy_grid.all_houses_list[i], cell)
-					copy_grid.all_houses_list[i].placed = True
-
-					# Calculate worth of grid and add to possible states
-					copy_grid.calculate_worth()
-					possibilities.append(copy_grid)
-
-				except:
-					print("House could not be placed on this cell")	
-
-			# Determine possible state with highest value --> best_grid
-			highest_value = 0
-			for grid in possibilities:
-				if grid.value > highest_value:
-					highest_value = grid.value
-					best_grid = grid
-
-			current_grid = best_grid
-
-			print(f"Placed {best_grid.all_houses_list[i]}")
-
-		self.grid = current_grid
+			for starting_coordinate in copy_grid.all_empty_coordinates:
+				print(f"Try {counter} for {house}")
+				counter += 1
+				
+				# Set house coordinates
+				house.calc_all_coordinates(starting_coordinate, rotation="random")
+				
+				if house.valid_location(copy_grid):
+					print("Valid location")
+					# Preliminary assignment of house
+					copy_grid.assignment_house(house)
+					
+					# Save location if it adds more value than previous locations
+					if self.check_solution(copy_grid):
+						best_coordinate = starting_coordinate
+						best_rotation = house.rotation
+					
+					# Undo assignment of house to test further locations
+					copy_grid.undo_assignment_house(house)
+			
+			# Permanently place house at location that yielded most value
+			house.calc_all_coordinates(best_coordinate, rotation=best_rotation)
+			copy_grid.assignment_house(house)
+			copy_grid.all_houses[house_nr + 1] = house
+		
+		self.grid = copy_grid

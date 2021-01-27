@@ -5,82 +5,176 @@ import random
 class HillClimber:
 	def __init__(self, grid):
 		self.grid = copy.deepcopy(grid)
-		self.value = grid.calculate_worth()
-
+		self.value = self.grid.value
+		self.all_values = []
+		self.conv_count = 0
 
 	def switch_house(self, grid):
-		pass 
+		"""
+		Switches two random houses of different types if possible. Returns true 
+		if succesfully switched. 
+		"""
+
+		# Pick random house
+		house_1 = random.choice(grid.all_houses)
+		different_houses = [house for house in grid.all_houses if house.type != house_1.type]
+		house_2 = random.choice(different_houses)
+
+		# Save relevant info
+		info_house_1 = {
+			"top_left": house_1.outer_house_coordinates['top_left'],
+			"rotation": house_1.rotation
+		}
+
+		info_house_2 = {
+			"top_left": house_2.outer_house_coordinates['top_left'],
+			"rotation": house_2.rotation
+		}
+
+		# Remove houses from map and set new coordinates
+		grid.undo_assignment_house(house_1)
+		grid.undo_assignment_house(house_2)
+
+		# Calculate new coordinates
+		house_1.calc_all_coordinates(info_house_2['top_left'], info_house_2['rotation'])
+		house_2.calc_all_coordinates(info_house_1['top_left'], info_house_1['rotation'])
+
+		# Check if new locations are valid
+		if house_1.valid_location(grid) and house_2.valid_location(grid):
+			print("Switched houses")
+
+			# Assign houses to new location on grid
+			grid.assignment_house(house_1)
+			grid.assignment_house(house_2)
+
+			succes = True
+
+		# Switch not possible
+		else:
+
+			# Calculate old coordinates
+			house_1.calc_all_coordinates(info_house_1['top_left'], info_house_1['rotation'])
+			house_2.calc_all_coordinates(info_house_2['top_left'], info_house_2['rotation'])
+
+			# Reassign houses to old location on grid
+			grid.assignment_house(house_1)
+			grid.assignment_house(house_2)
+
+			succes = False
+
+		return succes
 
 
 	def rotate_house(self, grid):
 		"""
-		Rotates house if possible.
-
-		- pick random house
-		- check rotation
-		- set rotation to opposite value
-		- calculate new possible coordinates
-		- see if possible
-		- if possible, set original cells to empty and then new cells to House
+		Rotates house if possible. Returns true if succesfully rotated.
 		"""
 
-		# succes = False
-
-		# while succes = False
-
 		# Pick random house
-		house = random.choice(grid.all_houses_list)
-		house_x = house.coordinates['top_left'][0]
-		house_y = house.coordinates['top_left'][1]
+		house = random.choice(grid.all_houses)
+		house_starting_xy = house.outer_house_coordinates['top_left']
 
-		# Check rotation
+		# Save relvant inf
+		info_house = {
+			"top_left": house.outer_house_coordinates['top_left'],
+			"rotation": house.rotation
+		}
+
+		# Remove house from map and set new coordinates
+		grid.undo_assignment_house(house)
+
+		# Check rotation and calculate new outer house coordinates
 		if house.rotation == "horizontal":
-			house_coordinates = house.calc_house_coordinates(house_x, house_y, "vertical")
+			house.calc_all_coordinates(house_starting_xy, "vertical")
 
 		elif house.rotation == "vertical":
-			house_coordinates = house.calc_house_coordinates(house_x, house_y, "horizontal")
+			house.calc_all_coordinates(house_starting_xy, "horizontal")
 
-		house_coordinates_mandatory_free = house.calc_mandatory_free_space_coordinates(house_coordinates)
+		# Check if new location is valid 
+		if house.valid_location(grid):
+			print("Rotated house")
 
-		# check if house can be placed on these coordinates
-		# if true
-			# place house on these coordinates
-			# succes == True
-		# else
-			# print could not rotate, picking other house
+			# Assign house to new location
+			grid.assignment_house(house)
+			succes = True
 
-	def mutate_grid(self, grid, hc_type, nr_houses=1): # type: switch or rotation?
-	    """
-        Depending on hc_type, this function performs a switch or rotates a house
-        for nr_houses. 
-        """
-
-		if hc_type = "switch":
-			for _ in range(nr_houses):
-            	self.switch_house(grid)
-		elif hc_type = "rotation":
-			for _ in range(nr_houses):
-            	self.rotate_house(grid)
+		# Rotation not possible
 		else:
-			# Error
+
+			# Calculate old coordinates
+			house.calc_all_coordinates(info_house['top_left'], info_house['rotation'])
+			
+			# Reassign house to old orignal location on grid
+			grid.assignment_house(house)
+
+			succes = False
+
+		return succes
 
 
-	def run(self, iterations, hc_type="switch", mutate_nr_houses=1):
+	def mutate_grid(self, grid, hc_type, nr_houses=1): 
+		"""
+		Depending on hc_type, this function performs a nr_houses switches or rotates a house
+		for nr_houses. 
+		"""
+
+		if hc_type == "switch":
+			for _ in range(nr_houses):	
+				succes = self.switch_house(grid)
+		elif hc_type == "rotation":
+			for _ in range(nr_houses):
+				succes = self.rotate_house(grid)
+
+		return succes 
+
+	def check_solution(self, new_grid):
+		"""
+		Checks if value of new grid is higher than current highest value.
+		If so, current best grid and value are replaced by new grid and value.
+		Also keeps track of the convergence count.
+		"""
+
+		new_value = new_grid.calculate_worth()
+		old_value = self.value
+
+		if new_value > old_value:
+			print("FOUND NEW BEST VALUE")
+
+			# Replace best grid and value 
+			self.grid = new_grid
+			self.value = new_value
+
+			# Reset convergence count
+			self.conv_count = 0
+
+		# No improvement
+		else:
+			self.conv_count += 1
+
+
+	def run(self, iterations, hc_type="switch", limit=200, mutate_nr_houses=1):
+		"""
+		Runs the hill climber algorithm for certain amount of iterations. 
+		"""
 
 		self.iterations = iterations
 
-		for interation in range(iterations):
+		for iteration in range(iterations):
 
-			print(f'Iteration {iteration}/{iterations}, current value: {self.value}')
+			# Check for convergence
+			if self.conv_count < limit:
 
-			new_grid = copy.deepcopy(self.grid)
+				print(f"Iteration {iteration}/{iterations}, current value: {self.value}")
+				print(f"Conv counter: {self.conv_count}")
 
-			self.mutate_grid(new_grid, "switch")
+				new_grid = copy.deepcopy(self.grid)
 
-			# Make changes to grid --> 
-			# - switch two random houses of different types
-			# - rotate certain house
+				succes = self.mutate_grid(new_grid, hc_type)
 
-			# Check if new solution is better 
+				if succes:
 
+					# Add solution to all solutions
+					self.all_values.append(new_grid.value)
 
+					# Check if new solution is better 
+					self.check_solution(new_grid)

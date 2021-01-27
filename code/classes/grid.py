@@ -1,256 +1,272 @@
 import csv
-import itertools
-import numpy as np
-from .cell import Cell
+import os
 from .house import House
-from code.classes.mandatory import MandatoryFreeSpace
-import code.algorithms.randomize as rz
-from IPython import embed;
+from .water import Water
+from code.constants import *
+from shapely.geometry import Point
+
+from IPython import embed
+
 
 class Grid():
     def __init__(self, quantity, source_file):
-        self.width = 180
-        self.depth = 160
-        self.map = source_file
+        self.width = GRID_WIDTH
+        self.depth = GRID_DEPTH
         self.quantity = quantity
-        self.cells = self.load_grid()
-        self.all_houses = self.load_houses() # misschien alleen list nodig?
-        # self.all_houses_list = rz.list_all_houses(self.all_houses)
-        self.all_houses_list = self.list_all_houses()
+        self.water = source_file
+        self.all_houses = self.load_houses()
+        self.all_water = self.load_water()
+        self.all_empty_coordinates = self.load_empty_coordinates()
+        self.all_water_coordinates = self.define_water_coordinates()
+        self.all_house_coordinates = []
+        self.all_man_free_coordinates = []
         self.value = 0   
-        self.create_water()      
 
-    def load_grid(self):
-        """
-        Creates and returns a 2D array filled with cells. Each cell represents
-        one square meter on the map and is associated with coordinates that
-        point to its unique position in the grid.
-        """
-        
-        grid = np.array([])
-        for y in range(self.depth + 1 ):
-            for x in range(self.width + 1):
-                cell = Cell(x, y)
-                grid = np.append(grid, cell)
-        grid = np.resize(grid,(self.depth + 1, self.width + 1))
-
-        return grid 
 
     def load_houses(self):
         """
-        Creates the specified quantity of houses with a fixed share of single
-        houses (60%), bungalows (25%) and maisons (15%). Returns a dictionary
-        that maps each house and its type to an ID.
+        Returns a list of house objects based on the specified quantity with a
+        fixed share of single houses (60%), bungalows (25%) and maisons (15%). 
         """
         
         # Determine quantity for each house type based on total quantity
-        q_single = int(0.6 * self.quantity)
-        q_bungalow = int(0.25 * self.quantity)
-        q_maison = int(0.15 * self.quantity)
+        q_single = int(PERC_SINGLE * self.quantity)
+        q_bungalow = int(PERC_BUNGALOW * self.quantity)
+        q_maison = int(PERC_MAISON * self.quantity)
 
-        all_houses = {}
-
+        all_houses = []
         id_counter = 1
 
         # Create correct quantiy of houses
-        for q_type in [q_single, q_bungalow, q_maison]:
-            for h in range(int(q_type)):
-                # Assign each House instance according type
-                if q_type == q_single:
-                    house = House("single", id_counter) 
-                elif q_type == q_bungalow:
-                    house = House("bungalow", id_counter)
-                else:
-                    house = House("maison", id_counter)
+        for q_type in [q_maison, q_bungalow, q_single]:
 
+            for house in range(int(q_type)):
+
+                # Assign each House instance according type
+                if q_type == q_maison:
+                    new_house = House("maison", id_counter) 
+                elif q_type == q_bungalow:
+                    new_house = House("bungalow", id_counter)
+                else:
+                    new_house = House("single", id_counter)
+                    
                 # Add House to dictionary and adjust id_counter
-                all_houses[id_counter] = house
+                all_houses.append(new_house)
                 id_counter = id_counter + 1
 
         return all_houses
 
-    def list_all_houses(self):
-        """
-        Returns a list of all houses.
-        """
-
-        houses = []
-        
-        for house in self.all_houses.values():
-            houses.append(house)
-
-        return houses
 
     def load_water(self):
         """
-        Returns a dictionary that maps the water surface(s) on a given map to
-        coordinates.
+        Creates a Water object for each water surface and sets its
+        coordinates based on source file. Returns a list of all
+        Water objects.
         """
 
+        all_water = []
+
         # Load coordinates of water surface(s) from source file
-        with open(self.map, 'r') as in_file:
+        with open(self.water, 'r') as in_file:
+
             # Skip header
             next(in_file)
 
-            water = {}
+            id_counter = 1
 
             while True:
+
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
+
                 if row == "":
                     break
+
                 items = row.split(",")
                 strip_items = [item.strip("\"") for item in items]
 
+                # Create a new water object
+                water = Water()
+
+                water.id = id_counter
+
                 # Save water coordinates in dict
-                water[strip_items[0]] = {'bottom_left': (int(strip_items[1]), int(strip_items[4])),
-                                    'bottom_right': (int(strip_items[3]), int(strip_items[4])),
-                                    'top_left': (int(strip_items[1]), int(strip_items[2])),
-                                    'top_right': (int(strip_items[3]), int(strip_items[2]))}
-
-        return water
-
-    def create_water(self):
-        """
-        Assigns cells that overlap with the water surface(s) into type 'Water'.
-        """
-
-        all_water = self.load_water()
-
-        # For each cell that ovelaps with water, update cell type to "Water"       
-        for water in all_water:
-            for y in range(int(all_water[water]['top_left'][1]), int(all_water[water]['bottom_right'][1]) + 1):
-                for x in range(int(all_water[water]['bottom_left'][0]), int(all_water[water]['top_right'][0]) + 1):    
-                    self.cells[y][x].type = "Water"
-
-    def define_empty_cells(self, house):
-        """
-        Returns a list of all empty cells on grid, where certain house would fit between 
-        borders of grid.
-        """
-
-        empty_cells = []
-
-        for row in self.cells:
-            for cell in row:
-                if cell.x_coordinate >= house.min_free and cell.y_coordinate >= house.min_free and cell.type == None:
-                    empty_cells.append(cell)
+                water.coordinates = {"bottom_left": (int(strip_items[1]), int(strip_items[4])),
+                                    "bottom_right": (int(strip_items[3]), int(strip_items[4])),
+                                    "top_left": (int(strip_items[1]), int(strip_items[2])),
+                                    "top_right": (int(strip_items[3]), int(strip_items[2]))}
         
-        return empty_cells
+                # Add water object to list
+                all_water.append(water)   
 
-    def define_object_cells(self, coordinates):
+                id_counter += 1
+        
+        return all_water
+
+
+    def load_empty_coordinates(self):
         """
-        Returns a list of cells for a specific object.
+        Returns a list with all coordinates that make up the map
+        of Amstelhaege.
+        """
+        
+        empty_coordinates = []
+
+        for x in range(self.width + 1 ):
+
+            for y in range(self.depth + 1):
+
+                coordinate = (x,y)
+                empty_coordinates.append(coordinate)
+
+        return empty_coordinates 
+
+
+    def define_water_coordinates(self):
+        """
+        Returns a list of all water coordinates.
         """
 
-        object_cells = []
+        water_coordinates = []
 
-        for row in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-            for column in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+        for water in self.all_water:
 
-                current_cell = self.cells[row, column]
-                object_cells.append(current_cell)
+            coordinates = self.define_object_coordinates(water.coordinates)
 
-        return object_cells
+            for coordinate in coordinates:
+
+                water_coordinates.append(coordinate)
+
+                # Remove from list of empty coordinates
+                self.all_empty_coordinates.remove(coordinate)
+
+        return water_coordinates
 
 
-    def assignment_house(self, house, cell, rotation="horizontal"):
+    def define_object_coordinates(self, coordinates):
+        """
+        Returns a list of coordinates for a specific object.
+        """
+
+        object_coordinates = []
+
+        for x in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+            
+            for y in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
+        
+                current_coordinate = (x, y)
+                object_coordinates.append(current_coordinate)
+
+        return object_coordinates 
+
+
+    def assignment_house(self, house):
         """ 
-        Assigns house to grid, based on coordinates of cell. Returns the new 
-        grid.
+        Assigns house to grid, based on its coordinates.
         """
 
-        print("Performing random assignment of house")
-        
-        # Retrieve coordinates random starting cell (top-left)
-        cell_x = cell.x_coordinate
-        cell_y = cell.y_coordinate
+        print("Performing assignment of house")
 
-        # Set house coordinates (excluding and including mandatory free space)
-        house_coordinates = house.calc_house_coordinates(cell_x, cell_y, rotation)
-        house_coordinates_mandatory_free_space = house.calc_mandatory_free_space_coordinates(house_coordinates)
+        # Add coordinates to grid 
+        for coordinate in house.house_coordinates:
+            self.all_house_coordinates.append(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
+            self.all_man_free_coordinates.append(coordinate)
+
+        # Remove from empty coordinates
+        self.all_empty_coordinates = list(set(self.all_empty_coordinates) - set(house.house_coordinates) - set(house.man_free_coordinates))
+
+        house.placed = True
+
+
+    def undo_assignment_house(self, house):
+        """
+        Reverts the placement of a house at a certain position.
+        """
+
+        other_houses = [other_house for other_house in self.all_houses if not other_house.id == house.id]
 
         # embed()
 
-        # Define all cells of possible house location (excluding and including mandatory free space)
-        house_cells = self.define_object_cells(house_coordinates)
-        house_cells_mandatory_free_space = self.define_object_cells(house_coordinates_mandatory_free_space)
+        for coordinate in house.house_coordinates:
+            self.all_empty_coordinates.append(coordinate)
+            self.all_house_coordinates.remove(coordinate)
+        
+        for coordinate in house.man_free_coordinates:
 
-        spot_available = True
+            # Only, add coordinate to empty coordinates if no overlap between man free space
+            if not self.all_man_free_coordinates.count(coordinate) > 1:
+                self.all_empty_coordinates.append(coordinate)
 
-        # For each cell, check if placing a house would be valid
-        for cell in house_cells_mandatory_free_space:
-                
-            # House cells must be empty, mandatory free space may not overlap with a house
-            if ((cell in house_cells) and cell.type != None) or cell.occupied_by_house():
-                spot_available = False
-   
-        # If all cells of possible location are still availabe 
-        if spot_available:   
+            # Remove instance of coordinate from all man free coordinates 
+            self.all_man_free_coordinates.remove(coordinate)
 
-            for current_cell in house_cells_mandatory_free_space:
+        house.placed = False
 
-                # Set cells occupied by house to according house type
-                if current_cell in house_cells:
-                    current_cell.type = house.type
-
-                # Mark cells occupied by mandatory free space 
-                elif current_cell.type != house.type:  #Of gewoon else?
-                    current_cell.type = MandatoryFreeSpace(house)
-
-            # Save coordinates
-            house.coordinates = house_coordinates
-            house.min_free_coordinates = house_coordinates_mandatory_free_space
-
-            # Save cells
-            house.min_free_cells = house_cells_mandatory_free_space
-
-        else:
-            raise ValueError("Location of house unavailable.")
-
+    
     def calculate_extra_free_meters(self, house):
         """
         Returns how many extra free meters can be assigned to a given house.
         """
 
-        print(f"Calculating extra free meters for: {house}")
+        #print(f"Calculating extra free meters for: {house}")
 
-        distance_found = False
+        # Set extra free meters to the possible maximum
+        house.extra_free = Point(0,0).distance(Point(GRID_WIDTH,GRID_DEPTH))
 
-        # i is number of extra free meters, starting from 1
-        for i in itertools.count(start=1):
+        # For all placed houses other than the selected one
+        for other_house in self.all_houses:
+            if other_house != house and other_house.placed:
+                
+                # If other_house is at the top left of the house
+                if other_house.outer_house_coordinates["bottom_right"][0] < house.outer_house_coordinates["top_left"][0] and other_house.outer_house_coordinates["bottom_right"][1] < house.outer_house_coordinates["top_left"][1]:
+                    house_xy = house.outer_house_coordinates["top_left"]
+                    other_house_xy = other_house.outer_house_coordinates["bottom_right"]
+                    distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
 
-            list_of_cells = []
+                # If other_house is at the top right of the house
+                elif other_house.outer_house_coordinates["bottom_left"][0] > house.outer_house_coordinates["top_right"][0] and other_house.outer_house_coordinates["bottom_left"][1] < house.outer_house_coordinates["top_right"][1]:
+                    house_xy = house.outer_house_coordinates["top_right"]
+                    other_house_xy = other_house.outer_house_coordinates["bottom_left"]
+                    distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
+                
+                # If other_house is at the bottom right of the house
+                elif other_house.outer_house_coordinates["top_left"][0] > house.outer_house_coordinates["bottom_right"][0] and other_house.outer_house_coordinates["top_left"][1] > house.outer_house_coordinates["bottom_right"][1]:
+                    house_xy = house.outer_house_coordinates["bottom_right"]
+                    other_house_xy = other_house.outer_house_coordinates["top_left"]
+                    distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
 
-            # Save all cells, including i extra free meters in list
-            for row in range((house.min_free_coordinates['top_left'][1] - i), (house.min_free_coordinates['bottom_right'][1] + i)):
-                for column in range((house.min_free_coordinates['top_left'][0] - i), (house.min_free_coordinates['bottom_right'][0] + i)):
+                # If other_house is at the bottom left of the house
+                elif other_house.outer_house_coordinates["top_right"][0] < house.outer_house_coordinates["bottom_left"][0] and other_house.outer_house_coordinates["top_right"][1] > house.outer_house_coordinates["bottom_left"][1]:
+                    house_xy = house.outer_house_coordinates["bottom_left"]
+                    other_house_xy = other_house.outer_house_coordinates["top_right"]
+                    distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
+
+                # If other_house is above the house
+                elif other_house.outer_house_coordinates["bottom_left"][1] < house.outer_house_coordinates["top_left"][1]:
+                    distance = house.outer_house_coordinates["top_left"][1] - other_house.outer_house_coordinates["bottom_left"][1]
+
+                # If other_house is to the right of the house
+                elif other_house.outer_house_coordinates["bottom_left"][0] > house.outer_house_coordinates["bottom_right"][0]:
+                    distance = other_house.outer_house_coordinates["bottom_left"][0] - house.outer_house_coordinates["bottom_right"][0]
+
+                # If other_house is below the house
+                elif other_house.outer_house_coordinates["top_left"][1] > house.outer_house_coordinates["bottom_left"][1]:
+                    distance = other_house.outer_house_coordinates["top_left"][1] - house.outer_house_coordinates["bottom_left"][1]
+
+                # If other_house is to the left of the house
+                elif other_house.outer_house_coordinates["bottom_right"][0] < house.outer_house_coordinates["bottom_left"][0]:
+                    distance = house.outer_house_coordinates["bottom_left"][0] - other_house.outer_house_coordinates["bottom_right"][0]
+                
+                # Calculate extra free space
+                extra_free_space = distance - house.min_free
+
+                # If extra free space is less than the current amount, replace
+                if extra_free_space < house.extra_free:
+                    house.extra_free = extra_free_space
                     
-                    # Check if cell is within borders of grid
-                    if row >= 0 and row <= 160 and column >= 0 and column <= 180:
-                        current_cell = self.cells[row, column]
-                        list_of_cells.append(current_cell)
-        
-            # Save cells that are extra free meters in list
-            for cell_1 in list_of_cells:
-                if cell_1 not in house.min_free_cells:
-                    house.extra_free_cells.append(cell_1)
-
-            # Check for all cells if it is a house
-            for cell_2 in house.extra_free_cells:
-                if cell_2.type in ["single", "bungalow", "maison"]:
-
-                    # Calculate distance
-                    shortest_distance = i - 1
-                    # Set to True, as shortest distance is found
-                    distance_found = True
-                    break
-            
-            if distance_found == True:
-                break
-
-        # Assign extra free meters to house
-        house.extra_free = shortest_distance
+        # print(f"Extra free space for {house}: {house.extra_free}")
 
     def calculate_worth(self):
         """
@@ -261,7 +277,8 @@ class Grid():
         total_networth = 0
 
         # Calculate worth of each house placed on the map
-        for house in self.all_houses.values():
+        for house in self.all_houses:
+
             if house.placed == True:
 
                 # Net worth of house
@@ -276,38 +293,60 @@ class Grid():
 
                 # Add worth of house to total net worth of the map
                 total_networth += worth_house
-            # else:
-            #     raise ValueError("Not all houses have been placed. Run algorithm to place houses.")
 
+        # Round to nearest integer
+        total_networth = int(round(total_networth))
+
+        # Assign value to grid
         self.value = total_networth
-
+        
         return total_networth
 
-    def create_output(self):
+
+    def create_output(self, map_name, quantity, name):
         """
-        Creates csv-file with results from running an algorithm to place houses.
+        Creates a csv-file with results from running an algorithm to place 
+        houses.
         """
 
-        with open('data/output.csv', 'w', newline='') as file:
+        # embed()
+
+        path = f"data/output/{map_name}/{quantity}/csv/{name}"
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        with open(f"{path}/output.csv", "w", newline='') as file:
             writer = csv.writer(file)
 
             # Create header
-            fieldnames =["structure", "corner_1 (bottom_left)", "corner_2 (bottom_right)", "corner_3 (top_left)", "corner_4 (top_right)", "type"]
+            fieldnames =["structure", "corner_1", "corner_2", "corner_3", "corner_4", "type"]
             writer.writerow(fieldnames)
 
-            # Load water coordinates from correct map
-            water = self.load_water()
-
             # Add location of water to csv file
-            for ident, coordinates in water.items():
-                water_list = [ident, water[ident].get('bottom_left'), water[ident].get('bottom_right'), water[ident].get('top_left'), water[ident].get('top_right'), "WATER"]
+            for water_object in self.load_water():
+                bottom_left = f"{water_object.coordinates['bottom_left'][0]},{water_object.coordinates['bottom_left'][1]}"
+                bottom_right = f"{water_object.coordinates['bottom_right'][0]},{water_object.coordinates['bottom_right'][1]}"
+                top_left = f"{water_object.coordinates['top_left'][0]},{water_object.coordinates['top_left'][1]}"
+                top_right = f"{water_object.coordinates['top_right'][0]},{water_object.coordinates['top_right'][1]}"
+                water_list = [water_object, bottom_left, top_left, top_right, bottom_right, "WATER"]
                 writer.writerow(water_list)
             
-            # Add location of houses to csv file
-            for house in self.all_houses.values():
-                house_list = f"{house.type}_{house.id}", house.coordinates['bottom_left'], house.coordinates['bottom_right'], house.coordinates['top_left'], house.coordinates['top_right'], house.type.upper()
+            for house in self.all_houses:
+
+                # Determine label
+                if house.type == "single":
+                    label = "eengezinswoning"
+                else:
+                    label = house.type
+
+                bottom_left = f"{house.outer_house_coordinates['bottom_left'][0]},{house.outer_house_coordinates['bottom_left'][1]}"
+                bottom_right = f"{house.outer_house_coordinates['bottom_right'][0]},{house.outer_house_coordinates['bottom_right'][1]}"
+                top_left = f"{house.outer_house_coordinates['top_left'][0]},{house.outer_house_coordinates['top_left'][1]}"
+                top_right = f"{house.outer_house_coordinates['top_right'][0]},{house.outer_house_coordinates['top_right'][1]}"
+                house_list = [f"{label}_{house.id}", bottom_left, top_left, top_right, bottom_right, label.upper()]
                 writer.writerow(house_list)
-            
+
             # Add total networth of map to csv file
-            networth = self.calculate_worth()
+            networth = self.value
             writer.writerow(["networth", networth])
