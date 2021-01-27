@@ -6,6 +6,7 @@ from code.algorithms import greedy as gr
 from code.algorithms import hillclimber as hc
 from statistics import mean 
 
+
 def getArgs():
 	"""
 	Returns command line arguments if they are valid, else issues error.
@@ -25,6 +26,7 @@ def getArgs():
 
 	return args
 
+
 def implement_random(grid, iterations, map_name, quantity):
 	"""
 	Runs a specified number of iterations of random algorithm on
@@ -34,6 +36,7 @@ def implement_random(grid, iterations, map_name, quantity):
 	"""
 	# Run randomize algorithm on grid as often as user specified
 	randomize = rz.Randomize(grid)
+	iterations = int(iterations)
 	randomize.run(iterations=iterations)
 
 	# Create histogram of all results
@@ -43,7 +46,10 @@ def implement_random(grid, iterations, map_name, quantity):
 	vis.visualize(randomize.best_grid, map_name, quantity, "randomize")
 	randomize.best_grid.create_output(map_name, quantity, "randomize")
 
+	print(f"RANDOMIZE MEAN: {mean(randomize.all_values)}")
+
 	return randomize.best_grid
+
 	
 def implement_greedy(grid, map_name, quantity, gr_type):
 	"""
@@ -61,7 +67,8 @@ def implement_greedy(grid, map_name, quantity, gr_type):
 
 	return greedy.grid
 
-def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
+
+def implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra_arg):
 	"""
 	Runs a specified number of iterations of hillclimber algorithm on
 	grid. "Quantity" specifies the number of houses to be placed each
@@ -70,18 +77,25 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
 	switch or rotation version of hilclimber, depending on "gr_type".
 	"""
 	if start_state == "greedy":
+
 		# Run greedy algorithm on grid with type that user specified
-		greedy = gr.Greedy(grid)
-		greedy.run(gr_type="strategy")
-		starting_grid = greedy.grid
+		starting_grid = implement_greedy(grid, map_name, quantity, extra_arg)
+
+		# greedy = gr.Greedy(grid)
+		# greedy.run(gr_type="strategy") 
+		# starting_grid = greedy.grid
+
 	else:
+
 		# Run randomize algorithm on grid as often as user specified
-		randomize = rz.Randomize(grid)
-		randomize.run(iterations=5)
-		starting_grid = randomize.best_grid
+		starting_grid = implement_random(grid, extra_arg, map_name, quantity)
+
+		# randomize = rz.Randomize(grid)
+		# randomize.run(iterations=500) 
+		# starting_grid = randomize.best_grid
 	
 	hillclimber = hc.HillClimber(starting_grid)
-	hillclimber.run(iterations=5, hc_type=hc_type)
+	hillclimber.run(iterations=2000, hc_type=hc_type)
 
 	# Create histogram of all results
 	vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
@@ -91,6 +105,7 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type):
 	hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	return hillclimber.grid
+
 
 if __name__ == "__main__":
 	
@@ -149,10 +164,34 @@ if __name__ == "__main__":
 
 		if algorithm in ["greedy_hill_climber", "gr_hc"]:
 			start_state = "greedy"
+
+			while True:
+				specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
+				
+				# Run requested greedy algorithm if possible, else re-prompt user
+				if specification in ["strategy", "s"]:
+					extra_arg = "strategy"
+					break
+				elif specification in ["random", "r"]:
+					extra_arg = "random"
+					break
+				else:
+					print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
+
 		else:
 			start_state = "randomize"
 
-		result = implement_hill_climber(grid, map_name, quantity, start_state, hc_type)
+			# Prompt for number of iterations until user provides valid input
+			while True:
+				extra_arg = input("How many times do you want to run random?\n")
+				
+				# Valid input must be a positive integer equal to or bigger than 1
+				if extra_arg.isdigit() and int(extra_arg) >= 1:
+					break
+				else:
+					print("Invalid input: Please enter an integer that is equal to or bigger than 1")
+
+		result = implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra_arg)
 
 	# Add runtime?
 	print(f"Highest total map value: {result.value}\n",

@@ -194,25 +194,22 @@ class Grid():
         """
 
         other_houses = [other_house for other_house in self.all_houses if not other_house.id == house.id]
-        
+
+        # embed()
+
         for coordinate in house.house_coordinates:
             self.all_empty_coordinates.append(coordinate)
             self.all_house_coordinates.remove(coordinate)
         
         for coordinate in house.man_free_coordinates:
 
-            # Check if coordinate does not also belong to man free space other house
-            overlap = False
-            for other_house in other_houses:
-                for mandatory_coordinate in other_house.man_free_coordinates:
-                    if coordinate == mandatory_coordinate:
-                        overlap = True
-                        break
-
-            if overlap == False:
+            # Only, add coordinate to empty coordinates if no overlap between man free space
+            if not self.all_man_free_coordinates.count(coordinate) > 1:
                 self.all_empty_coordinates.append(coordinate)
-                self.all_man_free_coordinates.remove(coordinate)
-        
+
+            # Remove instance of coordinate from all man free coordinates 
+            self.all_man_free_coordinates.remove(coordinate)
+
         house.placed = False
 
     
