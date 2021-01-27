@@ -6,8 +6,8 @@
 #
 # - Implements random algorithm to generate a solution for the Amstelhaege 
 # case.
+#
 ###############################################################################
-
 
 import random
 import copy

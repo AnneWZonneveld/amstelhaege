@@ -5,6 +5,7 @@
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
 # - A class to create House instances.
+# 
 ###############################################################################
 
 

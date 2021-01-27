@@ -5,8 +5,8 @@
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
 # - A class to create Grid instances.
+#
 ###############################################################################
-
 
 import csv
 import os
