@@ -170,7 +170,7 @@ if __name__ == "__main__":
 
 	randomize = rz.Randomize(test_grid)
 
-	randomize.run(iterations=1)
+	randomize.run(iterations=10)
 
 	#Visualize best case
 	vis.visualize(randomize.best_grid, map_name, quantity, "randomize")
@@ -186,25 +186,27 @@ if __name__ == "__main__":
 	# print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")
 
 
-	# ------------------------ Greedy algorithm -----------------------------------
-	#greedy = gr.Greedy(test_grid)
-	#greedy.run(gr_type="random")
+	# # ------------------------ Greedy algorithm -----------------------------------
+	# print("PERFORMING GREEDY")
+
+	# greedy = gr.Greedy(test_grid)
+	# greedy.run(gr_type="strategy")
 
 	# # Value of grid 
-	#print(f"Value greedy config: {greedy.value}")
+	# print(f"Value greedy config: {greedy.value}")
 
 	# # Visualize case
-	# vis.visualize(greedy.grid, map, quantity, "greedy")
+	# vis.visualize(greedy.grid, map_name, quantity, "greedy")
 
 	# # Create csv output file
-	#greedy.grid.create_output("greedy")
+	# greedy.grid.create_output(map_name, quantity, "greedy")
 
-	# ------------------------- Hill Climber algorithm ------------------------------
+	# # ------------------------- Hill Climber algorithm ------------------------------
 	# print("PERFORMING HC")
-	# start_state = "randomize" # randomize or greedy
+	# start_state = "greedy" # randomize or greedy
 
 	# # ------------------------------- SWITCH -----------------------------------------
-	# hillclimber = hc.HillClimber(randomize.best_grid)
+	# hillclimber = hc.HillClimber(greedy.grid)
 
 	# hc_type = "switch"
 	# hillclimber.run(iterations=2000, hc_type=hc_type)
@@ -222,7 +224,7 @@ if __name__ == "__main__":
 	# hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}") 
 
 	# # ---------------------------------- ROTATION --------------------------------------
-	# hillclimber = hc.HillClimber(randomize.best_grid)
+	# hillclimber = hc.HillClimber(greedy.grid)
 
 	# hc_type = "rotation"
 	# hillclimber.run(iterations=2000, hc_type=hc_type)
