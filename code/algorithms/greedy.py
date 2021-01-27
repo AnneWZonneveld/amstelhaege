@@ -54,10 +54,10 @@ class Greedy():
 		
 		# For each corner of the map, define coordinates of top left corner of house
 		bl_corner = (first_house.min_free, copy_grid.depth - first_house.depth - first_house.min_free)
-		tl_corner = (first_house.min_free, first_house.min_free + first_house.depth)
+		tl_corner = (first_house.min_free, first_house.min_free)
 		br_corner = (copy_grid.width - first_house.width - first_house.min_free, copy_grid.depth - first_house.depth - first_house.min_free)
 		tr_corner = (copy_grid.width - first_house.width - first_house.min_free, first_house.min_free)
-
+		
 		corner_coordinates = [bl_corner, tl_corner, br_corner, tr_corner]
 		
 		# Place house in one of the corners of the map if possible
