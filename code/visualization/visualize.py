@@ -15,13 +15,12 @@ from matplotlib.collections import PatchCollection
 
 def hist_plot(values, map_name, quantity, name):
     """
-    Creates a histogram that represents the total value of a map in relation to
-    the number of times an algorithm has been run. (?)
+    Creates a histogram that shows the distribution of the values of all created
+    maps.
     """
     
     fig, ax = plt.subplots()
     q_iterations = len(values)
-
     plt.title(f"{name.capitalize()}: {q_iterations} iterations")
     plt.xlabel("Value (€)")
     plt.ylabel("Frequency")
@@ -41,8 +40,8 @@ def hist_plot(values, map_name, quantity, name):
 
 def iteration_plot(values, map_name, quantity, hc_type, start_state):
     """
-    Creates a plot that shows how the value of a map is distributed across
-    the development of grid value over iterations. (?)
+    Creates a plot that shows how the map value develops per iteration of an
+    algorithm.
     """
 
     fig, ax = plt.subplots()
@@ -55,7 +54,7 @@ def iteration_plot(values, map_name, quantity, hc_type, start_state):
 
      # Draw plot based on passed on results and iterations
     plt.plot(iterations, values)
-    plt.xticks(np.arange(0, q_iterations +1, int(0.25*q_iterations)))
+    plt.xticks(np.arange(1, q_iterations +1, int(0.25*q_iterations)))
 
     path = os.path.join(".","data", "output", f"{map_name}", f"{quantity}", "figures", "analysis")
 
