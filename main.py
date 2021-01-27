@@ -160,7 +160,7 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra
 
 	# Run hill climber	
 	hillclimber = hc.HillClimber(starting_grid)
-	hillclimber.run(iterations=5, hc_type=hc_type)
+	hillclimber.run(iterations=2000, hc_type=hc_type)
 
 	# Create histogram of all results
 	vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
