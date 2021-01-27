@@ -4,14 +4,15 @@
 # Programmeertheorie
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
-# Generates visualizations of a solution for the Amstelhaege case.
-#
+# - Generates visualizations of a solution for the Amstelhaege case.
 ################################################################################
+
 
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
+
 
 def hist_plot(values, map_name, quantity, name):
     """

@@ -1,12 +1,12 @@
 ###############################################################################
-#
 # main.py
+#
 # Programmeertheorie
 # Anne Zonneveld, Fleur Tervoort en Seike Appold
 #
-# Runs algorithm depending on command line arguments.
-#
+# - Runs algorithm depending on command line arguments.
 ###############################################################################
+
 
 import sys, argparse
 from code.classes import grid, house 
