@@ -75,12 +75,12 @@ def visualize(grid, map_name, quantity, name=""):
 
         # Create diagram of size of map
         plt.plot([0, grid.width, grid.depth, 0])
+        fig, ax = plt.subplots()
         plt.title(f"{name.capitalize()}: €{str(round(grid.value, 2))}")
         plt.xlabel("Width")
         plt.ylabel("Depth")
 
         # Prepare for drawing multiple objects at once
-        fig, ax = plt.subplots()
         objects = []
 
         # Set scaling properties
