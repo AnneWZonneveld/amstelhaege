@@ -24,6 +24,7 @@ class House():
 		self.extra_free = 0
 		self.rotation = None
 		self.placed = False
+		self.rotation =  None
 
 		if self.type == "single":
 			self.width = SINGLE_WIDTH

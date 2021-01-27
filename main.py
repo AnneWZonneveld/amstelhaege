@@ -1,3 +1,13 @@
+###############################################################################
+#
+# main.py
+# Programmeertheorie
+# Anne Zonneveld, Fleur Tervoort en Seike Appold
+#
+# Runs algorithm depending on command line arguments.
+#
+###############################################################################
+
 import sys, argparse
 from code.classes import grid, house 
 from code.visualization import visualize as vis
@@ -27,6 +37,65 @@ def getArgs():
 	return args
 
 
+def aks_iterations():
+	"""
+	Prompts for iterations.
+	"""
+
+	iterations = input("How many times do you want to run random?\n")
+	
+	# Valid input must be a positive integer equal to or bigger than 1
+	if iterations.isdigit() and int(iterations) >= 1:
+		return int(iterations)
+
+	print("Invalid input: Please enter an integer that is equal to or bigger than 1")
+	iterations = None
+
+	return iterations
+
+
+def ask_gr_type():
+	"""
+	Prompts for greedy type.
+	"""
+
+	specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
+	gr_type = None
+
+	# Check if valid input
+	if specification in ["strategy", "s"]:
+		gr_type = "strategy"
+
+	elif specification in ["random", "r"]:
+		gr_type = "random"
+
+	else:
+		print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
+
+	return gr_type
+
+
+def ask_hc_type():
+	"""
+	Prompts for hillclimber type.
+	"""
+
+	specification = input("Which type of HillClimber do you want to run: switch/s or rotation/r?\n")
+	hc_type = None
+
+	# Check if valid input
+	if specification in ["switch", "s"]:
+		hc_type="switch"
+
+	elif specification in ["rotation", "r"]:
+		hc_type = "rotation"
+
+	else:
+		print("Invalid input: Please choose between 'rotation'/'r' and 'switch'/'s'")
+
+	return hc_type
+
+
 def implement_random(grid, iterations, map_name, quantity):
 	"""
 	Runs a specified number of iterations of random algorithm on
@@ -34,9 +103,10 @@ def implement_random(grid, iterations, map_name, quantity):
 	the number of houses to be placed each run and "map_name" the
 	underlying map. Returns grid configuration with most value.
 	"""
+
 	# Run randomize algorithm on grid as often as user specified
 	randomize = rz.Randomize(grid)
-	iterations = int(iterations)
+	iterations = iterations
 	randomize.run(iterations=iterations)
 
 	# Create histogram of all results
@@ -57,6 +127,7 @@ def implement_greedy(grid, map_name, quantity, gr_type):
 	of houses to be placed each run and "map_name" the underlying map.
 	Runs strategy or random version of greedy depending on "gr_type".
 	"""
+
 	# Run greedy algorithm on grid with type that user specified
 	greedy = gr.Greedy(grid)
 	greedy.run(gr_type=gr_type)
@@ -76,26 +147,20 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra
 	configuration as start state, depending on "start_state". Runs
 	switch or rotation version of hilclimber, depending on "gr_type".
 	"""
+
 	if start_state == "greedy":
 
 		# Run greedy algorithm on grid with type that user specified
 		starting_grid = implement_greedy(grid, map_name, quantity, extra_arg)
-
-		# greedy = gr.Greedy(grid)
-		# greedy.run(gr_type="strategy") 
-		# starting_grid = greedy.grid
 
 	else:
 
 		# Run randomize algorithm on grid as often as user specified
 		starting_grid = implement_random(grid, extra_arg, map_name, quantity)
 
-		# randomize = rz.Randomize(grid)
-		# randomize.run(iterations=500) 
-		# starting_grid = randomize.best_grid
-	
+	# Run hill climber	
 	hillclimber = hc.HillClimber(starting_grid)
-	hillclimber.run(iterations=2000, hc_type=hc_type)
+	hillclimber.run(iterations=5, hc_type=hc_type)
 
 	# Create histogram of all results
 	vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
@@ -119,165 +184,65 @@ if __name__ == "__main__":
 	# Create grid based on quantity of houses and map requested by user
 	grid = grid.Grid(quantity, map_file)
 
+	# Check for algoritm 
 	if algorithm in ["random", "r"]:
+
 		# Prompt for number of iterations until user provides valid input
-		while True:
-			iterations = input("How many times do you want to run random?\n")
-			
-			# Valid input must be a positive integer equal to or bigger than 1
-			if iterations.isdigit() and int(iterations) >= 1:
-				break
-			else:
-				print("Invalid input: Please enter an integer that is equal to or bigger than 1")
+		iterations = None
+		while iterations == None:
 
-		result = implement_random(grid, int(iterations), map_name, quantity)
+			# Ask input
+			iterations = aks_iterations()
+
+		# Run random algorithm
+		result = implement_random(grid, iterations, map_name, quantity)
+
 	elif algorithm in ["greedy", "gr"]:
-		# Prompt for type of greedy algorithm until user provides valid input
-		while True:
-			specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
-			
-			# Run requested greedy algorithm if possible, else re-prompt user
-			if specification in ["strategy", "s"]:
-				gr_type = "strategy"
-				break
-			elif specification in ["random", "r"]:
-				gr_type = "random"
-				break
-			else:
-				print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
-		
-		result = implement_greedy(grid, map_name, quantity, gr_type)
-	elif algorithm in ["greedy_hill_climber", "gr_hc", "random_hill_climber", "r_hc"]:
-		# Prompt for type of greedy algorithm until user provides valid input
-		while True:
-			specification = input("Which type of HillClimber do you want to run: Switch/s or rotation/r?\n")
-			
-			# Run requested greedy algorithm if possible, else re-prompt user
-			if specification in ["switch", "s"]:
-				hc_type="switch"
-				break
-			elif specification in ["rotation", "r"]:
-				hc_type = "rotation"
-				break
-			else:
-				print("Invalid input: Please choose between 'rotation'/'r' and 'switch'/'s'")
 
+		# Prompt for type of greedy algorithm until user provides valid input
+		gr_type = None
+		while gr_type == None:
+
+			# Ask input
+			gr_type = ask_gr_type()
+		
+		# Run greedy algoithm 
+		result = implement_greedy(grid, map_name, quantity, gr_type)
+
+	elif algorithm in ["greedy_hill_climber", "gr_hc", "random_hill_climber", "r_hc"]:
+
+		# Prompt for type of hillclimber algorithm until user provides valid 
+		hc_type = None
+		while hc_type == None:
+
+			# Ask input
+			hc_type = ask_hc_type()
+
+		# If intended start state is greedy
 		if algorithm in ["greedy_hill_climber", "gr_hc"]:
 			start_state = "greedy"
 
-			while True:
-				specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
-				
-				# Run requested greedy algorithm if possible, else re-prompt user
-				if specification in ["strategy", "s"]:
-					extra_arg = "strategy"
-					break
-				elif specification in ["random", "r"]:
-					extra_arg = "random"
-					break
-				else:
-					print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
+			# Prompt for greedy type until user provides valid answer
+			extra_arg = None
+			while extra_arg == None:
 
+				# Ask input
+				extra_arg = ask_gr_type()
+
+		# If inteded start state is random
 		else:
 			start_state = "randomize"
 
 			# Prompt for number of iterations until user provides valid input
-			while True:
-				extra_arg = input("How many times do you want to run random?\n")
-				
-				# Valid input must be a positive integer equal to or bigger than 1
-				if extra_arg.isdigit() and int(extra_arg) >= 1:
-					break
-				else:
-					print("Invalid input: Please enter an integer that is equal to or bigger than 1")
+			extra_arg = None
+			while extra_arg == None:
 
+				# Ask input
+				extra_arg = aks_iterations()
+
+		# Run hill climber algorithm
 		result = implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra_arg)
 
-	# Add runtime?
-	print(f"Highest total map value: {result.value}\n",
+	# Results
+	print(f"Highest total map value: {result.value }\n",
 	f"You can find a csv file and visualizations of the results at data/output/{map_name}/{quantity}")
-
-	"""quantity = 20
-	map_name = "wijk_3"
-	map_source = f"data/wijken/{map_name}.csv"
-
-	# Create grid from data
-	test_grid = grid.Grid(quantity, map_source)
-
-	# ----------------------- Randomize algorithm ---------------------------------
-	print("PERFORMING RANDOMIZE")
-
-	randomize = rz.Randomize(test_grid)
-
-	randomize.run(iterations=10)
-
-	#Visualize best case
-	vis.visualize(randomize.best_grid, map_name, quantity, "randomize")
-
-	# Visualize histogram
-	vis.hist_plot(randomize.all_values, map_name, quantity, "randomize")
-
-	# Create csv output file best case
-	randomize.best_grid.create_output(map_name, quantity, "randomize") 
-
-	# Determine highest value and mean
-	print(f"HIGHEST RANDOMIZE VALUE: {randomize.best_value}")
-	# print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")
-
-
-	# # ------------------------ Greedy algorithm -----------------------------------
-	# print("PERFORMING GREEDY")
-
-	# greedy = gr.Greedy(test_grid)
-	# greedy.run(gr_type="strategy")
-
-	# # Value of grid 
-	# print(f"Value greedy config: {greedy.value}")
-
-	# # Visualize case
-	# vis.visualize(greedy.grid, map_name, quantity, "greedy")
-
-	# # Create csv output file
-	# greedy.grid.create_output(map_name, quantity, "greedy")
-
-	# # ------------------------- Hill Climber algorithm ------------------------------
-	# print("PERFORMING HC")
-	# start_state = "greedy" # randomize or greedy
-
-	# # ------------------------------- SWITCH -----------------------------------------
-	# hillclimber = hc.HillClimber(greedy.grid)
-
-	# hc_type = "switch"
-	# hillclimber.run(iterations=2000, hc_type=hc_type)
-
-	# # Value of grid
-	# print(f"HILLCLIMBER VALUE: {hillclimber.value}")
-
-	# # Visualize case
-	# vis.visualize(hillclimber.grid, map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
-
-	# # Visualize iterations
-	# vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
-
-	# # Create csv output file
-	# hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}") 
-
-	# # ---------------------------------- ROTATION --------------------------------------
-	# hillclimber = hc.HillClimber(greedy.grid)
-
-	# hc_type = "rotation"
-	# hillclimber.run(iterations=2000, hc_type=hc_type)
-
-	# # Value of grid
-	# print(f"HILLCLIMBER VALUE: {hillclimber.value}")
-
-	# # Visualize case
-	# vis.visualize(hillclimber.grid, map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
-
-	# # Visualize iterations
-	# vis.iteration_plot(hillclimber.all_values, map_name, quantity, hc_type, start_state)
-
-	# # Create csv output file
-	# hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}") 
-
-	# print(f"MEAN RANDOMIZE VALUE: {mean(randomize.all_values)}")"""
