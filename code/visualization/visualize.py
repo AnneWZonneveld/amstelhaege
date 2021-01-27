@@ -5,6 +5,7 @@
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
 # Generates visualizations of a solution for the Amstelhaege case.
+#
 ################################################################################
 
 import numpy as np

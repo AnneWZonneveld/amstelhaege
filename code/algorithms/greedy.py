@@ -5,6 +5,7 @@
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
 # Implements greedy algorithm to generate a solution for the Amstelhaege case.
+#
 ################################################################################
 
 import copy, random
