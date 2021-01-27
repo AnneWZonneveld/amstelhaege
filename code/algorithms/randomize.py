@@ -1,3 +1,14 @@
+###############################################################################
+# randomize.py
+#
+# Programmeertheorie
+# Anne Zonneveld, Fleur Tervoort, Seike Appold
+#
+# - Implements random algorithm to generate a solution for the Amstelhaege 
+# case.
+###############################################################################
+
+
 import random
 import copy
 
@@ -17,7 +28,7 @@ def random_rotation():
 		Returns a random rotation.
 		"""
 
-		rotation = ['horizontal', 'vertical']
+		rotation = ["horizontal", "vertical"]
 		random_rotation = random.choice(rotation)
 
 		return random_rotation
@@ -48,7 +59,7 @@ class Randomize():
 
 					# Pick random cell
 					random_cell = random_empty_coordinate(copy_grid)
-					
+
 					# Calculate all coordinates for random cell and random rotation
 					house.calc_all_coordinates(random_cell, rotation="random")
 
@@ -56,7 +67,7 @@ class Randomize():
 					if house.valid_location(copy_grid):
 						print("Valid location")
 
-						#Assign house to grid
+						# Assign house to grid
 						copy_grid.assignment_house(house)
 
 					else:
@@ -81,17 +92,16 @@ class Randomize():
 
 	def run(self, iterations):
 		"""
-		Runs rondimize for specifc amount of iteration.
+		Runs randomize for a specifc amount of iterations.
 		"""
 
 		for i in range(0, iterations):
-
+			# Randomly assign grid and calculate worth
 			random_grid = self.random_assignment(self.grid)
 			random_grid.calculate_worth()
 
-			#Value of grid
 			print(f"RANDOMIZE ITERATION {i}: {random_grid.value}")
-
+			
+			# Add value to all_values and check if value is higher than current highest value
 			self.all_values.append(random_grid.value)
-
 			self.check_solution(random_grid)
