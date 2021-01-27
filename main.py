@@ -1,3 +1,13 @@
+###############################################################################
+#
+# main.py
+# Programmeertheorie
+# Anne Zonneveld, Fleur Tervoort en Seike Appold
+#
+# Runs algorithm depending on command line arguments.
+#
+###############################################################################
+
 import sys, argparse
 from code.classes import grid, house 
 from code.visualization import visualize as vis
@@ -25,6 +35,65 @@ def getArgs():
 	args = parser.parse_args()
 
 	return args
+
+
+def aks_iterations():
+	"""
+	Prompts for iterations.
+	"""
+
+	iterations = input("How many times do you want to run random?\n")
+	
+	# Valid input must be a positive integer equal to or bigger than 1
+	if iterations.isdigit() and int(iterations) >= 1:
+		return int(iterations)
+
+	print("Invalid input: Please enter an integer that is equal to or bigger than 1")
+	iterations = None
+
+	return iterations
+
+
+def ask_gr_type():
+	"""
+	Prompts for greedy type.
+	"""
+
+	specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
+	gr_type = None
+
+	# Check if valid input
+	if specification in ["strategy", "s"]:
+		gr_type = "strategy"
+
+	elif specification in ["random", "r"]:
+		gr_type = "random"
+
+	else:
+		print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
+
+	return gr_type
+
+
+def ask_hc_type():
+	"""
+	Prompts for hillclimber type.
+	"""
+
+	specification = input("Which type of HillClimber do you want to run: switch/s or rotation/r?\n")
+	hc_type = None
+
+	# Check if valid input
+	if specification in ["switch", "s"]:
+		hc_type="switch"
+
+	elif specification in ["rotation", "r"]:
+		hc_type = "rotation"
+
+	else:
+		print("Invalid input: Please choose between 'rotation'/'r' and 'switch'/'s'")
+
+	return hc_type
 
 
 def implement_random(grid, iterations, map_name, quantity):
@@ -101,65 +170,6 @@ def implement_hill_climber(grid, map_name, quantity, start_state, hc_type, extra
 	hillclimber.grid.create_output(map_name, quantity, f"{start_state}_hillclimber_{hc_type}")
 
 	return hillclimber.grid
-
-
-def aks_iterations():
-	"""
-	Prompts for iterations.
-	"""
-
-	iterations = input("How many times do you want to run random?\n")
-	
-	# Valid input must be a positive integer equal to or bigger than 1
-	if iterations.isdigit() and int(iterations) >= 1:
-		return int(iterations)
-
-	print("Invalid input: Please enter an integer that is equal to or bigger than 1")
-	iterations = None
-
-	return iterations
-
-
-def ask_gr_type():
-	"""
-	Prompts for greedy type.
-	"""
-
-	specification = input("Which type of greedy do you want to run: Random/r or strategy/s?\n")
-	gr_type = None
-
-	# Check if valid input
-	if specification in ["strategy", "s"]:
-		gr_type = "strategy"
-
-	elif specification in ["random", "r"]:
-		gr_type = "random"
-
-	else:
-		print("Invalid input: Please choose between 'random'/'r' and 'strategy'/'s'")
-
-	return gr_type
-
-
-def ask_hc_type():
-	"""
-	Prompts for hillclimber type.
-	"""
-
-	specification = input("Which type of HillClimber do you want to run: switch/s or rotation/r?\n")
-	hc_type = None
-
-	# Check if valid input
-	if specification in ["switch", "s"]:
-		hc_type="switch"
-
-	elif specification in ["rotation", "r"]:
-		hc_type = "rotation"
-
-	else:
-		print("Invalid input: Please choose between 'rotation'/'r' and 'switch'/'s'")
-
-	return hc_type
 
 
 if __name__ == "__main__":
