@@ -1,11 +1,10 @@
 ###############################################################################
-#
 # hillclimber.py
+# 
 # Programmeertheorie
 # Anne Zonneveld, Fleur Tervoort en Seike Appold
 #
-# Code for two types of hill climber algorithms: switch and rotation.
-#
+# - Code for two types of hill climber algorithms: switch and rotation.
 ###############################################################################
 
 import copy, random

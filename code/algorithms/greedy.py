@@ -4,13 +4,13 @@
 # Programmeertheorie
 # Anne Zonneveld, Fleur Tervoort, Seike Appold
 #
-# Implements greedy algorithm to generate a solution for the Amstelhaege case.
-#
+# - Implements greedy algorithm to generate a solution for the Amstelhaege case.
 ################################################################################
 
 import copy
 from code.algorithms import randomize as rz 
 from code.visualization import visualize as vis
+
 
 class Greedy():
 	def __init__(self, grid):
