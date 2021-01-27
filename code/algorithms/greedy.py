@@ -23,6 +23,7 @@ class Greedy():
 		self.grid = grid
 		self.value = 0
 
+
 	def place_first_house_randomly(self):
 		""" 
 		Places first house on a random valid location and returns updated copy
@@ -45,6 +46,7 @@ class Greedy():
 				copy_grid.assignment_house(first_house)
 	
 		return copy_grid
+
 
 	def place_first_house_strategically(self):
 		"""
@@ -81,6 +83,7 @@ class Greedy():
 	
 		return copy_grid
 
+
 	def check_solution(self, new_grid):
 		"""
 		Returns true if current placement of house adds more value to map than
@@ -97,6 +100,7 @@ class Greedy():
 			success = True
 			
 		return success
+
 
 	def run(self, gr_type):
 		"""
