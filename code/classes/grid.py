@@ -8,14 +8,6 @@ from shapely.geometry import Point
 from IPython import embed
 
 
-# Constants
-MAX_EXTRA_FREE = 250
-GRID_WIDTH = 180
-GRID_DEPTH = 160
-PERC_SINGLE = 0.6
-PERC_BUNGALOW = 0.25
-PERC_MAISON = 0.15
-
 class Grid():
     def __init__(self, quantity, source_file):
         self.width = GRID_WIDTH
@@ -231,25 +223,25 @@ class Grid():
             if other_house != house and other_house.placed:
                 
                 # If other_house is at the top left of the house
-                if other_house.outer_house_coordinates["bottom_right"][0] <= house.outer_house_coordinates["top_left"][0] and other_house.outer_house_coordinates["bottom_right"][1] <= house.outer_house_coordinates["top_left"][1]:
+                if other_house.outer_house_coordinates["bottom_right"][0] < house.outer_house_coordinates["top_left"][0] and other_house.outer_house_coordinates["bottom_right"][1] < house.outer_house_coordinates["top_left"][1]:
                     house_xy = house.outer_house_coordinates["top_left"]
                     other_house_xy = other_house.outer_house_coordinates["bottom_right"]
                     distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
 
                 # If other_house is at the top right of the house
-                elif other_house.outer_house_coordinates["bottom_left"][0] >= house.outer_house_coordinates["top_right"][0] and other_house.outer_house_coordinates["bottom_left"][1] <= house.outer_house_coordinates["top_right"][1]:
+                elif other_house.outer_house_coordinates["bottom_left"][0] > house.outer_house_coordinates["top_right"][0] and other_house.outer_house_coordinates["bottom_left"][1] < house.outer_house_coordinates["top_right"][1]:
                     house_xy = house.outer_house_coordinates["top_right"]
                     other_house_xy = other_house.outer_house_coordinates["bottom_left"]
                     distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
                 
                 # If other_house is at the bottom right of the house
-                elif other_house.outer_house_coordinates["top_left"][0] >= house.outer_house_coordinates["bottom_right"][0] and other_house.outer_house_coordinates["top_left"][1] >= house.outer_house_coordinates["bottom_right"][1]:
+                elif other_house.outer_house_coordinates["top_left"][0] > house.outer_house_coordinates["bottom_right"][0] and other_house.outer_house_coordinates["top_left"][1] > house.outer_house_coordinates["bottom_right"][1]:
                     house_xy = house.outer_house_coordinates["bottom_right"]
                     other_house_xy = other_house.outer_house_coordinates["top_left"]
                     distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
 
                 # If other_house is at the bottom left of the house
-                elif other_house.outer_house_coordinates["top_right"][0] <= house.outer_house_coordinates["bottom_left"][0] and other_house.outer_house_coordinates["top_right"][1] >= house.outer_house_coordinates["bottom_left"][1]:
+                elif other_house.outer_house_coordinates["top_right"][0] < house.outer_house_coordinates["bottom_left"][0] and other_house.outer_house_coordinates["top_right"][1] > house.outer_house_coordinates["bottom_left"][1]:
                     house_xy = house.outer_house_coordinates["bottom_left"]
                     other_house_xy = other_house.outer_house_coordinates["top_right"]
                     distance = Point(house_xy[0],house_xy[1]).distance(Point(other_house_xy[0],other_house_xy[1]))
