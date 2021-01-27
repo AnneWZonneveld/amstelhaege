@@ -1,57 +1,97 @@
 import random
 import copy
 
-from IPython import embed
+
+def random_empty_coordinate(grid):
+		"""
+		Returns a random empty coordinate from grid.
+		"""
+
+		random_coordinate = random.choice(grid.all_empty_coordinates)
+
+		return random_coordinate
 
 
-def random_empty_cell(grid, house):
-	"""
-	Returns a random empty cell from grid.
-	"""
+def random_rotation():
+		"""
+		Returns a random rotation.
+		"""
 
-	print("Performing picking empty cell")
+		rotation = ['horizontal', 'vertical']
+		random_rotation = random.choice(rotation)
 
-	random_cell = random.choice(grid.define_empty_cells(house))
-	return random_cell
-
-
-def random_rotation_choice():
-	"""
-	Returns a random rotation.
-	"""
-
-	rotation = ['horizontal', 'vertical']
-	random_rotation = random.choice(rotation)
-
-	return random_rotation
+		return random_rotation
 
 
-def random_assignment(grid):
-	"""
-	Places all houses randomly on grid. Returns the new grid.
-	"""
+class Randomize():
+	def __init__(self, grid):
+		self.grid = grid
+		self.best_grid = None
+		self.best_value = 0 
+		self.all_values = []
 
-	# Copy empty grid 
-	copy_grid = copy.deepcopy(grid)
-	houses = copy_grid.all_houses
-	
-	# Try to place all houses on grid at valid location, from large to small (heuristic)
-	all_houses = copy_grid.list_all_houses()
-	for house in reversed(all_houses):
-		# embed()
+	def random_assignment(self, grid):
+		"""
+		Places all houses randomly on grid. Returns the new grid.
+		"""
 
-		print(f"Trying to place: {house}")
+		# Copy empty grid 
+		copy_grid = copy.deepcopy(grid)
+		houses = copy_grid.all_houses
+		
+		# Try to place all houses on grid at valid location
+		for house in houses:
+			
+			print(f"Trying to place: {house}")
 
-		while house.placed == False:
-			try:
-				random_cell = random_empty_cell(copy_grid, house)
-				copy_grid.assignment_house(house, random_cell, rotation = "random")
-				house.placed = True
+			while house.placed == False:
 
-			except:
-				print("Error")
-				pass
+					# Pick random cell
+					random_cell = random_empty_coordinate(copy_grid)
+					
+					# Calculate all coordinates for random cell and random rotation
+					house.calc_all_coordinates(random_cell, rotation="random")
 
-	print("All houses placed succesfully")
+					# Check if location is valid
+					if house.valid_location(copy_grid):
+						print("Valid location")
 
-	return copy_grid
+						#Assign house to grid
+						copy_grid.assignment_house(house)
+
+					else:
+						print("Invalid location, retry")
+
+		print("All houses placed succesfully")
+
+		return copy_grid
+
+	def check_solution(self, grid):
+		"""
+		Checks if value of new grid is higher than current highest value.
+		If so, current best grid and value are replaced by new grid and value.
+		"""
+
+		new_value = grid.value
+		old_value = self.best_value
+
+		if new_value > old_value:
+			self.best_grid = grid
+			self.best_value = new_value
+
+	def run(self, iterations):
+		"""
+		Runs rondimize for specifc amount of iteration.
+		"""
+
+		for i in range(0, iterations):
+
+			random_grid = self.random_assignment(self.grid)
+			random_grid.calculate_worth()
+
+			#Value of grid
+			print(f"RANDOMIZE ITERATION {i}: {random_grid.value}")
+
+			self.all_values.append(random_grid.value)
+
+			self.check_solution(random_grid)

@@ -1,5 +1,0 @@
-structure,corner_1 (bottom_left),corner_2 (bottom_right),corner_3 (top_left),corner_4 (top_right),type
-water_1,"(0, 0)","(0, 0)","(0, 0)","(0, 0)",WATER
-single_1,"(15, 6)","(17, 6)","(15, 4)","(17, 4)",SINGLE
-single_2,"(12, 3)","(14, 3)","(12, 1)","(14, 1)",SINGLE
-networth,285000

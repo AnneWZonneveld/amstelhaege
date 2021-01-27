@@ -1,5 +1,5 @@
 # Amstelhaege
-Dicht bij Ouderkerk aan de Amstel wordt een nieuwe wijk gebouwd. De wijk zal bestaande uit vrijstaande huizen en oppervlakte water. De gemeente overweegt drie varianten van de wijk: één met 20 huizen, één met 40 huizen en één met 60 huizen. Een huis is meer waard, wanneer hij meer vrijstand heeft. Er zijn verschillende typen huizen (eengezinswoning, bungalow en maison) met verschillende hoeveelheden verplichte vrijstand en verschillende rekenpercentages. Verder zijn er nog enkele restricties:
+Dicht bij Ouderkerk aan de Amstel wordt een nieuwe wijk gebouwd. De wijk zal bestaan uit vrijstaande huizen en oppervlakte water. De gemeente overweegt drie varianten van de wijk: één met 20 huizen, één met 40 huizen en één met 60 huizen. Een huis is meer waard, wanneer hij meer vrijstand heeft. Er zijn verschillende typen huizen (eengezinswoning, bungalow en maison) met verschillende hoeveelheden verplichte vrijstand en verschillende rekenpercentages. Verder zijn er nog enkele restricties:
 -  Een huis mag niet op water staan, maar zijn vrijstand wel.
 -  De verplichte vrijstand moet binnen de kaart vallen. Dit geldt niet voor extra vrijstand. 
 Het doel van het probleem is om een valide indeling van de wijk te vinden die een zo hoog mogelijke waarde oplevert. 
@@ -18,7 +18,7 @@ De code kan worden gerund door het aanroepen van een command met de volgende str
 - quantity -> dit betreft hoeveel huizen zullen worden geplaats in de wijk. Opties zijn: 20, 40 of 60.
 - algorithm -> dit betreft welk algoritme je wilt runnen. Opties zijn: random/r, greedy/gr, random_hill_climber/r_hc en greedy_hill_climber/gr_hc. 
   
-  Afhankelijk van het gekozen algoritme kan worden gevraagd naar overige parameters.
+  Afhankelijk van het gekozen algoritme kan via een prompt worden gevraagd naar overige parameters.
   - Random: het aantal iteraties voor het runnen van het algoritme.
   - Greedy: het greedy type (random of strategy). Bij random zal het eerste huis op een random plek in de wijk worden geplaatst en bij strategy wordt geprobeerd het eerste huis in een van de hoeken van de wijk te plaatsen.
   - Hillclimber: het hillclimber type (rotation of switch). Rotation probeert per iteratie een huis om te draaien en switch probeert per iteratie twee verschillende type huizen om te wisselen.
