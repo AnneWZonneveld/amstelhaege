@@ -9,29 +9,28 @@
 ###############################################################################
 
 
-import random
-import copy
+import random, copy
 
 
 def random_empty_coordinate(grid):
-		"""
-		Returns a random empty coordinate from grid.
-		"""
+	"""
+	Returns a random empty coordinate from grid.
+	"""
 
-		random_coordinate = random.choice(grid.all_empty_coordinates)
+	random_coordinate = random.choice(grid.all_empty_coordinates)
 
-		return random_coordinate
+	return random_coordinate
 
 
 def random_rotation():
-		"""
-		Returns a random rotation.
-		"""
+	"""
+	Returns a random rotation.
+	"""
 
-		rotation = ["horizontal", "vertical"]
-		random_rotation = random.choice(rotation)
+	rotation = ["horizontal", "vertical"]
+	random_rotation = random.choice(rotation)
 
-		return random_rotation
+	return random_rotation
 
 
 class Randomize():

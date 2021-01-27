@@ -8,8 +8,7 @@
 ###############################################################################
 
 
-import csv
-import os
+import csv, os
 from .house import House
 from .water import Water
 from code.constants import *

@@ -8,8 +8,7 @@
 #
 ###############################################################################
 
-import copy
-import random
+import copy, random
 
 
 class HillClimber:

@@ -8,17 +8,11 @@
 #
 ################################################################################
 
-import copy, random
+import copy
 from code.algorithms import randomize as rz 
 from code.visualization import visualize as vis
 
 class Greedy():
-	"""
-	Places first house either randomly (type: "random") or in one of the corners
-	of the map (type: "strategy"). Places each subsequent greedily, by choosing
-	the location that renders most valuable map.
-	"""
-
 	def __init__(self, grid):
 		self.grid = grid
 		self.value = 0
