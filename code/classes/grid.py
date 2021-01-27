@@ -1,11 +1,19 @@
+###############################################################################
+# grid.py
+#
+# Programmeertheorie
+# Anne Zonneveld, Fleur Tervoort, Seike Appold
+#
+# - A class to create Grid instances.
+###############################################################################
+
+
 import csv
 import os
 from .house import House
 from .water import Water
 from code.constants import *
 from shapely.geometry import Point
-
-from IPython import embed
 
 
 class Grid():
@@ -37,20 +45,22 @@ class Grid():
         all_houses = []
         id_counter = 1
 
-        # Create correct quantiy of houses
+        # Create correct quantity of houses
         for q_type in [q_maison, q_bungalow, q_single]:
 
             for house in range(int(q_type)):
 
                 # Assign each House instance according type
                 if q_type == q_maison:
-                    new_house = House("maison", id_counter) 
+                    new_house = House("maison", id_counter)
+
                 elif q_type == q_bungalow:
                     new_house = House("bungalow", id_counter)
+
                 else:
                     new_house = House("single", id_counter)
                     
-                # Add House to dictionary and adjust id_counter
+                # Add House to list and adjust id_counter
                 all_houses.append(new_house)
                 id_counter = id_counter + 1
 
@@ -59,23 +69,19 @@ class Grid():
 
     def load_water(self):
         """
-        Creates a Water object for each water surface and sets its
-        coordinates based on source file. Returns a list of all
-        Water objects.
+        Creates a Water object for each water surface and sets its coordinates 
+        based on source file. Returns a list of all Water objects.
         """
 
         all_water = []
+        id_counter = 1
 
         # Load coordinates of water surface(s) from source file
-        with open(self.water, 'r') as in_file:
-
+        with open(self.water, "r") as in_file:
             # Skip header
             next(in_file)
 
-            id_counter = 1
-
             while True:
-
                 # For each row, create list of all items
                 row = in_file.readline().rstrip("\n")
 
@@ -87,7 +93,6 @@ class Grid():
 
                 # Create a new water object
                 water = Water()
-
                 water.id = id_counter
 
                 # Save water coordinates in dict
@@ -96,9 +101,8 @@ class Grid():
                                     "top_left": (int(strip_items[1]), int(strip_items[2])),
                                     "top_right": (int(strip_items[3]), int(strip_items[2]))}
         
-                # Add water object to list
-                all_water.append(water)   
-
+                # Add Water to list and adjust id_counter
+                all_water.append(water)
                 id_counter += 1
         
         return all_water
@@ -106,8 +110,8 @@ class Grid():
 
     def load_empty_coordinates(self):
         """
-        Returns a list with all coordinates that make up the map
-        of Amstelhaege.
+        Returns a list with all coordinates that make up the map of 
+        Amstelhaege.
         """
         
         empty_coordinates = []
@@ -115,7 +119,6 @@ class Grid():
         for x in range(self.width + 1 ):
 
             for y in range(self.depth + 1):
-
                 coordinate = (x,y)
                 empty_coordinates.append(coordinate)
 
@@ -129,15 +132,13 @@ class Grid():
 
         water_coordinates = []
 
+        # Define all water coordinates
         for water in self.all_water:
-
             coordinates = self.define_object_coordinates(water.coordinates)
 
             for coordinate in coordinates:
-
+                # Add to list of water coordinates and remove from list of empty coordinates
                 water_coordinates.append(coordinate)
-
-                # Remove from list of empty coordinates
                 self.all_empty_coordinates.remove(coordinate)
 
         return water_coordinates
@@ -150,10 +151,9 @@ class Grid():
 
         object_coordinates = []
 
-        for x in range(coordinates['top_left'][0], coordinates['bottom_right'][0]):
+        for x in range(coordinates["top_left"][0], coordinates["bottom_right"][0]):
             
-            for y in range(coordinates['top_left'][1], coordinates['bottom_right'][1]):
-        
+            for y in range(coordinates["top_left"][1], coordinates["bottom_right"][1]):
                 current_coordinate = (x, y)
                 object_coordinates.append(current_coordinate)
 
@@ -185,21 +185,18 @@ class Grid():
         Reverts the placement of a house at a certain position.
         """
 
-        other_houses = [other_house for other_house in self.all_houses if not other_house.id == house.id]
-
-        # embed()
-
         for coordinate in house.house_coordinates:
+            # Add coordinate to list of empty coordinates and remove from list of house coordinates
             self.all_empty_coordinates.append(coordinate)
             self.all_house_coordinates.remove(coordinate)
         
         for coordinate in house.man_free_coordinates:
 
-            # Only, add coordinate to empty coordinates if no overlap between man free space
+            # Only add coordinate to empty coordinates if no overlap between mandatory free space
             if not self.all_man_free_coordinates.count(coordinate) > 1:
                 self.all_empty_coordinates.append(coordinate)
 
-            # Remove instance of coordinate from all man free coordinates 
+            # Remove instance of coordinate from all mandatory free space coordinates 
             self.all_man_free_coordinates.remove(coordinate)
 
         house.placed = False
@@ -207,16 +204,16 @@ class Grid():
     
     def calculate_extra_free_meters(self, house):
         """
-        Returns how many extra free meters can be assigned to a given house.
+        Calculates the extra free meters of a given house and assigns it to the 
+        house.
         """
-
-        #print(f"Calculating extra free meters for: {house}")
 
         # Set extra free meters to the possible maximum
         house.extra_free = Point(0,0).distance(Point(GRID_WIDTH,GRID_DEPTH))
 
         # For all placed houses other than the selected one
         for other_house in self.all_houses:
+
             if other_house != house and other_house.placed:
                 
                 # If other_house is at the top left of the house
@@ -265,8 +262,7 @@ class Grid():
                 # If extra free space is less than the current amount, replace
                 if extra_free_space < house.extra_free:
                     house.extra_free = extra_free_space
-                    
-        # print(f"Extra free space for {house}: {house.extra_free}")
+
 
     def calculate_worth(self):
         """
@@ -280,10 +276,8 @@ class Grid():
         for house in self.all_houses:
 
             if house.placed == True:
-
                 # Net worth of house
                 worth_house = house.price
-
                 # Calculate extra free meters
                 self.calculate_extra_free_meters(house)
                 
@@ -296,7 +290,6 @@ class Grid():
 
         # Round to nearest integer
         total_networth = int(round(total_networth))
-
         # Assign value to grid
         self.value = total_networth
         
@@ -309,8 +302,7 @@ class Grid():
         houses.
         """
 
-        # embed()
-
+        # The path the created output should follow
         path = f"data/output/{map_name}/{quantity}/csv/{name}"
 
         if not os.path.exists(path):
@@ -332,11 +324,13 @@ class Grid():
                 water_list = [water_object, bottom_left, top_left, top_right, bottom_right, "WATER"]
                 writer.writerow(water_list)
             
+            # Add location of house to csv file
             for house in self.all_houses:
 
                 # Determine label
                 if house.type == "single":
                     label = "eengezinswoning"
+
                 else:
                     label = house.type
 
