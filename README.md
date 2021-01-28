@@ -37,6 +37,9 @@ De volgende lijst beschrijft de belangrijkste mappen en files van het project:
 - /data: bevat alle input en output data
   - /data/output: bevat de geproduceerde visualisaties en csv-bestanden voor de verschillende wijken
   - /data/wijken: bevat databestanden voor de verschillende wijken die nodig zijn voor visualiseren van de wijk
+
+## Disclaimer
+De "networth" voor de door ons gevonden wijkindelingen lijkt niet overeen te komen met de networth die wordt berekend door check50. Hoe dan ook is de networth een goede manier om de uitkomst van verschillende algortimen te vergelijken.
   
 ## Auteurs
 - Seike Appold
