@@ -109,9 +109,9 @@ class Greedy():
 			copy_grid = self.place_first_house_strategically()
 		
 		spare_houses = copy_grid.all_houses[1:]
-
+		
 		# For each remaining house, find location that adds most value to map
-		for house_nr in range(6):
+		for house_nr in range(len(spare_houses)):
 			house = spare_houses[house_nr]
 	
 			counter_tries = 1
